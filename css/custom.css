@@ -5,6 +5,57 @@ html, body {
   margin: 0; padding: 0; height: 100%; overflow: hidden; 
 }
 
+/* ===== ELASTIC JELLY ENTRY ANIMATIONS ===== */
+@keyframes jellyIn {
+  0%   { opacity: 0; transform: scale(0.6); }
+  40%  { opacity: 1; transform: scale(1.08); }
+  60%  { transform: scale(0.96); }
+  75%  { transform: scale(1.04); }
+  88%  { transform: scale(0.98); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes jellyInLeft {
+  0%   { opacity: 0; transform: translateX(-60px) scale(0.85); }
+  45%  { opacity: 1; transform: translateX(12px) scale(1.04); }
+  65%  { transform: translateX(-6px) scale(0.98); }
+  80%  { transform: translateX(4px) scale(1.01); }
+  100% { transform: translateX(0) scale(1); opacity: 1; }
+}
+
+@keyframes jellyInRight {
+  0%   { opacity: 0; transform: translateX(60px) scale(0.85); }
+  45%  { opacity: 1; transform: translateX(-12px) scale(1.04); }
+  65%  { transform: translateX(6px) scale(0.98); }
+  80%  { transform: translateX(-4px) scale(1.01); }
+  100% { transform: translateX(0) scale(1); opacity: 1; }
+}
+
+@keyframes jellyInDown {
+  0%   { opacity: 0; transform: translateY(-40px) scale(0.9); }
+  45%  { opacity: 1; transform: translateY(8px) scale(1.03); }
+  65%  { transform: translateY(-4px) scale(0.99); }
+  80%  { transform: translateY(3px) scale(1.01); }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+/* Aplicar animaciones a los paneles */
+#sidebar {
+  animation: jellyInLeft 0.75s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  animation-delay: 0.05s;
+}
+
+#cartPanel {
+  animation: jellyInRight 0.75s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  animation-delay: 0.15s;
+}
+
+/* Centro (navbar + main) */
+#centerCol {
+  animation: jellyInDown 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  animation-delay: 0.08s;
+}
+
 /* ===== LAYOUT BASE ===== */
 @media(min-width:1024px){
   aside.lg\\:flex { display: flex !important; }
@@ -520,17 +571,60 @@ html, body {
 .game-list-count { display: none; } /* En la imagen no se ve el count debajo del nombre */
 
 /* Section headers */
-.section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
-.section-title-text {
-  font-size: 17px; font-weight: 700;
-  background: linear-gradient(135deg,#fff 0%,rgba(255,255,255,.7) 100%);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+.section-header { 
+  display: flex; 
+  align-items: center; 
+  gap: 14px; 
+  margin-bottom: 24px; 
+  margin-top: 12px;
 }
+
+.section-icon-wrap {
+  width: 44px;
+  height: 44px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.5);
+  box-shadow: inset 0 0 12px rgba(255, 255, 255, 0.02);
+}
+
+.section-icon-wrap svg {
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.2));
+}
+
+.section-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.section-title-text {
+  font-size: 18px; 
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.01em;
+}
+
 .section-count-badge {
-  display: inline-flex; align-items: center;
-  padding: 2px 10px; border-radius: 999px;
-  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.10);
-  font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.5);
+  font-size: 12px; 
+  font-weight: 500; 
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* Bloque de sección con línea divisoria */
+.space-y-6.mb-10 {
+  padding-bottom: 32px;
+  margin-bottom: 8px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.space-y-6.mb-10:last-child {
+  border-bottom: none;
+  padding-bottom: 16px;
 }
 .product-grid {
   display: grid;
@@ -889,134 +983,4 @@ html, body {
   font-weight: 700;
 }
 
-/* ===== STARRY BACKGROUND ===== */
-.stars-container {
-  position: fixed;
-  top: 0; left: 0; width: 100%; height: 100%;
-  background: radial-gradient(ellipse at bottom, #111827 0%, #000 100%);
-  z-index: -1;
-  overflow: hidden;
-}
-
-#stars, #stars2, #stars3 {
-  width: 4px; height: 4px;
-  background: white;
-  border-radius: 50%;
-  box-shadow: 200px 200px #FFF, 400px 600px #FFF, 600px 200px #FFF, 800px 800px #FFF, 1000px 400px #FFF, 1200px 900px #FFF, 1400px 100px #FFF, 1600px 600px #FFF, 1800px 300px #FFF, 100px 700px #FFF, 300px 100px #FFF, 500px 800px #FFF, 700px 400px #FFF, 900px 900px #FFF, 1100px 200px #FFF;
-  animation: animStar 80s linear infinite;
-}
-
-#stars2 {
-  width: 6px; height: 6px;
-  box-shadow: 150px 250px #fff, 450px 450px #fff, 750px 150px #fff, 1050px 650px #fff, 1350px 350px #fff, 1650px 850px #fff, 150px 1150px #fff, 550px 250px #fff, 950px 750px #fff;
-  animation: animStar 120s linear infinite;
-}
-
-#stars3 {
-  width: 2px; height: 2px;
-  box-shadow: 50px 50px #fff, 150px 150px #fff, 250px 250px #fff, 350px 350px #fff, 450px 450px #fff, 550px 550px #fff, 650px 650px #fff, 750px 750px #fff, 850px 850px #fff, 950px 950px #fff;
-  animation: animStar 160s linear infinite;
-}
-
-@keyframes animStar {
-  from { transform: translateY(0px); }
-  to { transform: translateY(-2000px); }
-}
-
-/* ===== GLOBAL TRANSPARENCY (GLASSMORPHISM) ===== */
-body {
-  background: transparent !important;
-}
-
-/* Root Container Override */
-div[style*="background:#0B0F16"] {
-  background: transparent !important;
-}
-
-/* Main UI Panels */
-#sidebar, #cartPanel, main, .peek-header {
-  background: rgba(255, 255, 255, 0.02) !important;
-  backdrop-filter: blur(20px) !important;
-  -webkit-backdrop-filter: blur(20px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.05) !important;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37) !important;
-}
-
-#sidebar {
-  border-radius: 24px !important;
-}
-
-#cartPanel {
-  border-radius: 24px !important;
-}
-
-main {
-  border-radius: 24px !important;
-  background: rgba(0, 0, 0, 0.2) !important;
-}
-
-.peek-header {
-  background: rgba(255, 255, 255, 0.03) !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
-}
-
-/* Individual Item Cards Transparency */
-.product-card {
-  background: rgba(255, 255, 255, 0.01) !important;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.03) !important;
-}
-
-.cart-item-premium {
-  background: rgba(255, 255, 255, 0.02) !important;
-  backdrop-filter: blur(5px);
-}
-
-/* Scrollbar Visibility for Glass */
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 10px;
-}
-
-/* Alineación y Consistencia */
-#cartContent {
-  align-items: stretch !important;
-  justify-content: flex-start !important;
-  padding: 20px !important;
-}
-
-#cartFooter {
-  padding: 24px 20px !important;
-  background: rgba(255, 255, 255, 0.02) !important;
-  border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
-}
-
-#cartTotal {
-  font-size: 22px !important;
-  font-weight: 900 !important;
-  color: #fff !important;
-}
-
-#cartFooter button.w-full {
-  background: #fff !important;
-  color: #000 !important;
-  height: 52px !important;
-  border-radius: 14px !important;
-  font-size: 15px !important;
-  font-weight: 800 !important;
-  transition: all 0.3s !important;
-  margin-top: 10px;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: space-between !important;
-  padding: 0 24px !important;
-}
-
-#cartFooter button.w-full:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(255,255,255,0.1);
 }

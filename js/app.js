@@ -19,38 +19,27 @@ const GAMES=[
 
 const PRODUCTS=[
   // Blox Fruits
-  {id:'kitsune',name:'Kitsune Fruit',game:'blox-fruits',price:15.00,rarity:'Mythic',img:'https://tr.rbxcdn.com/f417f7b3c6b24d7803b82f61a1d2d3d3/150/150/Image/Webp',badge:'hot',purchases:2341},
-  {id:'leopard',name:'Leopard Fruit',game:'blox-fruits',price:12.00,rarity:'Mythic',img:'https://tr.rbxcdn.com/f417f7b3c6b24d7803b82f61a1d2d3d3/150/150/Image/Webp',badge:'trending',purchases:1876},
-  {id:'dragon',name:'Dragon Fruit',game:'blox-fruits',price:9.50,rarity:'Legendary',img:'https://tr.rbxcdn.com/e3b2a1c4d5e6f7a8b9c0d1e2f3a4b5c6/150/150/Image/Webp',badge:null,purchases:3200},
-  {id:'venom',name:'Venom Fruit',game:'blox-fruits',price:7.00,rarity:'Legendary',img:'https://tr.rbxcdn.com/c6b5a4d3e2f1a0b9c8d7e6f5a4b3c2d1/150/150/Image/Webp',badge:null,purchases:1540},
-  {id:'buddha',name:'Buddha Fruit',game:'blox-fruits',price:5.50,rarity:'Legendary',img:'https://tr.rbxcdn.com/b9c8d7e6f5a4b3c2d1e0f9a8b7c6d5e4/150/150/Image/Webp',badge:null,purchases:4100},
-  {id:'soul',name:'Soul Fruit',game:'blox-fruits',price:6.00,rarity:'Legendary',img:'https://tr.rbxcdn.com/a8b7c6d5e4f3a2b1c0d9e8f7a6b5c4d3/150/150/Image/Webp',badge:'new',purchases:890},
-  {id:'dough',name:'Dough Fruit',game:'blox-fruits',price:8.00,rarity:'Legendary',img:'https://tr.rbxcdn.com/97a6b5c4d3e2f1a0b9c8d7e6f5a4b3c2/150/150/Image/Webp',badge:null,purchases:2750},
-  {id:'shadow',name:'Shadow Fruit',game:'blox-fruits',price:4.50,rarity:'Epic',img:'https://tr.rbxcdn.com/86a5b4c3d2e1f0a9b8c7d6e5f4a3b2c1/150/150/Image/Webp',badge:null,purchases:1200},
-  {id:'magma',name:'Magma Fruit',game:'blox-fruits',price:3.00,rarity:'Common',img:'https://tr.rbxcdn.com/75a4b3c2d1e0f9a8b7c6d5e4f3a2b1c0/150/150/Image/Webp',badge:null,purchases:980},
-  {id:'quake',name:'Quake Fruit',game:'blox-fruits',price:3.50,rarity:'Common',img:'https://tr.rbxcdn.com/64a3b2c1d0e9f8a7b6c5d4e3f2a1b0c9/150/150/Image/Webp',badge:null,purchases:760},
+  {id:'kitsune',name:'Kitsune Fruit',game:'blox-fruits',price:15.00,rarity:'Mythic',type:'Fruits',img:'https://tr.rbxcdn.com/f417f7b3c6b24d7803b82f61a1d2d3d3/150/150/Image/Webp',badge:'hot',purchases:2341},
+  {id:'leopard',name:'Leopard Fruit',game:'blox-fruits',price:12.00,rarity:'Mythic',type:'Fruits',img:'https://tr.rbxcdn.com/f417f7b3c6b24d7803b82f61a1d2d3d3/150/150/Image/Webp',badge:'trending',purchases:1876},
+  {id:'dragon',name:'Dragon Fruit',game:'blox-fruits',price:9.50,rarity:'Legendary',type:'Fruits',img:'https://tr.rbxcdn.com/e3b2a1c4d5e6f7a8b9c0d1e2f3a4b5c6/150/150/Image/Webp',badge:null,purchases:3200},
+  {id:'dark-blade',name:'Dark Blade',game:'blox-fruits',price:25.00,rarity:'Mythic',type:'Gamepasses',img:'https://tr.rbxcdn.com/4a3b2c1d0e9f8a7b6c5d4e3f2a1b0c9/150/150/Image/Webp',badge:'hot',purchases:1200},
+  {id:'fast-boats',name:'Fast Boats',game:'blox-fruits',price:5.00,rarity:'Legendary',type:'Gamepasses',img:'https://tr.rbxcdn.com/5a4b3c2d1e0f9a8b7c6d5e4f3a2b1c0/150/150/Image/Webp',badge:null,purchases:850},
+  
   // MM2
-  {id:'niks-scythe',name:"Nik's Scythe",game:'mm2',price:45.00,rarity:'Mythic',img:'https://tr.rbxcdn.com/97825603b82f61a1d2d3d3f417f7b3c6/150/150/Image/Webp',badge:'hot',purchases:312},
-  {id:'harvester',name:'Harvester',game:'mm2',price:12.00,rarity:'Mythic',img:'https://tr.rbxcdn.com/3d3f417f7b3c697825603b82f61a1d2d/150/150/Image/Webp',badge:'trending',purchases:540},
-  {id:'seer',name:'Seer',game:'mm2',price:8.00,rarity:'Legendary',img:'https://tr.rbxcdn.com/f3d2c1b0a9e8f7d6c5b4a3f2e1d0c9b8/150/150/Image/Webp',badge:null,purchases:890},
-  {id:'ghostblade',name:'Ghostblade',game:'mm2',price:6.00,rarity:'Legendary',img:'https://tr.rbxcdn.com/e2d1c0b9a8f7e6d5c4b3a2f1e0d9c8b7/150/150/Image/Webp',badge:null,purchases:1100},
-  {id:'elderwood',name:'Elderwood Scythe',game:'mm2',price:10.00,rarity:'Legendary',img:'https://tr.rbxcdn.com/d1c0b9a8f7e6d5c4b3a2e1f0d9c8b7a6/150/150/Image/Webp',badge:null,purchases:670},
-  {id:'chroma-heat',name:'Chroma Heat',game:'mm2',price:5.00,rarity:'Epic',img:'https://tr.rbxcdn.com/b9a8f7e6d5c4b3a2c1d0e9f8b7a6f5e4/150/150/Image/Webp',badge:null,purchases:820},
-  {id:'orange-knife',name:'Orange Knife',game:'mm2',price:2.00,rarity:'Common',img:'https://tr.rbxcdn.com/a8f7e6d5c4b3a2b1c0d9e8f7a6b5c4d3/150/150/Image/Webp',badge:null,purchases:2100},
+  {id:'niks-scythe',name:"Nik's Scythe",game:'mm2',price:45.00,rarity:'Mythic',type:'Ancient',img:'https://tr.rbxcdn.com/97825603b82f61a1d2d3d3f417f7b3c6/150/150/Image/Webp',badge:'hot',purchases:312},
+  {id:'harvester',name:'Harvester',game:'mm2',price:12.00,rarity:'Mythic',type:'Ancient',img:'https://tr.rbxcdn.com/3d3f417f7b3c697825603b82f61a1d2d/150/150/Image/Webp',badge:'trending',purchases:540},
+  {id:'icebeam',name:'Icebeam Gun',game:'mm2',price:8.00,rarity:'Legendary',type:'Guns',img:'https://tr.rbxcdn.com/f3d2c1b0a9e8f7d6c5b4a3f2e1d0c9b8/150/150/Image/Webp',badge:null,purchases:890},
+  {id:'luger',name:'Luger',game:'mm2',price:6.00,rarity:'Legendary',type:'Guns',img:'https://tr.rbxcdn.com/e2d1c0b9a8f7e6d5c4b3a2f1e0d9c8b7/150/150/Image/Webp',badge:null,purchases:1100},
+  
   // Pet Sim 99
-  {id:'huge-cat',name:'Huge Cat',game:'pet-sim',price:20.00,rarity:'Mythic',img:'https://tr.rbxcdn.com/90f4d329eeed2b23e8a02dc80ee37534/150/150/Image/Webp',badge:'hot',purchases:430},
-  {id:'titanic-corgi',name:'Titanic Corgi',game:'pet-sim',price:35.00,rarity:'Common',img:'https://tr.rbxcdn.com/90f4d329eeed2b23e8a02dc80ee37534/150/150/Image/Webp',badge:'trending',purchases:210},
-  {id:'dominus-huge',name:'Dominus Huge',game:'pet-sim',price:50.00,rarity:'Common',img:'https://tr.rbxcdn.com/90f4d329eeed2b23e8a02dc80ee37534/150/150/Image/Webp',badge:null,purchases:95},
-  {id:'huge-hacked',name:'Huge Hacked Cat',game:'pet-sim',price:18.00,rarity:'Common',img:'https://tr.rbxcdn.com/90f4d329eeed2b23e8a02dc80ee37534/150/150/Image/Webp',badge:'new',purchases:380},
-  // Adopt Me
-  {id:'shadow-dragon',name:'Shadow Dragon',game:'adopt-me',price:25.00,rarity:'Legendary',img:'https://tr.rbxcdn.com/3e1dcf4a0c2b5a6f8e4d2b1c0a9f8e7d/150/150/Image/Webp',badge:'hot',purchases:1540},
-  {id:'frost-dragon',name:'Frost Dragon',game:'adopt-me',price:18.00,rarity:'Common',img:'https://tr.rbxcdn.com/2d0cbe3af9b4a5e7f3c1b0a9f8e7d6c5/150/150/Image/Webp',badge:null,purchases:2100},
-  {id:'bat-dragon',name:'Bat Dragon',game:'adopt-me',price:14.00,rarity:'Common',img:'https://tr.rbxcdn.com/1c9bdf2ae8a3b4f6e2b0c9a8f7e6d5c4/150/150/Image/Webp',badge:'trending',purchases:980},
-  {id:'neon-dragon',name:'Neon Fly Rid. Dragon',game:'adopt-me',price:22.00,rarity:'Mythic',img:'https://tr.rbxcdn.com/0b8ace1af7a2b3e5d1a9b8f7e6d5c4b3/150/150/Image/Webp',badge:null,purchases:650},
+  {id:'huge-cat',name:'Huge Cat',game:'pet-sim',price:20.00,rarity:'Mythic',type:'Huge Pets',img:'https://tr.rbxcdn.com/90f4d329eeed2b23e8a02dc80ee37534/150/150/Image/Webp',badge:'hot',purchases:430},
+  {id:'huge-dog',name:'Huge Dog',game:'pet-sim',price:18.00,rarity:'Legendary',type:'Huge Pets',img:'https://tr.rbxcdn.com/90f4d329eeed2b23e8a02dc80ee37534/150/150/Image/Webp',badge:null,purchases:320},
+  {id:'skin-case-3',name:'Skin Case 3 [x3]',game:'pet-sim',price:15.00,rarity:'Common',type:'Cajas',img:'https://tr.rbxcdn.com/b9c8d7e6f5a4b3c2d1e0f9a8b7c6d5e4/150/150/Image/Webp',badge:null,purchases:150},
+  {id:'skin-case-2',name:'Skin Case 2',game:'pet-sim',price:5.00,rarity:'Common',type:'Cajas',img:'https://tr.rbxcdn.com/b9c8d7e6f5a4b3c2d1e0f9a8b7c6d5e4/150/150/Image/Webp',badge:null,purchases:90},
+  
   // Rivals
-  {id:'galaxy-sword',name:'Galaxy Sword',game:'rivals',price:8.00,rarity:'Legendary',img:'https://tr.rbxcdn.com/f9a8b7c6d5e4f3a2b1c0d9e8f7a6b5c4/150/150/Image/Webp',badge:'new',purchases:340},
-  {id:'plasma-gun',name:'Plasma Gun',game:'rivals',price:6.00,rarity:'Epic',img:'https://tr.rbxcdn.com/e8a7b6c5d4f3e2a1b0c9d8e7f6a5b4c3/150/150/Image/Webp',badge:null,purchases:520},
-  {id:'void-blade',name:'Void Blade',game:'rivals',price:12.00,rarity:'Mythic',img:'https://tr.rbxcdn.com/d7a6b5c4e3f2d1a0b9c8d7e6f5a4b3c2/150/150/Image/Webp',badge:'hot',purchases:190},
+  {id:'galaxy-sword',name:'Galaxy Sword',game:'rivals',price:8.00,rarity:'Legendary',type:'Keys',img:'https://tr.rbxcdn.com/f9a8b7c6d5e4f3a2b1c0d9e8f7a6b5c4/150/150/Image/Webp',badge:'new',purchases:340},
+  {id:'plasma-gun',name:'Plasma Gun',game:'rivals',price:6.00,rarity:'Epic',type:'Keys',img:'https://tr.rbxcdn.com/e8a7b6c5d4f3e2a1b0c9d8e7f6a5b4c3/150/150/Image/Webp',badge:null,purchases:520},
 ];
 
 // ===== STATE =====
@@ -156,24 +145,31 @@ window.selectTab=function(t){
 };
 
 // ===== RENDER CATALOG =====
-function getGameIcon(id){
+function getGameIcon(id, type = null){
   const icons = {
-    'blox-fruits': `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-blue-400"><path d="M14.5 17.5 3 6V3h3l11.5 11.5"/><path d="m13 19 2 2 7-7-2-2"/><path d="m8.5 14.5-2-2"/><path d="m11.5 17.5-2-2"/><path d="m15 11 2 2"/><path d="m19 7-2-2"/></svg>`,
-    'mm2': `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-red-400"><path d="M14 14.7c-4.2-1.1-9.1-3.1-13-3.7l2.1-4.7c4.4 1 10.1 3.2 13.9 4.4l-3 4z"/><path d="M18 21h-8a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4z"/></svg>`,
-    'pet-sim': `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-orange-400"><path d="M10 5.172C10 3.42 11.42 2 13.172 2h7.656C22.58 2 24 3.42 24 5.172v7.656C24 14.58 22.58 16 20.828 16h-7.656C11.42 16 10 14.58 10 12.828V5.172Z"/><path d="M0 11.172C0 9.42 1.42 8 3.172 8h7.656C12.58 8 14 9.42 14 11.172v7.656C14 20.58 12.58 22 10.828 22H3.172C1.42 22 0 20.58 0 18.828v-7.656Z"/></svg>`,
-    'adopt-me': `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-pink-400"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>`,
-    'rivals': `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-purple-400"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>`
+    'blox-fruits': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5 3 6V3h3l11.5 11.5"/><path d="m13 19 2 2 7-7-2-2"/></svg>`,
+    'mm2': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14.7c-4.2-1.1-9.1-3.1-13-3.7l2.1-4.7c4.4 1 10.1 3.2 13.9 4.4l-3 4z"/></svg>`,
+    'pet-sim': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 5.172C10 3.42 11.42 2 13.172 2h7.656C22.58 2 24 3.42 24 5.172v7.656C24 14.58 22.58 16 20.828 16h-7.656C11.42 16 10 14.58 10 12.828V5.172Z"/></svg>`,
+    'adopt-me': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>`,
+    'rivals': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/></svg>`,
+    // Icons for types
+    'Fruits': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 11 6a7 7 0 0 1 0 14Zm0-11v5m-3-2h6"/></svg>`,
+    'Gamepasses': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>`,
+    'Cajas': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>`,
+    'Keys': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m21 2-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0 3 3L22 7l-3-3L15.5 7.5z"/></svg>`,
+    'Ancient': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m21 2-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0 3 3L22 7l-3-3L15.5 7.5z"/></svg>`,
+    'Guns': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m3 11 18-5v12L3 14v-3z"/></svg>`,
+    'Huge Pets': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 5.172C10 3.42 11.42 2 13.172 2h7.656C22.58 2 24 3.42 24 5.172v7.656C24 14.58 22.58 16 20.828 16h-7.656C11.42 16 10 14.58 10 12.828V5.172Z"/></svg>`
   };
-  return icons[id] || `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>`;
+  return icons[type] || icons[id] || `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>`;
 }
 
 function renderCatalog(){
   const cat=document.getElementById('catalogContent');
   const empty=document.getElementById('emptyState');
   
-  // Reiniciar animación
   cat.classList.remove('animate-fade-in');
-  void cat.offsetWidth; // Trigger reflow
+  void cat.offsetWidth; 
   cat.classList.add('animate-fade-in');
 
   let filtered=PRODUCTS.filter(p=>{
@@ -185,33 +181,45 @@ function renderCatalog(){
   if(!filtered.length){cat.innerHTML='';empty.classList.remove('hidden');return;}
   empty.classList.add('hidden');
 
+  let html='';
   if(!state.activeGame){
-    let html='';
     GAMES.forEach(g=>{
       const items=sortProds(filtered.filter(p=>p.game===g.id));
       if(!items.length)return;
-      html+=`<div class="space-y-4">
+      html+=`<div class="space-y-6 mb-10">
         <div class="section-header">
           <div class="section-icon-wrap">${getGameIcon(g.id)}</div>
-          <h2 class="section-title-text">${g.label}</h2>
-          <span class="section-count-badge">${items.length} items</span>
+          <div class="section-info">
+            <h2 class="section-title-text">${g.label}</h2>
+            <span class="section-count-badge">${items.length} productos disponibles</span>
+          </div>
         </div>
         <div class="product-grid">${items.map(renderCard).join('')}</div>
       </div>`;
     });
-    cat.innerHTML=html;
   } else {
-    const g=GAMES.find(x=>x.id===state.activeGame);
-    const items=sortProds(filtered);
-    cat.innerHTML=`<div class="space-y-4">
-      <div class="section-header">
-        <div class="section-icon-wrap">${getGameIcon(state.activeGame)}</div>
-        <h2 class="section-title-text">${g?g.label:state.activeGame}</h2>
-        <span class="section-count-badge">${items.length} items</span>
-      </div>
-      <div class="product-grid">${items.map(renderCard).join('')}</div>
-    </div>`;
+    const grouped = {};
+    filtered.forEach(p => {
+      const t = p.type || 'Otros';
+      if(!grouped[t]) grouped[t] = [];
+      grouped[t].push(p);
+    });
+
+    Object.keys(grouped).forEach(type => {
+      const items = sortProds(grouped[type]);
+      html += `<div class="space-y-6 mb-10">
+        <div class="section-header">
+          <div class="section-icon-wrap">${getGameIcon(state.activeGame, type)}</div>
+          <div class="section-info">
+            <h2 class="section-title-text">${type}</h2>
+            <span class="section-count-badge">${items.length} productos disponibles</span>
+          </div>
+        </div>
+        <div class="product-grid">${items.map(renderCard).join('')}</div>
+      </div>`;
+    });
   }
+  cat.innerHTML=html;
 }
 
 // ===== RENDER SIDEBAR =====
