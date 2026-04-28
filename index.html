@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>In-Game Items | PEEK STORE</title>
+  <link rel="icon" href="images/favicon.ico">
+  <link rel="stylesheet" href="css/22cf11a5658aed24.css">
+  <link rel="stylesheet" href="css/640c9f4240d72535.css">
+  <link rel="stylesheet" href="css/custom.css?v=1.4">
+</head>
+
+<body class="__variable_f367f3 __variable_30e69e font-sans antialiased">
+  <div class="stars-container">
+    <div id="stars"></div>
+    <div id="stars2"></div>
+    <div id="stars3"></div>
+  </div>
+
+  <!-- ROOT: full screen flex row -->
+  <div style="height:100vh;background:transparent;color:#fff;display:flex;overflow:hidden;padding:12px;gap:12px">
+
+    <!-- ===== SIDEBAR (izquierda, altura completa) ===== -->
+    <aside id="sidebar"
+      style="width:300px;flex-shrink:0;display:flex;flex-direction:column;padding:16px;background:rgba(255, 255, 255, 0.05);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.06);border-radius:24px;overflow-y:auto;height:100%">
+
+      <!-- Header con contador real -->
+      <div class="sidebar-header-row">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white/40">
+          <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+          <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+        </svg>
+        <span class="sidebar-badge">5</span>
+        <span class="text-sm font-bold text-white/90">Juegos</span>
+      </div>
+
+      <!-- Otro juego card -->
+      <button class="otro-juego-card group overflow-hidden relative">
+        <div
+          class="absolute inset-0 bg-gradient-to-r from-blue-500/0 via-blue-500/5 to-blue-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000">
+        </div>
+        <div class="otro-juego-icon group-hover:scale-110 group-hover:border-blue-500/50 transition-all duration-300">+
+        </div>
+        <div class="relative z-10">
+          <p class="text-[13px] font-bold text-white/90 group-hover:text-blue-400 transition-colors">Otro juego</p>
+          <p class="text-[11px] text-white/30 leading-tight">Busca entre todos los juegos de Roblox</p>
+        </div>
+      </button>
+
+      <!-- Sidebar Search -->
+      <div class="sidebar-search-wrap">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.34-4.34" />
+        </svg>
+        <input id="gameSearch" type="text" placeholder="Buscar en tus juegos..." class="sidebar-search-input">
+      </div>
+
+      <!-- Game list -->
+      <div id="gameList" class="flex flex-col flex-1 overflow-y-auto scrollbar-hide relative p-1">
+        <div id="sidebar-indicator" class="sidebar-indicator">
+          <div class="sidebar-dot"></div>
+        </div>
+        <div id="gameItemsContainer" class="flex flex-col gap-1 relative z-10"></div>
+      </div>
+    </aside>
+
+    <!-- ===== CENTER COLUMN (navbar + main) ===== -->
+    <div
+      style="flex:1;min-width:0;display:flex;flex-direction:column;overflow:hidden;background:rgba(255,255,255,0.02);border-radius:24px;border:1px solid rgba(255,255,255,0.05)">
+
+      <!-- NAVBAR (sticky top) -->
+      <div
+        style="flex-shrink:0;background:rgba(11,15,22,0.8);backdrop-filter:blur(12px);position:relative;z-index:40;border-bottom:1px solid rgba(255,255,255,0.05)">
+        <div
+          class="relative rounded-2xl overflow-visible backdrop-blur-2xl bg-white/[0.04] border border-white/[0.07] shadow-[0_8px_32px_rgba(0,0,0,0.12)]">
+          <!-- top gradient line -->
+          <div class="absolute top-0 left-0 right-0 h-px rounded-t-2xl"
+            style="background:linear-gradient(90deg,transparent,rgba(59,130,246,.5),rgba(139,92,246,.4),transparent)">
+          </div>
+
+          <!-- Row 1: controls -->
+          <div class="flex items-center gap-2 px-4 h-14">
+
+            <!-- Logo -->
+            <a href="#" class="flex items-center gap-2 shrink-0 group">
+              <img src="images/peek-logo-white.svg" alt="PEEK" width="28" height="28">
+              <span
+                class="text-sm font-bold tracking-wide text-white/80 group-hover:text-white transition-colors hidden 2xl:inline">PEEK
+                STORE</span>
+            </a>
+
+            <div class="w-px h-6 bg-white/[0.08] mx-1 shrink-0"></div>
+
+            <!-- Home icon -->
+            <a href="#"
+              class="flex h-8 w-8 items-center justify-center rounded-lg bg-white/[0.04] border border-white/[0.06] text-white/40 hover:text-white hover:bg-white/[0.08] transition-all shrink-0">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" />
+                <path
+                  d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+              </svg>
+            </a>
+
+            <!-- Game breadcrumb -->
+            <div id="navGameChip" style="display:none" class="items-center gap-2 shrink-0">
+              <div class="w-px h-6 bg-white/[0.08] shrink-0"></div>
+              <div class="flex items-center gap-2">
+                <div id="navGameThumb"
+                  class="w-8 h-8 rounded-lg overflow-hidden bg-white/[0.06] ring-1 ring-white/10 shrink-0"></div>
+                <div>
+                  <p id="navGameName" class="text-sm font-semibold text-white leading-none"></p>
+                  <p id="navGameCount" class="text-[10px] text-white/30 mt-0.5"></p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Search -->
+            <div class="flex-1 min-w-[120px] mx-2 relative group">
+              <svg
+                class="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-white/25 group-focus-within:text-blue-400/70 transition-colors pointer-events-none"
+                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2">
+                <path d="m21 21-4.34-4.34" />
+                <circle cx="11" cy="11" r="8" />
+              </svg>
+              <input id="searchInput" type="text" placeholder="Buscar items..."
+                class="h-9 w-full rounded-xl border border-white/[0.08] bg-white/[0.03] pl-9 pr-4 text-sm text-white placeholder:text-white/25 focus:border-blue-500/30 focus:bg-white/[0.05] focus:outline-none transition-all">
+            </div>
+
+            <!-- Right controls -->
+            <div class="flex items-center gap-1.5 shrink-0">
+
+              <!-- Currency -->
+              <div class="relative" id="currencyWrap">
+                <button id="currencyBtn"
+                  class="inline-flex items-center gap-1.5 h-9 px-3 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition-all text-sm font-semibold text-white">
+                  <img id="currencyFlagImg" src="images/us.png" alt="" width="20" height="15"
+                    class="rounded-[3px] object-cover">
+                  <span id="currencyLabel">USD</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="text-white/40">
+                    <path d="m6 9 6 6 6-6" />
+                  </svg>
+                </button>
+                <div id="currencyDropdown" class="peek-dropdown hidden">
+                  <button class="peek-dropdown-item active" data-code="USD">🇺🇸 USD — US Dollar</button>
+                  <button class="peek-dropdown-item" data-code="COP">🇨🇴 COP — Peso Colombiano</button>
+                  <button class="peek-dropdown-item" data-code="MXN">🇲🇽 MXN — Peso Mexicano</button>
+                  <button class="peek-dropdown-item" data-code="ARS">🇦🇷 ARS — Peso Argentino</button>
+                  <button class="peek-dropdown-item" data-code="PEN">🇵🇪 PEN — Sol Peruano</button>
+                  <button class="peek-dropdown-item" data-code="EUR">🇪🇺 EUR — Euro</button>
+                  <button class="peek-dropdown-item" data-code="BRL">🇧🇷 BRL — Real Brasileño</button>
+                </div>
+              </div>
+
+              <!-- Sort -->
+              <div class="relative" id="sortWrap">
+                <button id="sortBtn"
+                  class="inline-flex items-center gap-1.5 h-9 px-3 rounded-xl border border-white/[0.06] bg-white/[0.03] hover:bg-white/[0.06] transition-all text-xs font-medium text-white/50 hover:text-white/80">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M10 5H3" />
+                    <path d="M12 19H3" />
+                    <path d="M14 3v4" />
+                    <path d="M16 17v4" />
+                    <path d="M21 12h-9" />
+                    <path d="M21 19h-5" />
+                    <path d="M21 5h-7" />
+                    <path d="M8 10v4" />
+                    <path d="M8 12H3" />
+                  </svg>
+                  <span id="sortLabel" class="hidden xl:inline">Popularidad</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="text-white/30">
+                    <path d="m6 9 6 6 6-6" />
+                  </svg>
+                </button>
+                <div id="sortDropdown" class="peek-dropdown hidden">
+                  <button class="peek-dropdown-item active" data-sort="popular">🔥 Popularidad</button>
+                  <button class="peek-dropdown-item" data-sort="priceAsc">💸 Precio: Menor a Mayor</button>
+                  <button class="peek-dropdown-item" data-sort="priceDesc">💰 Precio: Mayor a Menor</button>
+                  <button class="peek-dropdown-item" data-sort="nameAsc">🔤 Nombre: A–Z</button>
+                  <button class="peek-dropdown-item" data-sort="nameDesc">🔤 Nombre: Z–A</button>
+                </div>
+              </div>
+
+              <div class="w-px h-5 bg-white/[0.06] shrink-0"></div>
+
+              <!-- Notifications -->
+              <button class="peek-notif-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+                  <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+                </svg>
+                <span class="peek-notif-badge">1</span>
+              </button>
+
+              <!-- Avatar -->
+              <button class="peek-avatar-btn">A</button>
+
+
+            </div>
+          </div>
+
+          <!-- Row 2: Category tabs -->
+          <div id="categoryTabsWrap" style="display:none; margin-top: 4px;">
+            <div id="categoryTabs" class="category-tabs"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MAIN CONTENT -->
+      <main style="flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;padding:16px 10px 80px" class="scrollbar-hide">
+        <div id="catalogContent" class="space-y-10"></div>
+        <div id="emptyState" style="display:none" class="flex flex-col items-center justify-center py-20 text-center">
+          <div class="text-5xl mb-4">🎮</div>
+          <h2 class="text-lg font-bold mb-2">No se encontraron items</h2>
+          <p class="text-sm text-white/40 mb-5">Intenta con otra búsqueda o selecciona otro juego.</p>
+          <button onclick="clearSearch()"
+            class="px-5 py-2 rounded-xl bg-blue-500 text-white text-sm font-semibold hover:bg-blue-400 transition-colors">Limpiar
+            búsqueda</button>
+        </div>
+      </main>
+    </div>
+
+    <!-- ===== CART PANEL (derecha, altura completa) ===== -->
+    <div id="cartPanel"
+      style="width:320px;flex-shrink:0;display:flex;flex-direction:column;border:1px solid rgba(255,255,255,0.07);background:rgba(255, 255, 255, 0.05);backdrop-filter:blur(20px);border-radius:24px;height:100%">
+
+      <!-- Cart Header -->
+      <div class="flex items-center justify-between p-5 border-b border-white/[0.05]">
+        <div class="flex items-center gap-3">
+          <div
+            class="w-10 h-10 flex items-center justify-center bg-white/[0.05] border border-white/[0.08] rounded-xl text-white/70 relative">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="8" cy="21" r="1" />
+              <circle cx="19" cy="21" r="1" />
+              <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
+            </svg>
+            <span id="cartBadge"
+              class="absolute -top-1 -right-1 w-4 h-4 bg-white text-black text-[9px] font-bold rounded-full flex items-center justify-center">0</span>
+          </div>
+          <div>
+            <h2 class="text-[14px] font-bold text-white">Tu Carrito</h2>
+            <p id="cartSubtitle" class="text-[11px] text-white/40">0 productos</p>
+          </div>
+        </div>
+        <button onclick="clearCart()" class="header-trash-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 6h18" />
+            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Cart Content -->
+      <div id="cartContent" class="flex-1 flex flex-col p-6 overflow-y-auto scrollbar-hide relative">
+        <!-- Empty State -->
+        <div id="cartEmpty" class="flex flex-col items-center justify-center h-full text-center">
+          <div
+            class="w-20 h-20 flex items-center justify-center bg-white/[0.03] border border-white/[0.05] rounded-[32px] mb-4 text-white/10 animate-slow-float">
+            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="8" cy="21" r="1" />
+              <circle cx="19" cy="21" r="1" />
+              <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
+            </svg>
+          </div>
+          <p class="text-[13px] font-bold text-white/80 mb-1">Tu carrito está vacío</p>
+          <p class="text-[11px] text-white/30">Agrega productos para comenzar</p>
+        </div>
+
+        <!-- List of items (hidden by default) -->
+        <div id="cartItemsList" class="w-full space-y-3 hidden"></div>
+      </div>
+
+      <!-- Cart Footer -->
+      <div id="cartFooter" class="p-5 border-t border-white/[0.05] hidden">
+        <!-- Promo Code Section -->
+        <div class="promo-section mb-6">
+          <label class="promo-label">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              style="display:inline; margin-right:4px;">
+              <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
+              <line x1="7" y1="7" x2="7.01" y2="7" />
+            </svg>
+            CÓDIGO PROMOCIONAL
+          </label>
+          <div class="promo-input-group mt-2">
+            <input type="text" placeholder="CÓDIGO" class="promo-input">
+            <button class="promo-btn">Aplicar</button>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between mb-1">
+          <span class="text-[13px] font-semibold text-white/40">Subtotal</span>
+          <span id="cartSubtotal" class="text-[13px] font-bold text-white/60">$0.00</span>
+        </div>
+        <div class="flex items-end justify-between mb-4">
+          <div>
+            <span class="text-[15px] font-bold text-white block">Total</span>
+            <span class="text-[9px] font-bold text-white/20">PRECIO NO FINAL ⓘ</span>
+          </div>
+          <span id="cartTotal" class="text-[22px] font-black text-white">$0.00</span>
+        </div>
+        <button
+          class="w-full h-[52px] bg-white text-black font-bold rounded-xl hover:bg-white/90 transition-all text-[15px] flex items-center justify-between px-6">
+          <span>Continuar al Pago</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14" />
+            <path d="m12 5 7 7-7 7" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+  </div><!-- end root -->
+
+  <div id="toast" class="peek-toast"></div>
+  <script src="js/app.js"></script>
+</body>
+
+</html>
