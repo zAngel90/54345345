@@ -314,6 +314,19 @@ function addToCart(id,e){
   setTimeout(() => { lastAddedId = null; }, 500);
 }
 
+function decreaseQty(id, e){
+  if(e) e.stopPropagation();
+  const item = state.cart.find(x => x.id === id);
+  if(!item) return;
+  
+  if(item.qty > 1) {
+    item.qty--;
+    updateCart();
+  } else {
+    removeFromCart(id, e);
+  }
+}
+
 function removeFromCart(id, event){
   if(event) event.stopPropagation();
   const targetEl = document.querySelector(`.cart-item-premium[data-id="${id}"]`);
@@ -386,6 +399,7 @@ function updateCart(){
               <span class="cart-item-price-total">${p.main} ${p.curr}</span>
               <div class="cart-item-controls">
                 <span class="text-[10px] text-white/20 mr-1 uppercase font-bold">Qty</span>
+                <button onclick="decreaseQty('${item.id}', event)" class="control-btn minus">-</button>
                 <span class="control-qty">${item.qty}</span>
                 <button onclick="addToCart('${item.id}', event)" class="control-btn plus">+</button>
               </div>
@@ -428,39 +442,67 @@ function calcTotal(){
 function setCurrency(code){
   state.currency=code;
   const c=CURRENCY_RATES[code];
+  const flagMap = {
+    'USD': 'https://flagcdn.com/w40/us.png',
+    'COP': 'https://flagcdn.com/w40/co.png',
+    'MXN': 'https://flagcdn.com/w40/mx.png',
+    'ARS': 'https://flagcdn.com/w40/ar.png',
+    'PEN': 'https://flagcdn.com/w40/pe.png',
+    'EUR': 'https://flagcdn.com/w40/eu.png',
+    'BRL': 'https://flagcdn.com/w40/br.png'
+  };
+  
   document.getElementById('currencyLabel').textContent=code;
-  document.getElementById('mobileCurrencyLabel').textContent=code;
-  document.getElementById('mobileCurrencyFlag').textContent=c.flag;
+  const flagImg = document.getElementById('currencyFlagImg');
+  if(flagImg) flagImg.src = flagMap[code] || flagMap['USD'];
+
   document.querySelectorAll('.peek-dropdown-item[data-code]').forEach(b=>b.classList.toggle('active',b.dataset.code===code));
-  renderCatalog();updateCart();
+  renderCatalog();
+  updateCart();
   document.getElementById('currencyDropdown').classList.add('hidden');
 }
 
 // ===== DROPDOWNS =====
+document.getElementById('notifBtn').addEventListener('click',e=>{
+  e.stopPropagation();
+  document.getElementById('currencyDropdown').classList.add('hidden');
+  document.getElementById('sortDropdown').classList.add('hidden');
+  document.getElementById('notifDropdown').classList.toggle('hidden');
+});
 document.getElementById('currencyBtn').addEventListener('click',e=>{
   e.stopPropagation();
   document.getElementById('sortDropdown').classList.add('hidden');
+  document.getElementById('notifDropdown').classList.add('hidden');
   document.getElementById('currencyDropdown').classList.toggle('hidden');
 });
 document.getElementById('sortBtn').addEventListener('click',e=>{
   e.stopPropagation();
   document.getElementById('currencyDropdown').classList.add('hidden');
+  document.getElementById('notifDropdown').classList.add('hidden');
   document.getElementById('sortDropdown').classList.toggle('hidden');
 });
 document.addEventListener('click',()=>{
   document.getElementById('currencyDropdown').classList.add('hidden');
   document.getElementById('sortDropdown').classList.add('hidden');
+  document.getElementById('notifDropdown').classList.add('hidden');
 });
 document.querySelectorAll('.peek-dropdown-item[data-code]').forEach(b=>b.addEventListener('click',()=>setCurrency(b.dataset.code)));
 document.querySelectorAll('.peek-dropdown-item[data-sort]').forEach(b=>b.addEventListener('click',()=>{
   state.sort=b.dataset.sort;
   document.getElementById('sortLabel').textContent=b.textContent.replace(/^..\s/,'');
-  document.getElementById('mobileSortLabel').textContent=b.textContent.replace(/^..\s/,'');
   document.querySelectorAll('.peek-dropdown-item[data-sort]').forEach(x=>x.classList.remove('active'));
   b.classList.add('active');
   document.getElementById('sortDropdown').classList.add('hidden');
   renderCatalog();
 }));
+
+// Notification Tabs Logic
+document.querySelectorAll('.notif-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.notif-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+  });
+});
 
 // ===== SEARCH =====
 document.getElementById('searchInput').addEventListener('input',e=>{state.search=e.target.value;renderCatalog();});

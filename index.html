@@ -8,7 +8,7 @@
   <link rel="icon" href="images/favicon.ico">
   <link rel="stylesheet" href="css/22cf11a5658aed24.css">
   <link rel="stylesheet" href="css/640c9f4240d72535.css">
-  <link rel="stylesheet" href="css/custom.css?v=1.4">
+  <link rel="stylesheet" href="css/custom.css?v=1.5">
 </head>
 
 <body class="__variable_f367f3 __variable_30e69e font-sans antialiased">
@@ -142,13 +142,67 @@
                   </svg>
                 </button>
                 <div id="currencyDropdown" class="peek-dropdown hidden">
-                  <button class="peek-dropdown-item active" data-code="USD">🇺🇸 USD — US Dollar</button>
-                  <button class="peek-dropdown-item" data-code="COP">🇨🇴 COP — Peso Colombiano</button>
-                  <button class="peek-dropdown-item" data-code="MXN">🇲🇽 MXN — Peso Mexicano</button>
-                  <button class="peek-dropdown-item" data-code="ARS">🇦🇷 ARS — Peso Argentino</button>
-                  <button class="peek-dropdown-item" data-code="PEN">🇵🇪 PEN — Sol Peruano</button>
-                  <button class="peek-dropdown-item" data-code="EUR">🇪🇺 EUR — Euro</button>
-                  <button class="peek-dropdown-item" data-code="BRL">🇧🇷 BRL — Real Brasileño</button>
+                  <div class="px-4 py-3 border-b border-white/[0.05] mb-2">
+                    <span class="text-[10px] font-black tracking-widest text-white/30 uppercase">Seleccionar Moneda</span>
+                  </div>
+                  <div class="space-y-1">
+                    <button class="peek-dropdown-item active" data-code="USD">
+                      <img src="https://flagcdn.com/w40/us.png" class="dropdown-flag" alt="">
+                      <div class="flex-1">
+                        <p class="dropdown-code">USD</p>
+                        <p class="dropdown-name">US Dollar</p>
+                      </div>
+                      <div class="dropdown-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                    </button>
+                    <button class="peek-dropdown-item" data-code="MXN">
+                      <img src="https://flagcdn.com/w40/mx.png" class="dropdown-flag" alt="">
+                      <div class="flex-1">
+                        <p class="dropdown-code">MXN</p>
+                        <p class="dropdown-name">Peso Mexicano</p>
+                      </div>
+                      <div class="dropdown-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                    </button>
+                    <button class="peek-dropdown-item" data-code="COP">
+                      <img src="https://flagcdn.com/w40/co.png" class="dropdown-flag" alt="">
+                      <div class="flex-1">
+                        <p class="dropdown-code">COP</p>
+                        <p class="dropdown-name">Peso Colombiano</p>
+                      </div>
+                      <div class="dropdown-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                    </button>
+                    <button class="peek-dropdown-item" data-code="ARS">
+                      <img src="https://flagcdn.com/w40/ar.png" class="dropdown-flag" alt="">
+                      <div class="flex-1">
+                        <p class="dropdown-code">ARS</p>
+                        <p class="dropdown-name">Peso Argentino</p>
+                      </div>
+                      <div class="dropdown-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                    </button>
+                    <button class="peek-dropdown-item" data-code="PEN">
+                      <img src="https://flagcdn.com/w40/pe.png" class="dropdown-flag" alt="">
+                      <div class="flex-1">
+                        <p class="dropdown-code">PEN</p>
+                        <p class="dropdown-name">Sol Peruano</p>
+                      </div>
+                      <div class="dropdown-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                    </button>
+                    <button class="peek-dropdown-item" data-code="EUR">
+                      <img src="https://flagcdn.com/w40/eu.png" class="dropdown-flag" alt="">
+                      <div class="flex-1">
+                        <p class="dropdown-code">EUR</p>
+                        <p class="dropdown-name">Euro</p>
+                      </div>
+                      <div class="dropdown-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                    </button>
+                    <button class="peek-dropdown-item" data-code="BRL">
+                      <img src="https://flagcdn.com/w40/br.png" class="dropdown-flag" alt="">
+                      <div class="flex-1">
+                        <p class="dropdown-code">BRL</p>
+                        <p class="dropdown-name">Real Brasileiro</p>
+                      </div>
+                      <div class="dropdown-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -187,14 +241,73 @@
               <div class="w-px h-5 bg-white/[0.06] shrink-0"></div>
 
               <!-- Notifications -->
-              <button class="peek-notif-btn">
-                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
-                  <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
-                </svg>
-                <span class="peek-notif-badge">1</span>
-              </button>
+              <div class="relative" id="notifWrap">
+                <button class="peek-notif-btn" id="notifBtn">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+                    <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+                  </svg>
+                  <span class="peek-notif-badge">3</span>
+                </button>
+                
+                <div id="notifDropdown" class="peek-dropdown hidden">
+                  <div class="flex items-center justify-between px-4 py-3 border-b border-white/[0.05] mb-2">
+                    <span class="text-[12px] font-black tracking-tight text-white uppercase">Notificaciones</span>
+                    <button class="text-[10px] text-blue-400 font-bold hover:underline">Limpiar</button>
+                  </div>
+
+                  <!-- Tabs de Notificaciones -->
+                  <div class="px-2 mb-3">
+                    <div class="flex items-center p-1 bg-white/[0.03] border border-white/[0.05] rounded-2xl gap-1">
+                      <button class="notif-tab active">
+                        Todas <span class="notif-tab-badge">1</span>
+                      </button>
+                      <button class="notif-tab">
+                        Pedidos <span class="notif-tab-badge secondary">1</span>
+                      </button>
+                      <button class="notif-tab">
+                        Chats
+                      </button>
+                    </div>
+                  </div>
+                  <div class="space-y-1 max-h-[400px] overflow-y-auto scrollbar-hide px-1">
+                    <!-- Notif 1 -->
+                    <div class="notif-item group">
+                      <div class="notif-dot bg-green-500"></div>
+                      <div class="flex-1 min-w-0">
+                        <div class="flex justify-between items-start gap-2">
+                          <h4 class="notif-title group-hover:text-blue-400 transition-colors">¡Pedido completado!</h4>
+                          <span class="notif-time">Hace 2m</span>
+                        </div>
+                        <p class="notif-desc">Tus 1,000 Robux han sido entregados con éxito.</p>
+                      </div>
+                    </div>
+                    <!-- Notif 2 -->
+                    <div class="notif-item group">
+                      <div class="notif-dot bg-blue-400"></div>
+                      <div class="flex-1 min-w-0">
+                        <div class="flex justify-between items-start gap-2">
+                          <h4 class="notif-title group-hover:text-blue-400 transition-colors">Nueva promoción</h4>
+                          <span class="notif-time">Hace 1h</span>
+                        </div>
+                        <p class="notif-desc">Aprovecha un 15% extra en paquetes de 5,000 Robux.</p>
+                      </div>
+                    </div>
+                    <!-- Notif 3 -->
+                    <div class="notif-item group">
+                      <div class="notif-dot bg-blue-500"></div>
+                      <div class="flex-1 min-w-0">
+                        <div class="flex justify-between items-start gap-2">
+                          <h4 class="notif-title group-hover:text-blue-400 transition-colors">Seguridad de cuenta</h4>
+                          <span class="notif-time">Hace 3h</span>
+                        </div>
+                        <p class="notif-desc">Se ha iniciado sesión desde un nuevo dispositivo.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
               <!-- Avatar -->
               <button class="peek-avatar-btn">A</button>
