@@ -81,7 +81,7 @@
 
             <!-- Logo -->
             <a href="#"
-              onclick="if(window.self !== window.top){ window.top.location.href='/'; return false; }"
+              onclick="window.parent.postMessage({ action: 'navigateTo', url: '/' }, '*'); return false;"
               class="flex items-center shrink-0 cursor-pointer">
               <img src="https://i.postimg.cc/5tSsMDgK/logo-4x.png" alt="Pixel Store" style="height:36px;width:auto;object-fit:contain;">
             </a>
