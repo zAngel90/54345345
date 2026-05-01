@@ -39,7 +39,7 @@ async function fetchCurrencies() {
 let GAMES = [];
 let PRODUCTS = [];
 let GAME_CATEGORIES = {};
-let state={currency:'USD',sort:'popular',activeGame:null,search:'',cart:[],gameSearch:'',user:null,notifications:[]};
+let state={currency:'USD',sort:'popular',activeGame:null,search:'',cart:[],gameSearch:'',user:null,notifications:[],activeNotifTab:'all'};
 let lastAddedId = null;
 let selectedUser = null;
 let searchTimeout = null;
@@ -542,14 +542,20 @@ function renderNotifications() {
   badge.textContent = state.notifications.length;
   badge.style.display = state.notifications.length > 0 ? 'flex' : 'none';
 
-  if (state.notifications.length === 0) {
-    container.innerHTML = '<p class="text-white/20 text-[11px] text-center py-8">No tienes notificaciones</p>';
+  // Filtrar según pestaña activa
+  const filtered = state.notifications.filter(n => {
+    if (state.activeNotifTab === 'all') return true;
+    return n.type === state.activeNotifTab;
+  });
+
+  if (filtered.length === 0) {
+    container.innerHTML = '<p class="text-white/20 text-[11px] text-center py-8">No hay notificaciones aquí</p>';
     return;
   }
 
-  container.innerHTML = state.notifications.map(n => `
+  container.innerHTML = filtered.map(n => `
     <div class="notif-item group">
-      <div class="notif-dot ${n.type === 'info' ? 'bg-blue-400' : 'bg-green-500'}"></div>
+      <div class="notif-dot ${n.type === 'orders' ? 'bg-emerald-400' : (n.type === 'chats' ? 'bg-blue-400' : 'bg-white/20')}"></div>
       <div class="flex-1 min-w-0">
         <div class="flex justify-between items-start gap-2">
           <h4 class="notif-title group-hover:text-blue-400 transition-colors">${n.title}</h4>
@@ -579,9 +585,11 @@ document.querySelectorAll('.peek-dropdown-item[data-sort]').forEach(b=>b.addEven
 // Notification Tabs Logic
 document.querySelectorAll('.notif-tab').forEach(tab => {
   tab.addEventListener('click', (e) => {
-    e.stopPropagation(); // Evita que se cierre el dropdown al cambiar de pestaña
+    e.stopPropagation(); 
     document.querySelectorAll('.notif-tab').forEach(t => t.classList.remove('active'));
     tab.classList.add('active');
+    state.activeNotifTab = tab.dataset.tab;
+    renderNotifications();
   });
 });
 
