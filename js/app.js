@@ -97,6 +97,8 @@ async function initApp() {
 
     updateCart();
     renderCatalog();
+    // Avisar al padre que estamos listos para recibir el usuario
+    window.parent.postMessage({ action: 'ready' }, '*');
   } catch (err) {
     console.error('Error initializing app:', err);
   }
