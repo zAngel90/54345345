@@ -658,7 +658,7 @@ function confirmCheckout() {
     action: 'checkout',
     user: selectedUser,
     cart: state.cart,
-    total: state.cart.reduce((s, x) => s + (x.price * x.qty), 0),
+    total: state.cart.reduce((s, x) => s + (x.price * CURRENCY_RATES[state.currency].rate * x.qty), 0),
     currency: state.currency
   };
   
