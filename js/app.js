@@ -505,14 +505,30 @@ window.addEventListener('message', (event) => {
 
 function renderUserUI() {
   const avatarBtn = document.querySelector('.peek-avatar-btn');
+  const nameLabel = document.getElementById('dropdownUserName');
+  const roleLabel = document.getElementById('dropdownUserRole');
   if (!avatarBtn) return;
 
   if (state.user) {
-    avatarBtn.textContent = (state.user.username || 'U').charAt(0).toUpperCase();
+    if (state.user.avatar) {
+      avatarBtn.innerHTML = `<img src="${state.user.avatar}" class="w-full h-full object-cover">`;
+    } else {
+      avatarBtn.innerHTML = `<span>${(state.user.username || 'U').charAt(0).toUpperCase()}</span>`;
+    }
     avatarBtn.style.background = 'linear-gradient(135deg, #3b82f6, #8b5cf6)';
-    avatarBtn.onclick = () => window.parent.postMessage({ action: 'navigateTo', url: '/account' }, '*');
+    if (nameLabel) nameLabel.textContent = state.user.displayName || state.user.username;
+    if (roleLabel) roleLabel.textContent = state.user.role || 'Cliente';
+    
+    // El botón ahora abre el dropdown en lugar de navegar
+    avatarBtn.onclick = (e) => {
+      e.stopPropagation();
+      document.getElementById('notifDropdown').classList.add('hidden');
+      document.getElementById('currencyDropdown').classList.add('hidden');
+      document.getElementById('sortDropdown').classList.add('hidden');
+      document.getElementById('userDropdown').classList.toggle('hidden');
+    };
   } else {
-    avatarBtn.textContent = 'L';
+    avatarBtn.innerHTML = '<span>L</span>';
     avatarBtn.style.background = 'rgba(255,255,255,0.05)';
     avatarBtn.onclick = () => window.parent.postMessage({ action: 'login' }, '*');
   }
@@ -549,6 +565,7 @@ document.addEventListener('click',()=>{
   document.getElementById('currencyDropdown').classList.add('hidden');
   document.getElementById('sortDropdown').classList.add('hidden');
   document.getElementById('notifDropdown').classList.add('hidden');
+  document.getElementById('userDropdown').classList.add('hidden');
 });
 document.querySelectorAll('.peek-dropdown-item[data-sort]').forEach(b=>b.addEventListener('click',()=>{
   state.sort=b.dataset.sort;
@@ -561,7 +578,8 @@ document.querySelectorAll('.peek-dropdown-item[data-sort]').forEach(b=>b.addEven
 
 // Notification Tabs Logic
 document.querySelectorAll('.notif-tab').forEach(tab => {
-  tab.addEventListener('click', () => {
+  tab.addEventListener('click', (e) => {
+    e.stopPropagation(); // Evita que se cierre el dropdown al cambiar de pestaña
     document.querySelectorAll('.notif-tab').forEach(t => t.classList.remove('active'));
     tab.classList.add('active');
   });
