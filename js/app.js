@@ -1,4 +1,7 @@
-// ===== MOCK DATA =====
+// ===== CONFIG =====
+const API_BASE_URL = 'http://localhost:3001/api';
+const SERVER_URL = 'http://localhost:3001';
+
 const CURRENCY_RATES = {
   USD:{symbol:'$',rate:1,flag:'🇺🇸'},
   COP:{symbol:'$',rate:4200,flag:'🇨🇴'},
@@ -9,87 +12,93 @@ const CURRENCY_RATES = {
   BRL:{symbol:'R$',rate:5.1,flag:'🇧🇷'}
 };
 
-const GAMES=[
-  {id:'blox-fruits',label:'Blox Fruits',img:'https://tr.rbxcdn.com/180da39f041f92e42095f9c9629b3a0d/150/150/Image/Webp',count:124},
-  {id:'mm2',label:'Murder Mystery 2',img:'https://tr.rbxcdn.com/f94da877709a340a6b6d471f288022b3/150/150/Image/Webp',count:85},
-  {id:'pet-sim',label:'Pet Simulator 99',img:'https://tr.rbxcdn.com/90f4d329eeed2b23e8a02dc80ee37534/150/150/Image/Webp',count:64},
-  {id:'adopt-me',label:'Adopt Me!',img:'https://tr.rbxcdn.com/3e1dcf4a0c2b5a6f8e4d2b1c0a9f8e7d/150/150/Image/Webp',count:97},
-  {id:'rivals',label:'Rivals',img:'https://tr.rbxcdn.com/a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6/150/150/Image/Webp',count:41},
-];
-
-const PRODUCTS=[
-  // Blox Fruits
-  {id:'kitsune',name:'Kitsune Fruit',game:'blox-fruits',price:15.00,rarity:'Mythic',type:'Fruits',img:'https://tr.rbxcdn.com/f417f7b3c6b24d7803b82f61a1d2d3d3/150/150/Image/Webp',badge:'hot',purchases:2341},
-  {id:'leopard',name:'Leopard Fruit',game:'blox-fruits',price:12.00,rarity:'Mythic',type:'Fruits',img:'https://tr.rbxcdn.com/f417f7b3c6b24d7803b82f61a1d2d3d3/150/150/Image/Webp',badge:'trending',purchases:1876},
-  {id:'dragon',name:'Dragon Fruit',game:'blox-fruits',price:9.50,rarity:'Legendary',type:'Fruits',img:'https://tr.rbxcdn.com/e3b2a1c4d5e6f7a8b9c0d1e2f3a4b5c6/150/150/Image/Webp',badge:null,purchases:3200},
-  {id:'dark-blade',name:'Dark Blade',game:'blox-fruits',price:25.00,rarity:'Mythic',type:'Gamepasses',img:'https://tr.rbxcdn.com/4a3b2c1d0e9f8a7b6c5d4e3f2a1b0c9/150/150/Image/Webp',badge:'hot',purchases:1200},
-  {id:'fast-boats',name:'Fast Boats',game:'blox-fruits',price:5.00,rarity:'Legendary',type:'Gamepasses',img:'https://tr.rbxcdn.com/5a4b3c2d1e0f9a8b7c6d5e4f3a2b1c0/150/150/Image/Webp',badge:null,purchases:850},
-  
-  // MM2
-  {id:'niks-scythe',name:"Nik's Scythe",game:'mm2',price:45.00,rarity:'Mythic',type:'Ancient',img:'https://tr.rbxcdn.com/97825603b82f61a1d2d3d3f417f7b3c6/150/150/Image/Webp',badge:'hot',purchases:312},
-  {id:'harvester',name:'Harvester',game:'mm2',price:12.00,rarity:'Mythic',type:'Ancient',img:'https://tr.rbxcdn.com/3d3f417f7b3c697825603b82f61a1d2d/150/150/Image/Webp',badge:'trending',purchases:540},
-  {id:'icebeam',name:'Icebeam Gun',game:'mm2',price:8.00,rarity:'Legendary',type:'Guns',img:'https://tr.rbxcdn.com/f3d2c1b0a9e8f7d6c5b4a3f2e1d0c9b8/150/150/Image/Webp',badge:null,purchases:890},
-  {id:'luger',name:'Luger',game:'mm2',price:6.00,rarity:'Legendary',type:'Guns',img:'https://tr.rbxcdn.com/e2d1c0b9a8f7e6d5c4b3a2f1e0d9c8b7/150/150/Image/Webp',badge:null,purchases:1100},
-  
-  // Pet Sim 99
-  {id:'huge-cat',name:'Huge Cat',game:'pet-sim',price:20.00,rarity:'Mythic',type:'Huge Pets',img:'https://tr.rbxcdn.com/90f4d329eeed2b23e8a02dc80ee37534/150/150/Image/Webp',badge:'hot',purchases:430},
-  {id:'huge-dog',name:'Huge Dog',game:'pet-sim',price:18.00,rarity:'Legendary',type:'Huge Pets',img:'https://tr.rbxcdn.com/90f4d329eeed2b23e8a02dc80ee37534/150/150/Image/Webp',badge:null,purchases:320},
-  {id:'skin-case-3',name:'Skin Case 3 [x3]',game:'pet-sim',price:15.00,rarity:'Common',type:'Cajas',img:'https://tr.rbxcdn.com/b9c8d7e6f5a4b3c2d1e0f9a8b7c6d5e4/150/150/Image/Webp',badge:null,purchases:150},
-  {id:'skin-case-2',name:'Skin Case 2',game:'pet-sim',price:5.00,rarity:'Common',type:'Cajas',img:'https://tr.rbxcdn.com/b9c8d7e6f5a4b3c2d1e0f9a8b7c6d5e4/150/150/Image/Webp',badge:null,purchases:90},
-  
-  // Rivals
-  {id:'galaxy-sword',name:'Galaxy Sword',game:'rivals',price:8.00,rarity:'Legendary',type:'Keys',img:'https://tr.rbxcdn.com/f9a8b7c6d5e4f3a2b1c0d9e8f7a6b5c4/150/150/Image/Webp',badge:'new',purchases:340},
-  {id:'plasma-gun',name:'Plasma Gun',game:'rivals',price:6.00,rarity:'Epic',type:'Keys',img:'https://tr.rbxcdn.com/e8a7b6c5d4f3e2a1b0c9d8e7f6a5b4c3/150/150/Image/Webp',badge:null,purchases:520},
-];
-
 // ===== STATE =====
+let GAMES = [];
+let PRODUCTS = [];
+let GAME_CATEGORIES = {};
 let state={currency:'USD',sort:'popular',activeGame:null,search:'',cart:[],gameSearch:''};
 let lastAddedId = null;
+
+// ===== INITIALIZATION =====
+async function initApp() {
+  try {
+    // 1. Cargar juegos
+    const gamesRes = await fetch(`${API_BASE_URL}/admin/games-config`);
+    const gamesData = await gamesRes.json();
+    if (gamesData.success) {
+      GAMES = gamesData.data.map(g => ({
+        id: g.id,
+        label: g.name,
+        img: g.image.startsWith('http') ? g.image : `${SERVER_URL}${g.image}`,
+        count: g.items.split(' ')[0] || 0
+      }));
+    }
+
+    // 2. Cargar productos
+    const prodsRes = await fetch(`${API_BASE_URL}/products`);
+    const prodsData = await prodsRes.json();
+    PRODUCTS = prodsData.map(p => ({
+      ...p,
+      purchases: Math.floor(Math.random() * 1000) + 100,
+      img: p.image.startsWith('http') ? p.image : `${SERVER_URL}${p.image}`
+    }));
+
+    // 3. Construir categorías dinámicas
+    GAME_CATEGORIES = {};
+    PRODUCTS.forEach(p => {
+      if (!GAME_CATEGORIES[p.game]) {
+        GAME_CATEGORIES[p.game] = ['Más Vendidos'];
+      }
+      const cat = p.category || 'Otros';
+      if (!GAME_CATEGORIES[p.game].includes(cat)) {
+        GAME_CATEGORIES[p.game].push(cat);
+      }
+    });
+
+    // 4. Renderizar sidebar
+    renderSidebar();
+
+    // 5. Detectar juego por URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const gameId = urlParams.get('game');
+    if (gameId && GAMES.some(g => g.id === gameId)) {
+      selectGame(gameId);
+    } else if (GAMES.length > 0) {
+      selectGame(GAMES[0].id);
+    }
+
+    updateCart();
+    renderCatalog();
+  } catch (err) {
+    console.error('Error initializing app:', err);
+  }
+}
 
 // ===== HELPERS =====
 function fmt(p){const c=CURRENCY_RATES[state.currency];const v=p*c.rate;return c.symbol+(v>=1000?v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}):v.toFixed(2))+' '+state.currency;}
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
 function badgeClass(badge,rarity){if(badge==='hot')return'badge-hot';if(badge==='new')return'badge-new';if(badge==='trending')return'badge-trending';if(rarity==='Mythic')return'badge-mythic';if(rarity==='Legendary')return'badge-legendary';if(rarity==='Epic')return'badge-epic';return'badge-rare';}
-function badgeLabel(badge,rarity){if(badge==='hot')return'HOT';if(badge==='new')return'NEW';if(badge==='trending')return'TOP';return rarity.toUpperCase();}
+function badgeLabel(badge,rarity){if(badge==='hot')return'HOT';if(badge==='new')return'NEW';if(badge==='trending')return'TOP';return (rarity||'ITEM').toUpperCase();}
 function sortProds(arr){const s=[...arr];if(state.sort==='popular')return s.sort((a,b)=>b.purchases-a.purchases);if(state.sort==='priceAsc')return s.sort((a,b)=>a.price-b.price);if(state.sort==='priceDesc')return s.sort((a,b)=>b.price-a.price);if(state.sort==='nameAsc')return s.sort((a,b)=>a.name.localeCompare(b.name));if(state.sort==='nameDesc')return s.sort((a,b)=>b.name.localeCompare(a.name));return s;}
 
 // ===== RENDER CARD =====
-const CATEGORY_COLORS={
-  'blox-fruits':{'Fruits':'#f59e0b','Permanent Fruits':'#60a5fa','Passes':'#a78bfa','Accessories':'#34d399'},
-  'mm2':{'Ancient':'#a855f7','Godly':'#f59e0b','Knife':'#ef4444','Gun':'#3b82f6'},
-  'pet-sim':{'Mythic':'#f59e0b','Legendary':'#a78bfa','Huge':'#ec4899'},
-  'adopt-me':{'Dragon':'#3b82f6','Legendary':'#a78bfa'},
-  'rivals':{'Weapon':'#ef4444','Legendary':'#a78bfa'}
-};
-
-function cardBorderColor(rarity){
-  if(rarity==='Mythic')return'rgba(245,158,11,0.4)';
-  if(rarity==='Legendary')return'rgba(139,92,246,0.4)';
-  if(rarity==='Epic')return'rgba(139,92,246,0.25)';
-  return'rgba(255,255,255,0.08)';
-}
-
-function priceDisplay(price){
-  const c=CURRENCY_RATES[state.currency];
-  const v=(price*c.rate);
-  if(v>=1000)return{main:Math.round(v).toLocaleString('en-US'),curr:state.currency};
-  return{main:v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}),curr:state.currency};
-}
-
 function getRarityColor(rarity){
   const colors = {
     'Mythic': '#2a1a0a',    
     'Legendary': '#0f1225', 
     'Epic': '#121826',      
     'Rare': '#0a1a12',      
-    'Uncommon': '#1a1c20',  // Gris frío neutro
-    'Common': '#1a1c20'     // Gris frío neutro
+    'Uncommon': '#1a1c20',
+    'Common': '#1a1c20'
   };
   return colors[rarity] || '#1a1c20';
 }
 
 function renderCard(p){
-  const pd=priceDisplay(p.price);
+  const pd = {
+    main: (p.price * CURRENCY_RATES[state.currency].rate).toLocaleString('en-US', { minimumFractionDigits: 2 }),
+    curr: state.currency
+  };
   const badgeHtml=p.badge?`<span class="card-badge-el ${badgeClass(p.badge,p.rarity)}">${badgeLabel(p.badge,p.rarity)}</span>`:'';
   const bgColor = getRarityColor(p.rarity);
   const borderCol = p.rarity === 'Mythic' ? 'rgba(245,158,11,0.4)' : 'rgba(255,255,255,0.06)';
@@ -102,11 +111,11 @@ function renderCard(p){
     </div>
     <div class="card-img-wrap" style="background: transparent">
       ${badgeHtml}
-      <img src="https://picsum.photos/seed/${p.id}/200" alt="${p.name}" loading="lazy">
+      <img src="${p.img}" alt="${p.name}" loading="lazy">
     </div>
     <div class="card-info" style="background: rgba(0,0,0,0.25)">
       <h3 class="card-title">${p.name}</h3>
-      <p class="card-category">${p.category||p.rarity}</p>
+      <p class="card-category">${p.category||p.rarity||'Item'}</p>
       <div class="card-price-row">
         <div class="price-box">
           <span class="card-price">${pd.main}</span>
@@ -122,13 +131,6 @@ function renderCard(p){
 }
 
 // ===== CATEGORY TABS =====
-const GAME_CATEGORIES={
-  'blox-fruits':['Más Vendidos','Productos','Frutas Permanentes','Pases'],
-  'mm2':['Más Vendidos','Cuchillos','Pistolas','Mascotas','Varios'],
-  'pet-sim':['Más Vendidos','Huge','Legendary','Epic'],
-  'adopt-me':['Más Vendidos','Dragones','Legendary'],
-  'rivals':['Más Vendidos','Armas','Legendary'],
-};
 let activeTab='Más Vendidos';
 
 function renderTabs(){
@@ -175,11 +177,16 @@ function renderCatalog(){
   let filtered=PRODUCTS.filter(p=>{
     const gOk=state.activeGame?p.game===state.activeGame:true;
     const sOk=state.search?p.name.toLowerCase().includes(state.search.toLowerCase()):true;
-    return gOk&&sOk;
+    const tOk=activeTab==='Más Vendidos'?true:(p.category===activeTab);
+    return gOk&&sOk&&tOk;
   });
 
-  if(!filtered.length){cat.innerHTML='';empty.classList.remove('hidden');return;}
-  empty.classList.add('hidden');
+  if(!filtered.length){
+    cat.innerHTML='';
+    empty.style.display = 'flex';
+    return;
+  }
+  empty.style.display = 'none';
 
   let html='';
   if(!state.activeGame){
@@ -233,7 +240,7 @@ function renderSidebar(){
     <div id="game-item-${g.id}" class="game-list-item ${state.activeGame===g.id?'active':''}" 
          onclick="selectGame('${g.id}')">
       <div class="game-list-thumb">
-        <img src="https://picsum.photos/seed/${g.id}/150" alt="${g.label}">
+        <img src="${g.img}" alt="${g.label}">
       </div>
       <div>
         <p class="game-list-name">${g.label}</p>
@@ -512,6 +519,4 @@ window.clearSearch=function(){state.search='';document.getElementById('searchInp
 document.getElementById('gameSearch').addEventListener('input',e=>{state.gameSearch=e.target.value;renderSidebar();});
 
 // ===== INIT =====
-renderSidebar();
-selectGame('blox-fruits');
-updateCart();
+initApp();
