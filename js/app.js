@@ -2,15 +2,38 @@
 const API_BASE_URL = 'https://arrives-tcp-lead-talk.trycloudflare.com/api';
 const SERVER_URL = 'https://arrives-tcp-lead-talk.trycloudflare.com';
 
-const CURRENCY_RATES = {
-  USD:{symbol:'$',rate:1,flag:'🇺🇸'},
-  COP:{symbol:'$',rate:4200,flag:'🇨🇴'},
-  MXN:{symbol:'$',rate:17.5,flag:'🇲🇽'},
-  ARS:{symbol:'$',rate:1050,flag:'🇦🇷'},
-  PEN:{symbol:'S/',rate:3.8,flag:'🇵🇪'},
-  EUR:{symbol:'€',rate:0.92,flag:'🇪🇺'},
-  BRL:{symbol:'R$',rate:5.1,flag:'🇧🇷'}
+let CURRENCY_RATES = {
+  USD: { symbol: '$', rate: 1, flag: 'us' },
+  COP: { symbol: '$', rate: 4000, flag: 'co' }
 };
+let currentCurrency = 'USD';
+
+async function fetchCurrencies() {
+  try {
+    const res = await fetch(`${SERVER_URL}/api/admin/currencies-config`);
+    const data = await res.json();
+    if (data.success && data.data) {
+      const activeCurrencies = data.data.filter(c => c.active);
+      CURRENCY_RATES = {};
+      activeCurrencies.forEach(c => {
+        CURRENCY_RATES[c.code] = {
+          symbol: c.symbol,
+          rate: c.rate,
+          flag: c.flag
+        };
+      });
+      if (!CURRENCY_RATES[currentCurrency]) {
+        currentCurrency = Object.keys(CURRENCY_RATES)[0] || 'USD';
+      }
+      state.currency = currentCurrency;
+      renderCurrencies();
+      renderCatalog();
+    }
+  } catch (err) {
+    console.error('Error fetching currencies:', err);
+    renderCurrencies();
+  }
+}
 
 // ===== STATE =====
 let GAMES = [];
@@ -24,8 +47,13 @@ let searchTimeout = null;
 // ===== INITIALIZATION =====
 async function initApp() {
   try {
-    // 1. Cargar juegos
-    const gamesRes = await fetch(`${API_BASE_URL}/admin/games-config`);
+    // 1. Iniciar todas las peticiones en paralelo para máxima velocidad
+    const [gamesRes, prodsRes] = await Promise.all([
+      fetch(`${API_BASE_URL}/admin/games-config`),
+      fetch(`${API_BASE_URL}/products`),
+      fetchCurrencies() // Esta corre de fondo
+    ]);
+
     const gamesData = await gamesRes.json();
     if (gamesData.success) {
       GAMES = gamesData.data.map(g => ({
@@ -36,8 +64,6 @@ async function initApp() {
       }));
     }
 
-    // 2. Cargar productos
-    const prodsRes = await fetch(`${API_BASE_URL}/products`);
     const prodsData = await prodsRes.json();
     PRODUCTS = prodsData.map(p => ({
       ...p,
@@ -81,7 +107,7 @@ function fmt(p){const c=CURRENCY_RATES[state.currency];const v=p*c.rate;return c
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
 function badgeClass(badge,rarity){if(badge==='hot')return'badge-hot';if(badge==='new')return'badge-new';if(badge==='trending')return'badge-trending';if(rarity==='Mythic')return'badge-mythic';if(rarity==='Legendary')return'badge-legendary';if(rarity==='Epic')return'badge-epic';return'badge-rare';}
 function badgeLabel(badge,rarity){if(badge==='hot')return'HOT';if(badge==='new')return'NEW';if(badge==='trending')return'TOP';return (rarity||'ITEM').toUpperCase();}
-function sortProds(arr){const s=[...arr];if(state.sort==='popular')return s.sort((a,b)=>b.purchases-a.purchases);if(state.sort==='priceAsc')return s.sort((a,b)=>a.price-b.price);if(state.sort==='priceDesc')return s.sort((a,b)=>b.price-a.price);if(state.sort==='nameAsc')return s.sort((a,b)=>a.name.localeCompare(b.name));if(state.sort==='nameDesc')return s.sort((a,b)=>b.name.localeCompare(a.name));return s;}
+function sortProds(arr){const s=[...arr];if(state.sort==='popular')return s.sort((a,b)=>b.purchases-a.purchases);if(state.sort==='priceAsc')return s.sort((a,b)=>a.price-b.price);if(state.sort==='priceDesc')return s.sort((a,b)=>b.price-a.price);if(state.sort==='nameAsc')return s.sort((a,b)=>a.name.localeCompare(b.name));if(state.sort==='nameDesc')return s.sort((a,b)=>a.name.localeCompare(b.name));return s;}
 
 // ===== RENDER CARD =====
 function getRarityColor(rarity){
@@ -156,7 +182,6 @@ function getGameIcon(id, type = null){
     'pet-sim': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 5.172C10 3.42 11.42 2 13.172 2h7.656C22.58 2 24 3.42 24 5.172v7.656C24 14.58 22.58 16 20.828 16h-7.656C11.42 16 10 14.58 10 12.828V5.172Z"/></svg>`,
     'adopt-me': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>`,
     'rivals': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/></svg>`,
-    // Icons for types
     'Fruits': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 11 6a7 7 0 0 1 0 14Zm0-11v5m-3-2h6"/></svg>`,
     'Gamepasses': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>`,
     'Cajas': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>`,
@@ -259,7 +284,6 @@ function selectGame(id){
   const chip = document.getElementById('navGameChip');
   const tabsWrap = document.getElementById('categoryTabsWrap');
 
-  // Actualizar clases activas sin re-renderizar todo el sidebar (evita parpadeo)
   document.querySelectorAll('.game-list-item').forEach(item => {
     item.classList.toggle('active', item.id === `game-item-${state.activeGame}`);
   });
@@ -298,7 +322,6 @@ function updateSidebarIndicator() {
 // ===== CART =====
 function addToCart(id,e){
   if(e)e.stopPropagation();
-  // Ensure we compare strings to avoid type issues (id from HTML is always string)
   const p=PRODUCTS.find(x=>String(x.id)===String(id));
   if(!p){
     console.error('Product not found for ID:', id);
@@ -311,18 +334,16 @@ function addToCart(id,e){
     state.cart.push({...p,qty:1});
   }
   
-  // Efecto visual en la card
   const card = document.querySelector(`.product-card[data-id="${id}"]`);
   if(card){
     card.classList.add('is-added');
     setTimeout(()=>card.classList.remove('is-added'), 2000);
   }
   
-  lastAddedId = id; // Track el último añadido
+  lastAddedId = id; 
   updateCart();
   showToast('✓ '+p.name+' added to cart');
   
-  // Limpiar el ID después de un momento para que no se repita la animación al re-renderizar por otras razones
   setTimeout(() => { lastAddedId = null; }, 500);
 }
 
@@ -389,7 +410,6 @@ function updateCart(){
     <div class="space-y-3">
       ${state.cart.map(item => {
         const pStr = fmt(item.price * item.qty);
-        // Solo aplicar animate-pop si es el item recién añadido
         const animClass = (item.id === lastAddedId) ? 'animate-pop' : '';
         
         return `
@@ -420,55 +440,35 @@ function updateCart(){
         </div>`;
       }).join('')}
     </div>
-
-    <!-- Recommendations -->
-    <div class="cart-recommendations mt-6">
-      <div class="rec-header">
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
-        <span>También te podría interesar</span>
-      </div>
-      <div class="rec-list space-y-2 mt-3">
-        <div class="rec-item">
-          <img src="https://tr.rbxcdn.com/90f4d329eeed2b23e8a02dc80ee37534/150/150/Image/Webp" class="rec-img">
-          <div class="rec-info">
-            <span class="rec-name">100 Diamonds</span>
-            <span class="rec-game">Pet Simulator 99</span>
-            <span class="rec-price">$10,800</span>
-          </div>
-          <button class="rec-add-btn">+</button>
-        </div>
-      </div>
-    </div>
   `;
   
   if(cartList) cartList.innerHTML = html;
 }
 
-function calcTotal(){
-  const t = state.cart.reduce((acc,item)=>acc + (item.price * item.qty), 0);
-  const c = CURRENCY_RATES[state.currency];
-  return (t * c.rate).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+function renderCurrencies() {
+  const container = document.getElementById('currencyDropdown');
+  if(!container) return;
+  container.innerHTML = Object.keys(CURRENCY_RATES).map(code => {
+    const config = CURRENCY_RATES[code];
+    return `
+      <button class="peek-dropdown-item ${code === currentCurrency ? 'active' : ''}" data-code="${code}">
+        <img src="https://flagcdn.com/w80/${config.flag}.png" style="width:20px;height:14px;object-fit:cover;border-radius:2px;">
+        <span>${code}</span>
+      </button>
+    `;
+  }).join('');
+  document.querySelectorAll('.peek-dropdown-item[data-code]').forEach(b=>b.addEventListener('click',()=>setCurrency(b.dataset.code)));
 }
 
 // ===== CURRENCY =====
 function setCurrency(code){
   state.currency=code;
-  const c=CURRENCY_RATES[code];
-  const flagMap = {
-    'USD': 'https://flagcdn.com/w40/us.png',
-    'COP': 'https://flagcdn.com/w40/co.png',
-    'MXN': 'https://flagcdn.com/w40/mx.png',
-    'ARS': 'https://flagcdn.com/w40/ar.png',
-    'PEN': 'https://flagcdn.com/w40/pe.png',
-    'EUR': 'https://flagcdn.com/w40/eu.png',
-    'BRL': 'https://flagcdn.com/w40/br.png'
-  };
-  
+  currentCurrency=code;
   document.getElementById('currencyLabel').textContent=code;
   const flagImg = document.getElementById('currencyFlagImg');
-  if(flagImg) flagImg.src = flagMap[code] || flagMap['USD'];
+  if(flagImg) flagImg.src = `https://flagcdn.com/w80/${CURRENCY_RATES[code].flag}.png`;
 
-  document.querySelectorAll('.peek-dropdown-item[data-code]').forEach(b=>b.classList.toggle('active',b.dataset.code===code));
+  renderCurrencies();
   renderCatalog();
   updateCart();
   document.getElementById('currencyDropdown').classList.add('hidden');
@@ -498,7 +498,6 @@ document.addEventListener('click',()=>{
   document.getElementById('sortDropdown').classList.add('hidden');
   document.getElementById('notifDropdown').classList.add('hidden');
 });
-document.querySelectorAll('.peek-dropdown-item[data-code]').forEach(b=>b.addEventListener('click',()=>setCurrency(b.dataset.code)));
 document.querySelectorAll('.peek-dropdown-item[data-sort]').forEach(b=>b.addEventListener('click',()=>{
   state.sort=b.dataset.sort;
   document.getElementById('sortLabel').textContent=b.textContent.replace(/^..\s/,'');
@@ -535,7 +534,6 @@ window.openCheckoutModal = function() {
   const modalTotal = document.getElementById('modalTotalAmount');
   const modalCurrency = document.getElementById('modalTotalCurrency');
   
-  // Update Summary
   modalList.innerHTML = state.cart.map(item => `
     <div class="modal-summary-item">
       <img src="${item.img}" class="modal-summary-img" alt="">
@@ -568,7 +566,6 @@ window.closeCheckoutModal = function() {
   document.getElementById('userSearchStatus').textContent = 'Busca y selecciona tu usuario para continuar';
 };
 
-// Search Roblox User
 document.getElementById('robloxUserInput').addEventListener('input', (e) => {
   const q = e.target.value.trim();
   const resultsDiv = document.getElementById('userSearchResults');
@@ -617,7 +614,6 @@ document.getElementById('robloxUserInput').addEventListener('input', (e) => {
 window.selectRobloxUser = function(id, name, displayName) {
   selectedUser = { id, name, displayName };
   
-  // Visual Feedback
   const resultsDiv = document.getElementById('userSearchResults');
   resultsDiv.innerHTML = `
     <div class="user-result-item selected">
