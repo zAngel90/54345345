@@ -39,7 +39,7 @@ async function fetchCurrencies() {
 let GAMES = [];
 let PRODUCTS = [];
 let GAME_CATEGORIES = {};
-let state={currency:'USD',sort:'popular',activeGame:null,search:'',cart:[],gameSearch:''};
+let state={currency:'USD',sort:'popular',activeGame:null,search:'',cart:[],gameSearch:'',user:null,notifications:[]};
 let lastAddedId = null;
 let selectedUser = null;
 let searchTimeout = null;
@@ -493,6 +493,58 @@ document.getElementById('sortBtn').addEventListener('click',e=>{
   document.getElementById('notifDropdown').classList.add('hidden');
   document.getElementById('sortDropdown').classList.toggle('hidden');
 });
+// ===== MESSAGE LISTENER (From React Parent) =====
+window.addEventListener('message', (event) => {
+  if (event.data?.action === 'syncAuth') {
+    state.user = event.data.user;
+    state.notifications = event.data.notifications || [];
+    renderUserUI();
+    renderNotifications();
+  }
+});
+
+function renderUserUI() {
+  const avatarBtn = document.querySelector('.peek-avatar-btn');
+  if (!avatarBtn) return;
+
+  if (state.user) {
+    avatarBtn.textContent = (state.user.username || 'U').charAt(0).toUpperCase();
+    avatarBtn.style.background = 'linear-gradient(135deg, #3b82f6, #8b5cf6)';
+    avatarBtn.onclick = () => window.parent.postMessage({ action: 'navigateTo', url: '/account' }, '*');
+  } else {
+    avatarBtn.textContent = 'L';
+    avatarBtn.style.background = 'rgba(255,255,255,0.05)';
+    avatarBtn.onclick = () => window.parent.postMessage({ action: 'login' }, '*');
+  }
+}
+
+function renderNotifications() {
+  const badge = document.querySelector('.peek-notif-badge');
+  const container = document.querySelector('#notifDropdown .space-y-1');
+  if (!badge || !container) return;
+
+  badge.textContent = state.notifications.length;
+  badge.style.display = state.notifications.length > 0 ? 'flex' : 'none';
+
+  if (state.notifications.length === 0) {
+    container.innerHTML = '<p class="text-white/20 text-[11px] text-center py-8">No tienes notificaciones</p>';
+    return;
+  }
+
+  container.innerHTML = state.notifications.map(n => `
+    <div class="notif-item group">
+      <div class="notif-dot ${n.type === 'info' ? 'bg-blue-400' : 'bg-green-500'}"></div>
+      <div class="flex-1 min-w-0">
+        <div class="flex justify-between items-start gap-2">
+          <h4 class="notif-title group-hover:text-blue-400 transition-colors">${n.title}</h4>
+          <span class="notif-time">${n.time}</span>
+        </div>
+        <p class="notif-desc">${n.desc}</p>
+      </div>
+    </div>
+  `).join('');
+}
+
 document.addEventListener('click',()=>{
   document.getElementById('currencyDropdown').classList.add('hidden');
   document.getElementById('sortDropdown').classList.add('hidden');
