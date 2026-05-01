@@ -542,6 +542,16 @@ function renderNotifications() {
   badge.textContent = state.notifications.length;
   badge.style.display = state.notifications.length > 0 ? 'flex' : 'none';
 
+  // Actualizar contadores de las pestañas
+  const allBadge = document.querySelector('.notif-tab[data-tab="all"] .notif-tab-badge');
+  const ordersBadge = document.querySelector('.notif-tab[data-tab="orders"] .notif-tab-badge');
+  if (allBadge) allBadge.textContent = state.notifications.length;
+  if (ordersBadge) {
+    const orderCount = state.notifications.filter(n => n.type === 'orders').length;
+    ordersBadge.textContent = orderCount;
+    ordersBadge.style.display = orderCount > 0 ? 'flex' : 'none';
+  }
+
   // Filtrar según pestaña activa
   const filtered = state.notifications.filter(n => {
     if (state.activeNotifTab === 'all') return true;
