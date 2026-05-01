@@ -1,6 +1,6 @@
 // ===== CONFIG =====
-const API_BASE_URL = 'http://localhost:3001/api';
-const SERVER_URL = 'http://localhost:3001';
+const API_BASE_URL = 'https://arrives-tcp-lead-talk.trycloudflare.com/api';
+const SERVER_URL = 'https://arrives-tcp-lead-talk.trycloudflare.com';
 
 const CURRENCY_RATES = {
   USD:{symbol:'$',rate:1,flag:'🇺🇸'},
@@ -18,6 +18,8 @@ let PRODUCTS = [];
 let GAME_CATEGORIES = {};
 let state={currency:'USD',sort:'popular',activeGame:null,search:'',cart:[],gameSearch:''};
 let lastAddedId = null;
+let selectedUser = null;
+let searchTimeout = null;
 
 // ===== INITIALIZATION =====
 async function initApp() {
@@ -29,8 +31,8 @@ async function initApp() {
       GAMES = gamesData.data.map(g => ({
         id: g.id,
         label: g.name,
-        img: g.image.startsWith('http') ? g.image : `${SERVER_URL}${g.image}`,
-        count: g.items.split(' ')[0] || 0
+        img: g.image ? (g.image.startsWith('http') ? g.image : `${SERVER_URL}${g.image}`) : '',
+        count: g.items ? g.items.split(' ')[0] : 0
       }));
     }
 
@@ -40,7 +42,7 @@ async function initApp() {
     PRODUCTS = prodsData.map(p => ({
       ...p,
       purchases: Math.floor(Math.random() * 1000) + 100,
-      img: p.image.startsWith('http') ? p.image : `${SERVER_URL}${p.image}`
+      img: p.image ? (p.image.startsWith('http') ? p.image : `${SERVER_URL}${p.image}`) : ''
     }));
 
     // 3. Construir categorías dinámicas
@@ -296,10 +298,13 @@ function updateSidebarIndicator() {
 // ===== CART =====
 function addToCart(id,e){
   if(e)e.stopPropagation();
-  const p=PRODUCTS.find(x=>x.id===id);
-  if(!p)return;
-  if(!p) return;
-  const existing=state.cart.find(x=>x.id===id);
+  // Ensure we compare strings to avoid type issues (id from HTML is always string)
+  const p=PRODUCTS.find(x=>String(x.id)===String(id));
+  if(!p){
+    console.error('Product not found for ID:', id);
+    return;
+  }
+  const existing=state.cart.find(x=>String(x.id)===String(id));
   if(existing){
     existing.qty++;
   }else{
@@ -323,7 +328,7 @@ function addToCart(id,e){
 
 function decreaseQty(id, e){
   if(e) e.stopPropagation();
-  const item = state.cart.find(x => x.id === id);
+  const item = state.cart.find(x => String(x.id) === String(id));
   if(!item) return;
   
   if(item.qty > 1) {
@@ -341,11 +346,11 @@ function removeFromCart(id, event){
   if(targetEl){
     targetEl.classList.add('animate-slide-out');
     setTimeout(() => {
-      state.cart = state.cart.filter(x => x.id !== id);
+      state.cart = state.cart.filter(x => String(x.id) !== String(id));
       updateCart();
     }, 300);
   } else {
-    state.cart = state.cart.filter(x => x.id !== id);
+    state.cart = state.cart.filter(x => String(x.id) !== String(id));
     updateCart();
   }
 }
@@ -383,14 +388,14 @@ function updateCart(){
   let html = `
     <div class="space-y-3">
       ${state.cart.map(item => {
-        const p = priceDisplay(item.price * item.qty);
+        const pStr = fmt(item.price * item.qty);
         // Solo aplicar animate-pop si es el item recién añadido
         const animClass = (item.id === lastAddedId) ? 'animate-pop' : '';
         
         return `
         <div class="cart-item-premium ${animClass}" data-id="${item.id}">
           <div class="cart-item-img-wrap">
-            <img src="https://picsum.photos/seed/${item.id}/100" alt="${item.name}">
+            <img src="${item.img}" alt="${item.name}">
           </div>
           <div class="cart-item-details">
             <div class="flex justify-between items-start">
@@ -403,7 +408,7 @@ function updateCart(){
               </button>
             </div>
             <div class="cart-item-footer mt-2">
-              <span class="cart-item-price-total">${p.main} ${p.curr}</span>
+              <span class="cart-item-price-total">${pStr}</span>
               <div class="cart-item-controls">
                 <span class="text-[10px] text-white/20 mr-1 uppercase font-bold">Qty</span>
                 <button onclick="decreaseQty('${item.id}', event)" class="control-btn minus">-</button>
@@ -517,6 +522,152 @@ window.clearSearch=function(){state.search='';document.getElementById('searchInp
 
 // ===== GAME SEARCH =====
 document.getElementById('gameSearch').addEventListener('input',e=>{state.gameSearch=e.target.value;renderSidebar();});
+
+// ===== CHECKOUT MODAL LOGIC =====
+window.openCheckoutModal = function() {
+  if (state.cart.length === 0) {
+    showToast('❌ Tu carrito está vacío');
+    return;
+  }
+  
+  const modal = document.getElementById('checkoutModal');
+  const modalList = document.getElementById('modalItemsList');
+  const modalTotal = document.getElementById('modalTotalAmount');
+  const modalCurrency = document.getElementById('modalTotalCurrency');
+  
+  // Update Summary
+  modalList.innerHTML = state.cart.map(item => `
+    <div class="modal-summary-item">
+      <img src="${item.img}" class="modal-summary-img" alt="">
+      <div class="flex-1">
+        <p class="text-[13px] font-bold text-white">${item.name}</p>
+        <p class="text-[10px] text-white/30 uppercase tracking-tighter">${item.game}</p>
+      </div>
+      <div class="text-right">
+        <p class="text-[13px] font-black text-white">${fmt(item.price * item.qty)}</p>
+        <p class="text-[10px] text-white/20">Cant: ${item.qty}</p>
+      </div>
+    </div>
+  `).join('');
+  
+  const total = state.cart.reduce((s, x) => s + (x.price * x.qty), 0);
+  modalTotal.textContent = fmt(total).split(' ')[0];
+  modalCurrency.textContent = state.currency;
+  
+  modal.classList.remove('hidden');
+  document.getElementById('robloxUserInput').focus();
+};
+
+window.closeCheckoutModal = function() {
+  document.getElementById('checkoutModal').classList.add('hidden');
+  selectedUser = null;
+  updateConfirmButton();
+  document.getElementById('userSearchResults').classList.add('hidden');
+  document.getElementById('userSearchResults').innerHTML = '';
+  document.getElementById('robloxUserInput').value = '';
+  document.getElementById('userSearchStatus').textContent = 'Busca y selecciona tu usuario para continuar';
+};
+
+// Search Roblox User
+document.getElementById('robloxUserInput').addEventListener('input', (e) => {
+  const q = e.target.value.trim();
+  const resultsDiv = document.getElementById('userSearchResults');
+  const status = document.getElementById('userSearchStatus');
+  
+  clearTimeout(searchTimeout);
+  
+  if (q.length < 3) {
+    resultsDiv.classList.add('hidden');
+    status.textContent = 'Escribe al menos 3 caracteres...';
+    return;
+  }
+  
+  status.textContent = 'Buscando usuario...';
+  
+  searchTimeout = setTimeout(async () => {
+    try {
+      const res = await fetch(`${SERVER_URL}/api/users/search?username=${q}`);
+      const data = await res.json();
+      
+      if (data.success && data.data && data.data.length > 0) {
+        resultsDiv.innerHTML = data.data.map(user => {
+          const avatar = user.avatarUrl.startsWith('http') ? user.avatarUrl : `${SERVER_URL}${user.avatarUrl}`;
+          return `
+            <div class="user-result-item" onclick="selectRobloxUser('${user.id}', '${user.name}', '${user.displayName}')">
+              <img src="${avatar}" class="user-result-avatar" alt="">
+              <div>
+                <p class="text-sm font-bold text-white">${user.displayName}</p>
+                <p class="text-[10px] text-white/30">@${user.name}</p>
+              </div>
+            </div>
+          `;
+        }).join('');
+        resultsDiv.classList.remove('hidden');
+        status.textContent = 'Selecciona tu usuario de la lista';
+      } else {
+        resultsDiv.classList.add('hidden');
+        status.textContent = 'No se encontró ningún usuario';
+      }
+    } catch (err) {
+      status.textContent = 'Error al buscar usuario';
+    }
+  }, 500);
+});
+
+window.selectRobloxUser = function(id, name, displayName) {
+  selectedUser = { id, name, displayName };
+  
+  // Visual Feedback
+  const resultsDiv = document.getElementById('userSearchResults');
+  resultsDiv.innerHTML = `
+    <div class="user-result-item selected">
+      <img src="${SERVER_URL}/api/users/avatar/${id}" class="user-result-avatar" alt="">
+      <div>
+        <p class="text-sm font-bold text-white">${displayName}</p>
+        <p class="text-[10px] text-white/30">@${name}</p>
+      </div>
+      <div class="ml-auto text-blue-400">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      </div>
+    </div>
+  `;
+  
+  document.getElementById('userSearchStatus').textContent = '¡Usuario seleccionado correctamente!';
+  updateConfirmButton();
+};
+
+function updateConfirmButton() {
+  const btn = document.getElementById('confirmCheckoutBtn');
+  if (selectedUser) {
+    btn.disabled = false;
+    btn.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      Confirmar y Pagar
+    `;
+    btn.onclick = confirmCheckout;
+  } else {
+    btn.disabled = true;
+    btn.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="m12 16 4-4-4-4"/></svg>
+      Selecciona tu usuario
+    `;
+    btn.onclick = null;
+  }
+}
+
+function confirmCheckout() {
+  if (!selectedUser) return;
+  
+  const checkoutData = {
+    action: 'checkout',
+    user: selectedUser,
+    cart: state.cart,
+    total: state.cart.reduce((s, x) => s + (x.price * x.qty), 0),
+    currency: state.currency
+  };
+  
+  window.parent.postMessage(checkoutData, '*');
+}
 
 // ===== INIT =====
 initApp();

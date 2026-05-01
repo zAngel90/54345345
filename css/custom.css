@@ -1223,4 +1223,128 @@ html, body {
   font-weight: 700;
 }
 
+/* ===== MODAL SYSTEM ===== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(11, 15, 22, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-content {
+  width: 100%;
+  background: linear-gradient(145deg, #161B22, #0D1117);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 32px;
+  padding: 32px;
+  box-shadow: 0 40px 100px rgba(0,0,0,0.8);
+  position: relative;
+  animation: jellyIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 32px;
+}
+
+.modal-close-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.05);
+  color: rgba(255,255,255,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.modal-close-btn:hover {
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+  transform: rotate(90deg);
+}
+
+/* User Result Item */
+.user-result-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.user-result-item:hover {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+.user-result-item.selected {
+  background: rgba(59, 130, 246, 0.1);
+  border-color: rgba(59, 130, 246, 0.5);
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.1);
+}
+
+.user-result-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  object-fit: cover;
+}
+
+/* Modal Summary Item */
+.modal-summary-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px;
+  background: rgba(255,255,255,0.02);
+  border-radius: 12px;
+}
+
+.modal-summary-img {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+}
+
+#confirmCheckoutBtn:not(:disabled) {
+  background: linear-gradient(135deg, #2563EB, #1D4ED8);
+  border-color: rgba(255,255,255,0.1);
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 12px 24px rgba(37, 99, 235, 0.3);
+}
+
+#confirmCheckoutBtn:not(:disabled):hover {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+}
+
+#confirmCheckoutBtn:not(:disabled):active {
+  transform: translateY(1px);
+}
+
+.hidden {
+  display: none !important;
 }
