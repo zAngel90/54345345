@@ -128,7 +128,7 @@ function renderCard(p){
     curr: state.currency
   };
   const badgeHtml=p.badge?`<span class="card-badge-el ${badgeClass(p.badge,p.rarity)}">${badgeLabel(p.badge,p.rarity)}</span>`:'';
-  const bgColor = getRarityColor(p.rarity);
+  const bgColor = p.color || getRarityColor(p.rarity);
   const borderCol = p.rarity === 'Mythic' ? 'rgba(245,158,11,0.4)' : 'rgba(255,255,255,0.06)';
 
   return `<div class="product-card" data-id="${p.id}" onclick="addToCart('${p.id}',event)" style="background: ${bgColor} !important; border-color: ${borderCol}">
