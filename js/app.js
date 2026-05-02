@@ -40,6 +40,7 @@ async function fetchCurrencies() {
 
 // ===== STATE =====
 let GAMES = [];
+let ALL_PRODUCTS = [];
 let PRODUCTS = [];
 let GAME_CATEGORIES = {};
 let state={currency:'PEN',sort:'popular',activeGame:null,search:'',cart:[],gameSearch:'',user:null,notifications:[],activeNotifTab:'all'};
@@ -73,11 +74,12 @@ async function initApp() {
     }
 
     const prodsData = await prodsRes.json();
-    PRODUCTS = prodsData.map(p => ({
+    ALL_PRODUCTS = prodsData.map(p => ({
       ...p,
       purchases: Math.floor(Math.random() * 1000) + 100,
       img: p.image ? (p.image.startsWith('http') ? p.image : `${SERVER_URL}${p.image}`) : ''
     }));
+    PRODUCTS = [...ALL_PRODUCTS];
 
     // 3. Construir categorías dinámicas
     GAME_CATEGORIES = {};
@@ -103,12 +105,14 @@ async function initApp() {
       const limRes = await fetch(`${API_BASE_URL}/admin/limiteds-config`);
       const limData = await limRes.json();
       if (limData.success) {
-        PRODUCTS = limData.data.map(p => ({
+        const limProds = limData.data.map(p => ({
           ...p,
           game: 'limiteds',
           purchases: Math.floor(Math.random() * 500) + 50,
           img: p.image ? (p.image.startsWith('http') ? p.image : `${SERVER_URL}${p.image}`) : ''
         }));
+        PRODUCTS = limProds;
+        document.getElementById('limitedsBanner').classList.remove('hidden');
 
         // Construir categorías para limiteds
         GAME_CATEGORIES['limiteds'] = ['Más Vendidos'];
@@ -124,6 +128,7 @@ async function initApp() {
         renderTabs();
       }
     } else {
+      document.getElementById('limitedsBanner').classList.add('hidden');
       renderSidebar();
       if (gameId && GAMES.some(g => g.id === gameId)) {
         selectGame(gameId);
@@ -394,7 +399,11 @@ function updateSidebarIndicator() {
 function addToCart(id,e){
   if(e)e.stopPropagation();
   
-  const p=PRODUCTS.find(x=>String(x.id)===String(id));
+  // Buscar en la vista actual o en la lista global de productos
+  let p = PRODUCTS.find(x => String(x.id) === String(id));
+  if (!p) p = ALL_PRODUCTS.find(x => String(x.id) === String(id));
+  if (!p) p = state.cart.find(x => String(x.id) === String(id));
+
   if(!p){
     console.error('Product not found for ID:', id);
     return;
@@ -415,7 +424,12 @@ function addToCart(id,e){
   
   lastAddedId = id; 
   updateCart();
-  showToast('✓ '+p.name+' added to cart');
+  showToast('✓ '+p.name+' añadido al carrito');
+
+  // Si es un limited, abrimos el modal de trade al instante
+  if (p.game === 'limiteds' || state.activeGame === 'limiteds') {
+    setTimeout(() => openTradeModal(id), 100);
+  }
   
   setTimeout(() => { lastAddedId = null; }, 500);
 }
