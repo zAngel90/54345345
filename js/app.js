@@ -879,13 +879,40 @@ function updateTradeStepUI() {
   const progress = ((currentTradeStep - 1) / 2) * 100;
   track.style.width = `${progress}%`;
 
-  backBtn.classList.toggle('hidden', currentTradeStep === 1);
-
   if (currentTradeStep === 1) {
     title.innerText = 'Verificación';
     desc.innerText = 'Busca tu usuario de Roblox para continuar';
-    nextBtnText.innerText = tradeSelectedUser ? 'Continuar' : 'Selecciona un usuario';
-    nextBtn.disabled = !tradeSelectedUser;
+    
+    const searchView = document.getElementById('trade-search-view');
+    const confirmView = document.getElementById('trade-confirm-view');
+    
+    if (tradeSelectedUser) {
+      searchView.classList.add('hidden');
+      confirmView.classList.remove('hidden');
+      backBtn.classList.remove('hidden'); // Show back button to return to search
+      
+      document.getElementById('step1-user-card').innerHTML = `
+        <div class="user-result-item !bg-white/5 !border-white/10 !p-5">
+          <img src="${tradeSelectedUser.avatarUrl}" class="user-result-avatar !size-14" alt="">
+          <div class="flex-1">
+            <p class="text-[10px] text-white/20 font-black uppercase tracking-widest">Cuenta Encontrada</p>
+            <p class="text-base font-bold text-white">${tradeSelectedUser.displayName || tradeSelectedUser.name}</p>
+            <p class="text-xs text-white/40">@${tradeSelectedUser.name}</p>
+          </div>
+          <div class="size-6 rounded-full bg-emerald-500 flex items-center justify-center text-white">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path d="M20 6 9 17l-5-5"/></svg>
+          </div>
+        </div>
+      `;
+      nextBtnText.innerText = 'Continuar';
+      nextBtn.disabled = false;
+    } else {
+      searchView.classList.remove('hidden');
+      confirmView.classList.add('hidden');
+      backBtn.classList.add('hidden');
+      nextBtnText.innerText = 'Selecciona un usuario';
+      nextBtn.disabled = true;
+    }
   } else if (currentTradeStep === 2) {
     title.innerText = 'Seleccionar Item';
     desc.innerText = 'Selecciona un item para el trade';
@@ -960,7 +987,13 @@ window.tradeNextStep = function() {
   updateTradeStepUI();
 };
 
-window.tradePrevStep = function() {
+window.tradePrevStep = function tradePrevStep() {
+  if (currentTradeStep === 1) {
+    // Si estamos en el paso 1 y hay un usuario seleccionado, "Atrás" vuelve a la búsqueda
+    tradeSelectedUser = null;
+    updateTradeStepUI();
+    return;
+  }
   if (currentTradeStep > 1) {
     currentTradeStep--;
     updateTradeStepUI();
