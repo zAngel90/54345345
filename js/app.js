@@ -3,8 +3,9 @@ const API_BASE_URL = 'https://arrives-tcp-lead-talk.trycloudflare.com/api';
 const SERVER_URL = 'https://arrives-tcp-lead-talk.trycloudflare.com';
 
 let CURRENCY_RATES = {
-  USD: { symbol: '$', rate: 1, flag: 'us' },
-  COP: { symbol: '$', rate: 4000, flag: 'co' }
+  'USD': { symbol: '$', rate: 1, flag: 'us' },
+  'PEN': { symbol: 'S/', rate: 3.75, flag: 'pe' },
+  'COP': { symbol: '$', rate: 4000, flag: 'co' }
 };
 let currentCurrency = 'PEN';
 
@@ -937,8 +938,14 @@ function updateTradeStepUI() {
     }
   } else if (currentTradeStep === 3) {
     title.innerText = 'Confirmar Compra';
-    const totalRaw = state.cart.reduce((s, i) => s + (i.price * i.qty), 0);
-    desc.innerText = `Total: ${state.currency} ${formatPrice(totalRaw)}`;
+    
+    // Forzamos PEN para el trade si está disponible
+    const tradeCurrency = CURRENCY_RATES['PEN'] ? 'PEN' : state.currency;
+    const rate = CURRENCY_RATES[tradeCurrency]?.rate || 1;
+    const totalUSD = state.cart.reduce((s, i) => s + (i.price * i.qty), 0);
+    const totalFinal = totalUSD * rate;
+
+    desc.innerText = `Total: ${tradeCurrency} ${formatPrice(totalFinal)}`;
     nextBtnText.innerText = 'Confirmar y Pagar';
     nextBtn.disabled = false;
 
@@ -956,14 +963,13 @@ function updateTradeStepUI() {
 
     if (state.cart.length > 0) {
       const mainItem = state.cart[0];
-      const total = state.cart.reduce((s, i) => s + (i.price * i.qty), 0);
       document.getElementById('final-buy-name').innerText = state.cart.length > 1 ? `${mainItem.name} + ${state.cart.length - 1} más` : mainItem.name;
       document.getElementById('final-buy-img').innerHTML = `<img src="${mainItem.img}" alt="">`;
-      document.getElementById('final-buy-price').innerText = `${state.currency} ${formatPrice(total)}`;
+      document.getElementById('final-buy-price').innerText = `${tradeCurrency} ${formatPrice(totalFinal)}`;
       
-      document.getElementById('final-subtotal').innerText = `${state.currency} ${formatPrice(total)}`;
-      document.getElementById('final-total').innerText = formatPrice(total);
-      document.getElementById('final-currency').innerText = state.currency;
+      document.getElementById('final-subtotal').innerText = `${tradeCurrency} ${formatPrice(totalFinal)}`;
+      document.getElementById('final-total').innerText = formatPrice(totalFinal);
+      document.getElementById('final-currency').innerText = tradeCurrency;
     }
 
     if (tradeSelectedInventoryItem) {
@@ -1013,28 +1019,39 @@ document.getElementById('tradeRobloxInput').addEventListener('input', (e) => {
     return;
   }
   
-  if (status) status.textContent = 'Buscando usuario...';
-  searchTimeout = setTimeout(async () => {
-    try {
-      const res = await fetch(`${SERVER_URL}/api/users/search?username=${q}`);
-      const data = await res.json();
-      if (data.success && data.data && data.data.length > 0) {
-        resultsDiv.innerHTML = data.data.map(user => `
-          <div class="user-result-item" onclick="selectTradeUser('${user.id}', '${user.name}', '${user.displayName}')">
-            <img src="${user.avatarUrl.startsWith('http') ? user.avatarUrl : `${SERVER_URL}${user.avatarUrl}`}" class="user-result-avatar" alt="">
-            <div class="flex-1">
-              <p class="text-sm font-bold text-white">${user.displayName}</p>
-              <p class="text-[10px] text-white/30">@${user.name}</p>
+    if (status) status.textContent = 'Buscando usuario...';
+    resultsDiv.innerHTML = `
+      <div class="py-10 flex flex-col items-center gap-3">
+        <div class="size-8 rounded-full border-2 border-white/5 border-t-blue-500 animate-spin"></div>
+        <p class="text-[10px] text-white/20 font-black uppercase tracking-widest">Buscando usuario...</p>
+      </div>
+    `;
+
+    searchTimeout = setTimeout(async () => {
+      try {
+        const res = await fetch(`${SERVER_URL}/api/users/search?username=${q}`);
+        const data = await res.json();
+        if (data.success && data.data && data.data.length > 0) {
+          resultsDiv.innerHTML = data.data.map(user => `
+            <div class="user-result-item" onclick="selectTradeUser('${user.id}', '${user.name}', '${user.displayName}')">
+              <img src="${user.avatarUrl.startsWith('http') ? user.avatarUrl : `${SERVER_URL}${user.avatarUrl}`}" class="user-result-avatar" alt="">
+              <div class="flex-1">
+                <p class="text-sm font-bold text-white">${user.displayName}</p>
+                <p class="text-[10px] text-white/30">@${user.name}</p>
+              </div>
+              <svg class="text-white/10" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m9 18 6-6-6-6"/></svg>
             </div>
-            <svg class="text-white/10" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m9 18 6-6-6-6"/></svg>
-          </div>
-        `).join('');
-        if (status) status.textContent = 'Selecciona tu perfil';
-      } else {
-        if (status) status.textContent = 'Usuario no encontrado';
+          `).join('');
+          if (status) status.textContent = 'Selecciona tu perfil';
+        } else {
+          resultsDiv.innerHTML = '';
+          if (status) status.textContent = 'Usuario no encontrado';
+        }
+      } catch (err) { 
+        resultsDiv.innerHTML = '';
+        if (status) status.textContent = 'Error de conexión'; 
       }
-    } catch (err) { if (status) status.textContent = 'Error de conexión'; }
-  }, 500);
+    }, 500);
 });
 
 window.selectTradeUser = function(id, name, displayName) {
@@ -1066,8 +1083,8 @@ async function fetchUserInventory() {
           </div>
           <p class="inv-item-name">${item.name}</p>
           <div class="inv-item-rap">
-            <img src="https://i.postimg.cc/pL4Jc4r5/robux.png" width="10" height="10" alt="">
-            <span>${item.recentAveragePrice?.toLocaleString() || 'N/A'}</span>
+            <span class="text-[9px] opacity-40">VALOR ESTIMADO</span>
+            <span class="ml-1">${item.recentAveragePrice?.toLocaleString() || 'N/A'}</span>
           </div>
         </div>
       `).join('');
@@ -1096,6 +1113,12 @@ function prepareTradeConfirmation() {
   
   document.getElementById('final-trade-img').innerHTML = `<img src="${tradeSelectedInventoryItem.thumbnail}" class="size-full object-contain">`;
   document.getElementById('final-trade-name').textContent = tradeSelectedInventoryItem.name;
+  
+  // Limpiamos cualquier rastro de robux en el rap de confirmación
+  const rapEl = document.getElementById('final-trade-rap');
+  if (rapEl) {
+    rapEl.innerText = `RAP: ${tradeSelectedInventoryItem.recentAveragePrice?.toLocaleString() || 'N/A'}`;
+  }
 }
 
 function confirmTrade() {
