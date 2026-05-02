@@ -425,11 +425,6 @@ function addToCart(id,e){
   lastAddedId = id; 
   updateCart();
   showToast('✓ '+p.name+' añadido al carrito');
-
-  // Si es un limited, abrimos el modal de trade al instante
-  if (p.game === 'limiteds' || state.activeGame === 'limiteds') {
-    setTimeout(() => openTradeModal(id), 100);
-  }
   
   setTimeout(() => { lastAddedId = null; }, 500);
 }
