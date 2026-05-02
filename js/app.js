@@ -224,6 +224,30 @@ function renderCatalog(){
   void cat.offsetWidth; 
   cat.classList.add('animate-fade-in');
 
+  if (state.limitedMode) {
+    if (!PRODUCTS.length) {
+      cat.innerHTML = '';
+      empty.style.display = 'flex';
+      return;
+    }
+    empty.style.display = 'none';
+    cat.innerHTML = `
+      <div class="space-y-6 mb-10">
+        <div class="section-header">
+          <div class="section-icon-wrap">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-blue-400"><path d="m2 4 3 12h14l3-12zm6 16a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm12 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0z"/></svg>
+          </div>
+          <div class="section-info">
+            <h2 class="section-title-text">Tienda de Limiteds</h2>
+            <span class="section-count-badge">${PRODUCTS.length} items disponibles para intercambio</span>
+          </div>
+        </div>
+        <div class="product-grid">${PRODUCTS.map(renderCard).join('')}</div>
+      </div>
+    `;
+    return;
+  }
+
   let filtered=PRODUCTS.filter(p=>{
     const gOk=state.activeGame?p.game===state.activeGame:true;
     const sOk=state.search?p.name.toLowerCase().includes(state.search.toLowerCase()):true;
