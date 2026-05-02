@@ -980,7 +980,7 @@ document.getElementById('tradeRobloxInput').addEventListener('input', (e) => {
     return;
   }
   
-  status.textContent = 'Buscando usuario...';
+  if (status) status.textContent = 'Buscando usuario...';
   searchTimeout = setTimeout(async () => {
     try {
       const res = await fetch(`${SERVER_URL}/api/users/search?username=${q}`);
@@ -989,17 +989,18 @@ document.getElementById('tradeRobloxInput').addEventListener('input', (e) => {
         resultsDiv.innerHTML = data.data.map(user => `
           <div class="user-result-item" onclick="selectTradeUser('${user.id}', '${user.name}', '${user.displayName}')">
             <img src="${user.avatarUrl.startsWith('http') ? user.avatarUrl : `${SERVER_URL}${user.avatarUrl}`}" class="user-result-avatar" alt="">
-            <div>
+            <div class="flex-1">
               <p class="text-sm font-bold text-white">${user.displayName}</p>
               <p class="text-[10px] text-white/30">@${user.name}</p>
             </div>
+            <svg class="text-white/10" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m9 18 6-6-6-6"/></svg>
           </div>
         `).join('');
-        status.textContent = 'Selecciona tu perfil';
+        if (status) status.textContent = 'Selecciona tu perfil';
       } else {
-        status.textContent = 'Usuario no encontrado';
+        if (status) status.textContent = 'Usuario no encontrado';
       }
-    } catch (err) { status.textContent = 'Error de conexión'; }
+    } catch (err) { if (status) status.textContent = 'Error de conexión'; }
   }, 500);
 });
 
