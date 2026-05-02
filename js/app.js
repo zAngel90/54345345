@@ -6,7 +6,7 @@ let CURRENCY_RATES = {
   USD: { symbol: '$', rate: 1, flag: 'us' },
   COP: { symbol: '$', rate: 4000, flag: 'co' }
 };
-let currentCurrency = 'USD';
+let currentCurrency = 'PEN';
 
 async function fetchCurrencies() {
   try {
@@ -22,7 +22,9 @@ async function fetchCurrencies() {
           flag: c.flag
         };
       });
-      if (!CURRENCY_RATES[currentCurrency]) {
+      if (CURRENCY_RATES['PEN']) {
+        currentCurrency = 'PEN';
+      } else {
         currentCurrency = Object.keys(CURRENCY_RATES)[0] || 'USD';
       }
       state.currency = currentCurrency;
@@ -39,7 +41,7 @@ async function fetchCurrencies() {
 let GAMES = [];
 let PRODUCTS = [];
 let GAME_CATEGORIES = {};
-let state={currency:'USD',sort:'popular',activeGame:null,search:'',cart:[],gameSearch:'',user:null,notifications:[],activeNotifTab:'all'};
+let state={currency:'PEN',sort:'popular',activeGame:null,search:'',cart:[],gameSearch:'',user:null,notifications:[],activeNotifTab:'all'};
 let lastAddedId = null;
 let selectedUser = null;
 let searchTimeout = null;
