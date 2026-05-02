@@ -734,8 +734,11 @@ window.openCheckoutModal = function() {
   modalTotal.textContent = fmt(total).split(' ')[0];
   modalCurrency.textContent = state.currency;
   
-  modal.classList.remove('hidden');
-  document.getElementById('robloxUserInput').focus();
+  const checkoutModal = document.getElementById('checkoutModal');
+  if (checkoutModal) {
+    checkoutModal.classList.remove('hidden');
+    document.getElementById('robloxUserInput').focus();
+  }
 };
 
 window.closeCheckoutModal = function() {
