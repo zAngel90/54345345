@@ -1134,7 +1134,8 @@ function confirmTrade() {
     targetItem: tradeTargetProduct,
     type: 'trade_limited',
     total: totalFinal,
-    currency: tradeCurrency
+    currency: tradeCurrency,
+    cart: state.cart
   };
   
   window.parent.postMessage(tradeData, '*');
