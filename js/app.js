@@ -45,6 +45,11 @@ let state={currency:'PEN',sort:'popular',activeGame:null,search:'',cart:[],gameS
 let lastAddedId = null;
 let selectedUser = null;
 let searchTimeout = null;
+let currentTradeStep = 1;
+let tradeSelectedUser = null;
+let tradeInventoryItems = [];
+let tradeSelectedInventoryItem = null;
+let tradeTargetProduct = null;
 
 // ===== INITIALIZATION =====
 async function initApp() {
@@ -85,16 +90,30 @@ async function initApp() {
       }
     });
 
-    // 4. Renderizar sidebar
-    renderSidebar();
-
-    // 5. Detectar juego por URL
+    // 4. Detectar modo Limited por URL
     const urlParams = new URLSearchParams(window.location.search);
     const gameId = urlParams.get('game');
-    if (gameId && GAMES.some(g => g.id === gameId)) {
-      selectGame(gameId);
-    } else if (GAMES.length > 0) {
-      selectGame(GAMES[0].id);
+    state.limitedMode = (gameId === 'limiteds');
+
+    if (state.limitedMode) {
+      document.getElementById('sidebar').style.display = 'none';
+      const limRes = await fetch(`${API_BASE_URL}/admin/limiteds-config`);
+      const limData = await limRes.json();
+      if (limData.success) {
+        PRODUCTS = limData.data.map(p => ({
+          ...p,
+          game: 'limiteds',
+          purchases: Math.floor(Math.random() * 500) + 50,
+          img: p.image ? (p.image.startsWith('http') ? p.image : `${SERVER_URL}${p.image}`) : ''
+        }));
+      }
+    } else {
+      renderSidebar();
+      if (gameId && GAMES.some(g => g.id === gameId)) {
+        selectGame(gameId);
+      } else if (GAMES.length > 0) {
+        selectGame(GAMES[0].id);
+      }
     }
 
     updateCart();
@@ -326,11 +345,18 @@ function updateSidebarIndicator() {
 // ===== CART =====
 function addToCart(id,e){
   if(e)e.stopPropagation();
+  
   const p=PRODUCTS.find(x=>String(x.id)===String(id));
   if(!p){
     console.error('Product not found for ID:', id);
     return;
   }
+
+  if(state.limitedMode) {
+    openTradeModal(id);
+    return;
+  }
+
   const existing=state.cart.find(x=>String(x.id)===String(id));
   if(existing){
     existing.qty++;
@@ -755,6 +781,210 @@ function confirmCheckout() {
   };
   
   window.parent.postMessage(checkoutData, '*');
+}
+
+// ===== TRADE MODAL LOGIC (3 STEPS) =====
+window.openTradeModal = function(productId) {
+  tradeTargetProduct = PRODUCTS.find(p => String(p.id) === String(productId));
+  if(!tradeTargetProduct) return;
+
+  currentTradeStep = 1;
+  tradeSelectedUser = null;
+  tradeSelectedInventoryItem = null;
+  tradeInventoryItems = [];
+
+  document.getElementById('tradeModal').classList.remove('hidden');
+  updateTradeStepUI();
+  
+  // Reset Step 1
+  document.getElementById('tradeRobloxInput').value = '';
+  document.getElementById('tradeSearchResults').innerHTML = '';
+  document.getElementById('tradeSearchStatus').textContent = 'Buscamos tu perfil para ver qué items tienes disponibles';
+  setTimeout(() => document.getElementById('tradeRobloxInput').focus(), 100);
+};
+
+window.closeTradeModal = function() {
+  document.getElementById('tradeModal').classList.add('hidden');
+};
+
+function updateTradeStepUI() {
+  // Hide all steps
+  document.getElementById('trade-step-1').classList.add('hidden');
+  document.getElementById('trade-step-2').classList.add('hidden');
+  document.getElementById('trade-step-3').classList.add('hidden');
+  
+  // Show active step
+  document.getElementById(`trade-step-${currentTradeStep}`).classList.remove('hidden');
+  
+  // Update Pills
+  for(let i=1; i<=3; i++) {
+    const pill = document.getElementById(`step-pill-${i}`);
+    pill.classList.toggle('active', i === currentTradeStep);
+    pill.classList.toggle('completed', i < currentTradeStep);
+  }
+  
+  // Update Label
+  const labels = ['Identificación', 'Selección de Item', 'Confirmación Final'];
+  document.getElementById('step-label').textContent = `Paso ${currentTradeStep}: ${labels[currentTradeStep-1]}`;
+  
+  // Update Buttons
+  const nextBtn = document.getElementById('trade-next-btn');
+  const backBtn = document.getElementById('trade-back-btn');
+  
+  backBtn.classList.toggle('hidden', currentTradeStep === 1);
+  
+  if (currentTradeStep === 1) {
+    nextBtn.disabled = !tradeSelectedUser;
+    nextBtn.textContent = 'Siguiente Paso';
+  } else if (currentTradeStep === 2) {
+    nextBtn.disabled = !tradeSelectedInventoryItem;
+    nextBtn.textContent = 'Siguiente Paso';
+  } else {
+    nextBtn.disabled = false;
+    nextBtn.textContent = 'Confirmar Intercambio';
+  }
+}
+
+window.tradeNextStep = function() {
+  if (currentTradeStep === 1 && tradeSelectedUser) {
+    currentTradeStep = 2;
+    fetchUserInventory();
+  } else if (currentTradeStep === 2 && tradeSelectedInventoryItem) {
+    currentTradeStep = 3;
+    prepareTradeConfirmation();
+  } else if (currentTradeStep === 3) {
+    confirmTrade();
+  }
+  updateTradeStepUI();
+};
+
+window.tradePrevStep = function() {
+  if (currentTradeStep > 1) {
+    currentTradeStep--;
+    updateTradeStepUI();
+  }
+};
+
+// Step 1: User Search for Trade
+document.getElementById('tradeRobloxInput').addEventListener('input', (e) => {
+  const q = e.target.value.trim();
+  const resultsDiv = document.getElementById('tradeSearchResults');
+  const status = document.getElementById('tradeSearchStatus');
+  
+  clearTimeout(searchTimeout);
+  if (q.length < 3) {
+    resultsDiv.innerHTML = '';
+    status.textContent = 'Escribe al menos 3 caracteres...';
+    return;
+  }
+  
+  status.textContent = 'Buscando usuario...';
+  searchTimeout = setTimeout(async () => {
+    try {
+      const res = await fetch(`${SERVER_URL}/api/users/search?username=${q}`);
+      const data = await res.json();
+      if (data.success && data.data && data.data.length > 0) {
+        resultsDiv.innerHTML = data.data.map(user => `
+          <div class="user-result-item" onclick="selectTradeUser('${user.id}', '${user.name}', '${user.displayName}')">
+            <img src="${user.avatarUrl.startsWith('http') ? user.avatarUrl : `${SERVER_URL}${user.avatarUrl}`}" class="user-result-avatar" alt="">
+            <div>
+              <p class="text-sm font-bold text-white">${user.displayName}</p>
+              <p class="text-[10px] text-white/30">@${user.name}</p>
+            </div>
+          </div>
+        `).join('');
+        status.textContent = 'Selecciona tu perfil';
+      } else {
+        status.textContent = 'Usuario no encontrado';
+      }
+    } catch (err) { status.textContent = 'Error de conexión'; }
+  }, 500);
+});
+
+window.selectTradeUser = function(id, name, displayName) {
+  tradeSelectedUser = { id, name, displayName };
+  document.getElementById('tradeSearchResults').innerHTML = `
+    <div class="user-result-item selected">
+      <img src="${SERVER_URL}/api/users/avatar/${id}" class="user-result-avatar" alt="">
+      <div>
+        <p class="text-sm font-bold text-white">${displayName}</p>
+        <p class="text-[10px] text-white/30">@${name}</p>
+      </div>
+      <div class="ml-auto text-blue-400"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+    </div>
+  `;
+  updateTradeStepUI();
+};
+
+// Step 2: Inventory
+async function fetchUserInventory() {
+  const grid = document.getElementById('tradeInventoryGrid');
+  const empty = document.getElementById('tradeInventoryEmpty');
+  const countLabel = document.getElementById('user-inv-count');
+  
+  grid.innerHTML = '<div class="col-span-full py-10 flex flex-col items-center gap-3"><div class="size-8 rounded-full border-2 border-white/5 border-t-blue-500 animate-spin"></div><p class="text-[10px] text-white/30 font-black uppercase tracking-widest">Consultando Inventario...</p></div>';
+  empty.classList.add('hidden');
+  
+  try {
+    const res = await fetch(`${API_BASE_URL}/users/${tradeSelectedUser.id}/collectibles`);
+    const data = await res.json();
+    
+    if (data.data && data.data.length > 0) {
+      tradeInventoryItems = data.data;
+      countLabel.textContent = `${data.data.length} Items`;
+      grid.innerHTML = data.data.map(item => `
+        <div class="inv-item-card" onclick="selectTradeItem('${item.assetId}')" data-asset-id="${item.assetId}">
+          <div class="inv-item-img">
+            <img src="${item.thumbnail}" alt="">
+          </div>
+          <p class="inv-item-name">${item.name}</p>
+          <div class="inv-item-rap">
+            <img src="https://i.postimg.cc/pL4Jc4r5/robux.png" width="10" height="10" alt="">
+            <span>${item.recentAveragePrice?.toLocaleString() || 'N/A'}</span>
+          </div>
+        </div>
+      `).join('');
+    } else {
+      grid.innerHTML = '';
+      empty.classList.remove('hidden');
+      countLabel.textContent = '0 Items';
+    }
+  } catch (err) {
+    grid.innerHTML = '<p class="col-span-full text-center text-red-400 text-xs py-10">Error al cargar el inventario</p>';
+  }
+}
+
+window.selectTradeItem = function(assetId) {
+  tradeSelectedInventoryItem = tradeInventoryItems.find(i => String(i.assetId) === String(assetId));
+  document.querySelectorAll('.inv-item-card').forEach(el => {
+    el.classList.toggle('active', el.dataset.assetId === String(assetId));
+  });
+  updateTradeStepUI();
+};
+
+// Step 3: Confirmation
+function prepareTradeConfirmation() {
+  document.getElementById('final-buy-img').innerHTML = `<img src="${tradeTargetProduct.img}" class="size-full object-contain">`;
+  document.getElementById('final-buy-name').textContent = tradeTargetProduct.name;
+  
+  document.getElementById('final-trade-img').innerHTML = `<img src="${tradeSelectedInventoryItem.thumbnail}" class="size-full object-contain">`;
+  document.getElementById('final-trade-name').textContent = tradeSelectedInventoryItem.name;
+}
+
+function confirmTrade() {
+  const tradeData = {
+    action: 'checkout',
+    user: tradeSelectedUser,
+    tradeItem: tradeSelectedInventoryItem,
+    targetItem: tradeTargetProduct,
+    type: 'trade_limited',
+    total: tradeTargetProduct.price, // El precio base, la diferencia se arregla en el checkout si aplica
+    currency: state.currency
+  };
+  
+  window.parent.postMessage(tradeData, '*');
+  closeTradeModal();
+  showToast('✓ Solicitud de intercambio enviada');
 }
 
 // ===== INIT =====

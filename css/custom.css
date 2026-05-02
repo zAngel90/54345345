@@ -1348,3 +1348,114 @@ html, body {
 .hidden {
   display: none !important;
 }
+
+/* ===== TRADE SYSTEM STYLES ===== */
+.step-pill {
+  width: 24px;
+  height: 24px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 900;
+  color: rgba(255,255,255,0.3);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.step-pill.active {
+  background: #2563eb;
+  border-color: #3b82f6;
+  color: #fff;
+  transform: scale(1.1);
+  box-shadow: 0 0 15px rgba(37, 99, 235, 0.4);
+}
+
+.step-pill.completed {
+  background: #10b981;
+  border-color: #34d399;
+  color: #fff;
+}
+
+.inv-item-card {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 20px;
+  padding: 12px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  animation: simpleInDown 0.4s ease-out both;
+}
+
+.inv-item-card:hover {
+  background: rgba(255,255,255,0.05);
+  border-color: rgba(255,255,255,0.1);
+  transform: translateY(-4px);
+}
+
+.inv-item-card.active {
+  background: rgba(37, 99, 235, 0.1);
+  border-color: #2563eb;
+  box-shadow: 0 0 25px rgba(37, 99, 235, 0.15);
+}
+
+.inv-item-img {
+  width: 100%;
+  aspect-ratio: 1;
+  background: rgba(0,0,0,0.2);
+  border-radius: 14px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.inv-item-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.inv-item-name {
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 6px;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.inv-item-rap {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 800;
+  color: #d97706; /* Amber-600 */
+  background: rgba(217, 119, 6, 0.1);
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255,255,255,0.02);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.1);
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,0.2);
+}
