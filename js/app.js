@@ -1,4 +1,4 @@
-// ===== CONFIG =====
+// Version: 1.2.0 - Final Trade Redesign
 const API_BASE_URL = 'https://arrives-tcp-lead-talk.trycloudflare.com/api';
 const SERVER_URL = 'https://arrives-tcp-lead-talk.trycloudflare.com';
 
@@ -143,6 +143,8 @@ async function initApp() {
 
 // ===== HELPERS =====
 function fmt(p){const c=CURRENCY_RATES[state.currency];const v=p*c.rate;return c.symbol+(v>=1000?v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}):v.toFixed(2))+' '+state.currency;}
+function fmtByCurr(p, curr){const c=CURRENCY_RATES[curr]||CURRENCY_RATES['USD'];const v=p*c.rate;return c.symbol+(v>=1000?v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}):v.toFixed(2))+' '+curr;}
+function formatPrice(p){return p>=1000?p.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}):p.toFixed(2);}
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
 function badgeClass(badge,rarity){if(badge==='hot')return'badge-hot';if(badge==='new')return'badge-new';if(badge==='trending')return'badge-trending';if(rarity==='Mythic')return'badge-mythic';if(rarity==='Legendary')return'badge-legendary';if(rarity==='Epic')return'badge-epic';return'badge-rare';}
 function badgeLabel(badge,rarity){if(badge==='hot')return'HOT';if(badge==='new')return'NEW';if(badge==='trending')return'TOP';return (rarity||'ITEM').toUpperCase();}
@@ -941,11 +943,9 @@ function updateTradeStepUI() {
     
     // Forzamos PEN para el trade si está disponible
     const tradeCurrency = CURRENCY_RATES['PEN'] ? 'PEN' : state.currency;
-    const rate = CURRENCY_RATES[tradeCurrency]?.rate || 1;
     const totalUSD = state.cart.reduce((s, i) => s + (i.price * i.qty), 0);
-    const totalFinal = totalUSD * rate;
 
-    desc.innerText = `Total: ${tradeCurrency} ${formatPrice(totalFinal)}`;
+    desc.innerText = `Total: ${fmtByCurr(totalUSD, tradeCurrency)}`;
     nextBtnText.innerText = 'Confirmar y Pagar';
     nextBtn.disabled = false;
 
@@ -965,17 +965,17 @@ function updateTradeStepUI() {
       const mainItem = state.cart[0];
       document.getElementById('final-buy-name').innerText = state.cart.length > 1 ? `${mainItem.name} + ${state.cart.length - 1} más` : mainItem.name;
       document.getElementById('final-buy-img').innerHTML = `<img src="${mainItem.img}" alt="">`;
-      document.getElementById('final-buy-price').innerText = `${tradeCurrency} ${formatPrice(totalFinal)}`;
+      document.getElementById('final-buy-price').innerText = fmtByCurr(totalUSD, tradeCurrency);
       
-      document.getElementById('final-subtotal').innerText = `${tradeCurrency} ${formatPrice(totalFinal)}`;
-      document.getElementById('final-total').innerText = formatPrice(totalFinal);
+      document.getElementById('final-subtotal').innerText = fmtByCurr(totalUSD, tradeCurrency);
+      document.getElementById('final-total').innerText = formatPrice(totalUSD * (CURRENCY_RATES[tradeCurrency]?.rate || 1));
       document.getElementById('final-currency').innerText = tradeCurrency;
     }
 
     if (tradeSelectedInventoryItem) {
       document.getElementById('final-trade-name').innerText = tradeSelectedInventoryItem.name;
       document.getElementById('final-trade-img').innerHTML = `<img src="${tradeSelectedInventoryItem.thumbnail}" alt="">`;
-      document.getElementById('final-trade-rap').innerText = `RAP: ${formatPrice(tradeSelectedInventoryItem.rap)}`;
+      document.getElementById('final-trade-rap').innerText = `RAP: ${formatPrice(tradeSelectedInventoryItem.recentAveragePrice || 0)}`;
     }
   }
 }
