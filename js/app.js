@@ -830,11 +830,10 @@ function confirmCheckout() {
   window.parent.postMessage(checkoutData, '*');
 }
 
-// ===== TRADE MODAL LOGIC (3 STEPS) =====
+// ===== TRADE MODAL LOGIC (REDESIGN COMPACT) =====
 window.openTradeModal = function(productId) {
   tradeTargetProduct = PRODUCTS.find(p => String(p.id) === String(productId));
-  if(!tradeTargetProduct) return;
-
+  
   currentTradeStep = 1;
   tradeSelectedUser = null;
   tradeSelectedInventoryItem = null;
@@ -846,7 +845,6 @@ window.openTradeModal = function(productId) {
   // Reset Step 1
   document.getElementById('tradeRobloxInput').value = '';
   document.getElementById('tradeSearchResults').innerHTML = '';
-  document.getElementById('tradeSearchStatus').textContent = 'Buscamos tu perfil para ver qué items tienes disponibles';
   setTimeout(() => document.getElementById('tradeRobloxInput').focus(), 100);
 };
 
@@ -855,6 +853,14 @@ window.closeTradeModal = function() {
 };
 
 function updateTradeStepUI() {
+  const track = document.getElementById('step-track');
+  const icons = [1, 2, 3].map(i => document.getElementById(`step-icon-${i}`));
+  const title = document.getElementById('trade-modal-title');
+  const desc = document.getElementById('trade-modal-desc');
+  const nextBtnText = document.getElementById('trade-btn-text');
+  const nextBtn = document.getElementById('trade-next-btn');
+  const backBtn = document.getElementById('trade-back-btn');
+  
   // Hide all steps
   document.getElementById('trade-step-1').classList.add('hidden');
   document.getElementById('trade-step-2').classList.add('hidden');
@@ -863,32 +869,81 @@ function updateTradeStepUI() {
   // Show active step
   document.getElementById(`trade-step-${currentTradeStep}`).classList.remove('hidden');
   
-  // Update Pills
-  for(let i=1; i<=3; i++) {
-    const pill = document.getElementById(`step-pill-${i}`);
-    pill.classList.toggle('active', i === currentTradeStep);
-    pill.classList.toggle('completed', i < currentTradeStep);
-  }
-  
-  // Update Label
-  const labels = ['Identificación', 'Selección de Item', 'Confirmación Final'];
-  document.getElementById('step-label').textContent = `Paso ${currentTradeStep}: ${labels[currentTradeStep-1]}`;
-  
-  // Update Buttons
-  const nextBtn = document.getElementById('trade-next-btn');
-  const backBtn = document.getElementById('trade-back-btn');
-  
+  icons.forEach((icon, idx) => {
+    icon.classList.remove('active', 'completed');
+    if (idx + 1 < currentTradeStep) icon.classList.add('completed');
+    if (idx + 1 === currentTradeStep) icon.classList.add('active');
+  });
+
+  // Update track width
+  const progress = ((currentTradeStep - 1) / 2) * 100;
+  track.style.width = `${progress}%`;
+
   backBtn.classList.toggle('hidden', currentTradeStep === 1);
-  
+
   if (currentTradeStep === 1) {
+    title.innerText = 'Verificación';
+    desc.innerText = 'Busca tu usuario de Roblox para continuar';
+    nextBtnText.innerText = tradeSelectedUser ? 'Continuar' : 'Selecciona un usuario';
     nextBtn.disabled = !tradeSelectedUser;
-    nextBtn.textContent = 'Siguiente Paso';
   } else if (currentTradeStep === 2) {
+    title.innerText = 'Seleccionar Item';
+    desc.innerText = 'Selecciona un item para el trade';
+    nextBtnText.innerText = tradeSelectedInventoryItem ? 'Continuar' : 'Selecciona un item';
     nextBtn.disabled = !tradeSelectedInventoryItem;
-    nextBtn.textContent = 'Siguiente Paso';
-  } else {
+    
+    if (tradeSelectedUser) {
+      document.getElementById('trade-selected-user-card').innerHTML = `
+        <div class="user-result-item">
+          <img src="${tradeSelectedUser.avatarUrl}" class="user-result-avatar" alt="">
+          <div class="flex-1">
+            <p class="text-[10px] text-white/20 font-black uppercase tracking-widest">Cuenta Encontrada</p>
+            <p class="text-sm font-bold text-white">${tradeSelectedUser.displayName || tradeSelectedUser.name}</p>
+            <p class="text-[11px] text-white/40">@${tradeSelectedUser.name}</p>
+          </div>
+          <div class="verified-badge">
+            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path d="M20 6 9 17l-5-5"/></svg>
+            Verificado
+          </div>
+        </div>
+      `;
+    }
+  } else if (currentTradeStep === 3) {
+    title.innerText = 'Confirmar Compra';
+    const totalRaw = state.cart.reduce((s, i) => s + (i.price * i.qty), 0);
+    desc.innerText = `Total: ${state.currency} ${formatPrice(totalRaw)}`;
+    nextBtnText.innerText = 'Confirmar y Pagar';
     nextBtn.disabled = false;
-    nextBtn.textContent = 'Confirmar Intercambio';
+
+    if (tradeSelectedUser) {
+      document.getElementById('final-user-card').innerHTML = `
+        <div class="user-result-item !bg-white/5 !p-4">
+          <img src="${tradeSelectedUser.avatarUrl}" class="user-result-avatar" alt="">
+          <div class="flex-1">
+            <p class="text-sm font-bold text-white">${tradeSelectedUser.displayName || tradeSelectedUser.name}</p>
+            <p class="text-[11px] text-white/40">@${tradeSelectedUser.name}</p>
+          </div>
+        </div>
+      `;
+    }
+
+    if (state.cart.length > 0) {
+      const mainItem = state.cart[0];
+      const total = state.cart.reduce((s, i) => s + (i.price * i.qty), 0);
+      document.getElementById('final-buy-name').innerText = state.cart.length > 1 ? `${mainItem.name} + ${state.cart.length - 1} más` : mainItem.name;
+      document.getElementById('final-buy-img').innerHTML = `<img src="${mainItem.img}" alt="">`;
+      document.getElementById('final-buy-price').innerText = `${state.currency} ${formatPrice(total)}`;
+      
+      document.getElementById('final-subtotal').innerText = `${state.currency} ${formatPrice(total)}`;
+      document.getElementById('final-total').innerText = formatPrice(total);
+      document.getElementById('final-currency').innerText = state.currency;
+    }
+
+    if (tradeSelectedInventoryItem) {
+      document.getElementById('final-trade-name').innerText = tradeSelectedInventoryItem.name;
+      document.getElementById('final-trade-img').innerHTML = `<img src="${tradeSelectedInventoryItem.thumbnail}" alt="">`;
+      document.getElementById('final-trade-rap').innerText = `RAP: ${formatPrice(tradeSelectedInventoryItem.rap)}`;
+    }
   }
 }
 
@@ -949,17 +1004,8 @@ document.getElementById('tradeRobloxInput').addEventListener('input', (e) => {
 });
 
 window.selectTradeUser = function(id, name, displayName) {
-  tradeSelectedUser = { id, name, displayName };
-  document.getElementById('tradeSearchResults').innerHTML = `
-    <div class="user-result-item selected">
-      <img src="${SERVER_URL}/api/users/avatar/${id}" class="user-result-avatar" alt="">
-      <div>
-        <p class="text-sm font-bold text-white">${displayName}</p>
-        <p class="text-[10px] text-white/30">@${name}</p>
-      </div>
-      <div class="ml-auto text-blue-400"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
-    </div>
-  `;
+  const avatarUrl = `${SERVER_URL}/api/users/avatar/${id}`;
+  tradeSelectedUser = { id, name, displayName, avatarUrl };
   updateTradeStepUI();
 };
 

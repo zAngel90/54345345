@@ -1466,6 +1466,96 @@ html, body {
   height: 85% !important;
 }
 
+/* ===== REDESIGNED COMPACT TRADE MODAL ===== */
+.step-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #161B22;
+  border: 1px solid rgba(255,255,255,0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255,255,255,0.2);
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 0 0 4px rgba(0,0,0,0.2);
+}
+
+.step-icon.active {
+  background: #2563eb;
+  border-color: #3b82f6;
+  color: #fff;
+  transform: scale(1.1);
+  box-shadow: 0 0 20px rgba(37, 99, 235, 0.4), 0 0 0 4px rgba(37,99,235,0.1);
+}
+
+.step-icon.completed {
+  background: #10b981;
+  border-color: #34d399;
+  color: #fff;
+}
+
+.verified-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-radius: 8px;
+  color: #10b981;
+  font-size: 9px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+#trade-selected-user-card .user-result-item {
+  background: rgba(255,255,255,0.03);
+  border-color: rgba(255,255,255,0.05);
+  padding: 16px;
+  cursor: default;
+}
+
+/* Specific item cards for Step 3 */
+#final-buy-item-card, #final-trade-item-card {
+  transition: all 0.3s ease;
+}
+
+#final-trade-item-card {
+  border-style: dashed;
+}
+
+#final-buy-img img, #final-trade-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Scrollbar for Step 2 Grid */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.05);
+  border-radius: 10px;
+}
+
+/* Animations */
+#trade-step-1, #trade-step-2, #trade-step-3 {
+  animation: fadeIn 0.4s ease-out both;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 .custom-scrollbar::-webkit-scrollbar {
   width: 4px;
 }
