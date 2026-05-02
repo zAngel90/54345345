@@ -1122,14 +1122,19 @@ function prepareTradeConfirmation() {
 }
 
 function confirmTrade() {
+  const tradeCurrency = CURRENCY_RATES['PEN'] ? 'PEN' : state.currency;
+  const rate = CURRENCY_RATES[tradeCurrency]?.rate || 1;
+  const totalUSD = state.cart.reduce((s, i) => s + (i.price * i.qty), 0);
+  const totalFinal = totalUSD * rate;
+
   const tradeData = {
     action: 'checkout',
     user: tradeSelectedUser,
     tradeItem: tradeSelectedInventoryItem,
     targetItem: tradeTargetProduct,
     type: 'trade_limited',
-    total: tradeTargetProduct.price, // El precio base, la diferencia se arregla en el checkout si aplica
-    currency: state.currency
+    total: totalFinal,
+    currency: tradeCurrency
   };
   
   window.parent.postMessage(tradeData, '*');
