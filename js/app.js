@@ -93,42 +93,64 @@ async function initApp() {
       }
     });
 
-    // 4. Detectar modo Limited por URL
     const urlParams = new URLSearchParams(window.location.search);
     const gameId = urlParams.get('game');
     state.limitedMode = (gameId === 'limiteds');
+    state.mm2Mode = (gameId === 'mm2' || gameId === 'murder-mystery-2');
 
     if (state.limitedMode) {
       document.getElementById('sidebar').style.display = 'none';
       document.getElementById('catalogContent').classList.add('limited-grid');
-      // Cargar limiteds desde el admin config
       const limRes = await fetch(`${API_BASE_URL}/admin/limiteds-config`);
       const limData = await limRes.json();
       if (limData.success) {
-        const limProds = limData.data.map(p => ({
+        PRODUCTS = limData.data.map(p => ({
           ...p,
           game: 'limiteds',
           purchases: Math.floor(Math.random() * 500) + 50,
           img: p.image ? (p.image.startsWith('http') ? p.image : `${SERVER_URL}${p.image}`) : ''
         }));
-        PRODUCTS = limProds;
         document.getElementById('limitedsBanner').classList.remove('hidden');
-
-        // Construir categorías para limiteds
+        document.getElementById('mm2Banner').classList.add('hidden');
+        
         GAME_CATEGORIES['limiteds'] = ['Más Vendidos'];
         PRODUCTS.forEach(p => {
           const cat = p.category || 'General';
-          if (!GAME_CATEGORIES['limiteds'].includes(cat)) {
-            GAME_CATEGORIES['limiteds'].push(cat);
-          }
+          if (!GAME_CATEGORIES['limiteds'].includes(cat)) GAME_CATEGORIES['limiteds'].push(cat);
         });
         
         state.activeGame = 'limiteds';
         document.getElementById('categoryTabsWrap').style.display = 'block';
         renderTabs();
       }
+    } else if (state.mm2Mode) {
+      document.getElementById('sidebar').style.display = 'none';
+      document.getElementById('catalogContent').classList.add('limited-grid');
+      const mm2Res = await fetch(`${API_BASE_URL}/admin/mm2-config`);
+      const mm2Data = await mm2Res.json();
+      if (mm2Data.success) {
+        PRODUCTS = mm2Data.data.map(p => ({
+          ...p,
+          game: 'murder-mystery-2',
+          purchases: Math.floor(Math.random() * 300) + 20,
+          img: p.image ? (p.image.startsWith('http') ? p.image : `${SERVER_URL}${p.image}`) : ''
+        }));
+        document.getElementById('mm2Banner').classList.remove('hidden');
+        document.getElementById('limitedsBanner').classList.add('hidden');
+        
+        GAME_CATEGORIES['murder-mystery-2'] = ['Más Vendidos'];
+        PRODUCTS.forEach(p => {
+          const cat = p.category || 'Skins';
+          if (!GAME_CATEGORIES['murder-mystery-2'].includes(cat)) GAME_CATEGORIES['murder-mystery-2'].push(cat);
+        });
+        
+        state.activeGame = 'murder-mystery-2';
+        document.getElementById('categoryTabsWrap').style.display = 'block';
+        renderTabs();
+      }
     } else {
       document.getElementById('limitedsBanner').classList.add('hidden');
+      document.getElementById('mm2Banner').classList.add('hidden');
       renderSidebar();
       if (gameId && GAMES.some(g => g.id === gameId)) {
         selectGame(gameId);
