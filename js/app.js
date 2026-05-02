@@ -97,6 +97,8 @@ async function initApp() {
 
     if (state.limitedMode) {
       document.getElementById('sidebar').style.display = 'none';
+      document.getElementById('catalogContent').classList.add('limited-grid');
+      // Cargar limiteds desde el admin config
       const limRes = await fetch(`${API_BASE_URL}/admin/limiteds-config`);
       const limData = await limRes.json();
       if (limData.success) {
@@ -106,6 +108,19 @@ async function initApp() {
           purchases: Math.floor(Math.random() * 500) + 50,
           img: p.image ? (p.image.startsWith('http') ? p.image : `${SERVER_URL}${p.image}`) : ''
         }));
+
+        // Construir categorías para limiteds
+        GAME_CATEGORIES['limiteds'] = ['Más Vendidos'];
+        PRODUCTS.forEach(p => {
+          const cat = p.category || 'General';
+          if (!GAME_CATEGORIES['limiteds'].includes(cat)) {
+            GAME_CATEGORIES['limiteds'].push(cat);
+          }
+        });
+        
+        state.activeGame = 'limiteds';
+        document.getElementById('categoryTabsWrap').style.display = 'block';
+        renderTabs();
       }
     } else {
       renderSidebar();
@@ -225,7 +240,13 @@ function renderCatalog(){
   cat.classList.add('animate-fade-in');
 
   if (state.limitedMode) {
-    if (!PRODUCTS.length) {
+    let filtered = PRODUCTS.filter(p => {
+      const sOk = state.search ? p.name.toLowerCase().includes(state.search.toLowerCase()) : true;
+      const tOk = activeTab === 'Más Vendidos' ? true : (p.category === activeTab);
+      return sOk && tOk;
+    });
+
+    if (!filtered.length) {
       cat.innerHTML = '';
       empty.style.display = 'flex';
       return;
@@ -238,11 +259,11 @@ function renderCatalog(){
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-blue-400"><path d="m2 4 3 12h14l3-12zm6 16a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm12 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0z"/></svg>
           </div>
           <div class="section-info">
-            <h2 class="section-title-text">Tienda de Limiteds</h2>
-            <span class="section-count-badge">${PRODUCTS.length} items disponibles para intercambio</span>
+            <h2 class="section-title-text">${activeTab === 'Más Vendidos' ? 'Tienda de Limiteds' : activeTab}</h2>
+            <span class="section-count-badge">${filtered.length} items disponibles para intercambio</span>
           </div>
         </div>
-        <div class="product-grid">${PRODUCTS.map(renderCard).join('')}</div>
+        <div class="product-grid">${filtered.map(renderCard).join('')}</div>
       </div>
     `;
     return;
@@ -373,11 +394,6 @@ function addToCart(id,e){
   const p=PRODUCTS.find(x=>String(x.id)===String(id));
   if(!p){
     console.error('Product not found for ID:', id);
-    return;
-  }
-
-  if(state.limitedMode) {
-    openTradeModal(id);
     return;
   }
 
@@ -670,8 +686,15 @@ window.openCheckoutModal = function() {
     showToast('❌ Tu carrito está vacío');
     return;
   }
-  
-  const modal = document.getElementById('checkoutModal');
+
+  // Si hay limiteds en el carrito, abrimos el modal de trade en lugar del checkout normal
+  const hasLimiteds = state.cart.some(item => item.game === 'limiteds');
+  if (hasLimiteds) {
+    // Abrimos el modal de trade usando el primer item como referencia visual, 
+    // pero el trade será por todo el carrito
+    openTradeModal(state.cart[0].id);
+    return;
+  }
   const modalList = document.getElementById('modalItemsList');
   const modalTotal = document.getElementById('modalTotalAmount');
   const modalCurrency = document.getElementById('modalTotalCurrency');
