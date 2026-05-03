@@ -555,11 +555,11 @@ function renderCard(p){
   // High-end Glassmorphism Style
   const cardStyle = `
     --theme-color: ${themeColor};
-    background: linear-gradient(165deg, rgba(13, 17, 23, 0.88), ${themeColor}${r === 'UNIQUE' ? '08' : '15'});
+    background: linear-gradient(165deg, rgba(13, 17, 23, 0.88), ${themeColor}${r === 'UNIQUE' ? '12' : '15'});
     backdrop-filter: blur(16px) saturate(180%);
     -webkit-backdrop-filter: blur(16px) saturate(180%);
-    border: 1px solid ${themeColor}70;
-    box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.45), inset 0 0 0 1px ${themeColor}25;
+    border: 1px solid ${themeColor}30;
+    box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.45), inset 0 0 0 1px ${themeColor}15;
   `;
 
   return `<div class="product-card ${themeClass}" data-id="${p.id}" onclick="addToCart('${p.id}',event)" style="${cardStyle}">
