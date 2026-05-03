@@ -514,7 +514,7 @@ function renderCard(p){
   };
   
   const badgeHtml = p.badge ? `<span class="card-badge-el ${badgeClass(p.badge,p.rarity)}">${badgeLabel(p.badge,p.rarity)}</span>` : '';
-  const themeColor = p.color || getRarityColor(p.rarity);
+  let themeColor = p.color || getRarityColor(p.rarity);
   
   // New Badges Logic
   let topBadgeHtml = '';
