@@ -122,8 +122,17 @@ async function initApp() {
         state.activeGame = 'limiteds';
         document.getElementById('navGameName').textContent = 'Limiteds';
         document.getElementById('navGameCount').textContent = PRODUCTS.length + ' productos';
+        
+        // Inyectar el icono de la corona
+        document.getElementById('navGameThumb').innerHTML = `
+          <div class="w-full h-full flex items-center justify-center bg-white/10 border border-white/20 rounded-lg">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/></svg>
+          </div>
+        `;
+
         document.getElementById('navGameChip').style.display = 'flex';
         document.getElementById('categoryTabsWrap').style.display = 'block';
+
         renderTabs();
       }
     } else if (state.mm2Mode) {
@@ -150,9 +159,18 @@ async function initApp() {
         state.activeGame = 'murder-mystery-2';
         document.getElementById('navGameName').textContent = 'Murder Mystery 2';
         document.getElementById('navGameCount').textContent = PRODUCTS.length + ' productos';
+        
+        // Inyectar el icono de la espada
+        document.getElementById('navGameThumb').innerHTML = `
+          <div class="w-full h-full flex items-center justify-center bg-white/10 border border-white/20 rounded-lg">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" x2="19" y1="19" y2="13"/><line x1="16" x2="20" y1="16" y2="20"/><line x1="19" x2="21" y1="21" y2="19"/></svg>
+          </div>
+        `;
+
         document.getElementById('navGameChip').style.display = 'flex';
         document.getElementById('categoryTabsWrap').style.display = 'block';
         renderTabs();
+
         renderCatalog(); // Forzar renderizado inmediato tras cargar productos
       }
     } else {
@@ -721,7 +739,6 @@ function renderCatalog() {
   void cat.offsetWidth;
   cat.classList.add('animate-fade-in');
 
-  // 1. Filtrado
   let filtered = PRODUCTS.filter(p => {
     // Si estamos en un juego específico
     const gOk = state.activeGame ? p.game === state.activeGame : true;
@@ -732,14 +749,15 @@ function renderCatalog() {
     const r = (p.rarity || p.badge || p.type || p.itemType || '').toUpperCase();
     const isSpecialRarity = (r === 'GODLY' || r === 'UNIQUE' || r === 'ANCIENT' || r.includes('GODLY'));
     const isSpecialItem = (p.game === 'mm2' || p.game === 'murder-mystery-2' || p.game === 'limiteds');
-
+    
     const isSpecialMode = (state.activeGame === 'murder-mystery-2' || state.activeGame === 'limiteds' || state.mm2Mode || state.limitedMode);
-
+    
     // Si NO estamos en modo especial, bloqueamos cualquier item especial o con rareza especial
     if (!isSpecialMode && (isSpecialItem || isSpecialRarity)) return false;
 
     return gOk && sOk && tOk;
   });
+
 
   if (!filtered.length) {
     cat.innerHTML = '';
@@ -836,7 +854,11 @@ function renderSidebar() {
 // ===== SELECT GAME =====
 function selectGame(id) {
   state.activeGame = state.activeGame === id ? null : id;
-  const g = GAMES.find(x => x.id === id);
+  const gid = String(id).toLowerCase();
+  
+  // Buscar juego de forma robusta (por ID o por Nombre)
+  const g = GAMES.find(x => String(x.id).toLowerCase() === gid || x.label.toLowerCase().includes('murder') || x.label.toLowerCase().includes('limited'));
+  
   const chip = document.getElementById('navGameChip');
   const tabsWrap = document.getElementById('categoryTabsWrap');
 
@@ -845,38 +867,33 @@ function selectGame(id) {
   });
 
   if (state.activeGame && g) {
-    const realCount = ALL_PRODUCTS.filter(p => p.game === id).length;
+    const realCount = ALL_PRODUCTS.filter(p => p.game === g.id || p.game === id).length;
     document.getElementById('navGameName').textContent = g.label;
     document.getElementById('navGameCount').textContent = realCount + ' productos';
-
+    
     const thumb = document.getElementById('navGameThumb');
+    const label = g.label.toLowerCase();
+    
     if (g.img) {
       thumb.innerHTML = `<img src="${g.img}" style="width:100%;height:100%;object-fit:cover;border-radius:8px">`;
     } else {
-      const gid = String(id).toLowerCase();
       let svgIcon = '';
-      
-      // Iconos en crudo (SVG) para máxima fiabilidad
-      if (gid === 'murder-mystery-2' || gid === 'mm2') {
+      if (label.includes('murder') || gid.includes('mm2')) {
         svgIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" x2="19" y1="19" y2="13"/><line x1="16" x2="20" y1="16" y2="20"/><line x1="19" x2="21" y1="21" y2="19"/></svg>`;
-      } else if (gid === 'limiteds') {
+      } else if (label.includes('limited')) {
         svgIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/></svg>`;
       } else {
         svgIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="6" x2="10" y1="11" y2="11"/><line x1="8" x2="8" y1="9" y2="13"/><path d="M12 2a10 10 0 0 1 10 10c0 4.41-4 8-10 8s-10-3.59-10-8c0-4.41 3.59-6 10-10z"/><circle cx="12" cy="13" r="5"/></svg>`;
       }
 
-      thumb.innerHTML = `
-        <div class="w-full h-full flex items-center justify-center bg-white/10 border border-white/20 rounded-lg">
-          ${svgIcon}
-        </div>
-      `;
+      thumb.innerHTML = `<div class="w-full h-full flex items-center justify-center bg-white/10 border border-white/20 rounded-lg">${svgIcon}</div>`;
     }
 
     chip.style.display = 'flex';
     tabsWrap.style.display = 'block';
     activeTab = 'Más Vendidos';
-
-    if (window.lucide) lucide.createIcons();
+    
+    if (window.lucide) setTimeout(() => lucide.createIcons(), 50);
   } else {
     chip.style.display = 'none';
     tabsWrap.style.display = 'none';
