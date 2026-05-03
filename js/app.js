@@ -69,7 +69,7 @@ async function initApp() {
         id: g.id,
         label: g.name,
         img: g.image ? (g.image.startsWith('http') ? g.image : `${SERVER_URL}${g.image}`) : '',
-        count: g.items ? g.items.split(' ')[0] : 0
+        count: 0
       }));
     }
 
@@ -118,8 +118,10 @@ async function initApp() {
           const cat = p.category || 'General';
           if (!GAME_CATEGORIES['limiteds'].includes(cat)) GAME_CATEGORIES['limiteds'].push(cat);
         });
-        
-        state.activeGame = 'limiteds';
+            state.activeGame = 'limiteds';
+        document.getElementById('navGameName').textContent = 'Limiteds';
+        document.getElementById('navGameCount').textContent = PRODUCTS.length + ' productos';
+        document.getElementById('navGameChip').style.display = 'flex';
         document.getElementById('categoryTabsWrap').style.display = 'block';
         renderTabs();
       }
@@ -145,12 +147,21 @@ async function initApp() {
         });
         
         state.activeGame = 'murder-mystery-2';
+        document.getElementById('navGameName').textContent = 'Murder Mystery 2';
+        document.getElementById('navGameCount').textContent = PRODUCTS.length + ' productos';
+        document.getElementById('navGameChip').style.display = 'flex';
         document.getElementById('categoryTabsWrap').style.display = 'block';
         renderTabs();
       }
     } else {
       document.getElementById('limitedsBanner').classList.add('hidden');
       document.getElementById('mm2Banner').classList.add('hidden');
+      
+      // Update real counts for all games
+      GAMES.forEach(g => {
+        g.count = ALL_PRODUCTS.filter(p => p.game === g.id).length;
+      });
+
       renderSidebar();
       if (gameId && GAMES.some(g => g.id === gameId)) {
         selectGame(gameId);
@@ -703,8 +714,9 @@ function selectGame(id){
   });
 
   if(state.activeGame && g){
+    const realCount = ALL_PRODUCTS.filter(p => p.game === id).length;
     document.getElementById('navGameName').textContent = g.label;
-    document.getElementById('navGameCount').textContent = g.count + ' items';
+    document.getElementById('navGameCount').textContent = realCount + ' productos';
     const thumb = document.getElementById('navGameThumb');
     thumb.innerHTML = `<img src="${g.img}" style="width:100%;height:100%;object-fit:cover;border-radius:8px">`;
     chip.style.display = 'flex';
