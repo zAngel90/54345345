@@ -486,14 +486,14 @@ function sortProds(arr){const s=[...arr];if(state.sort==='popular')return s.sort
 // ===== RENDER CARD =====
 function getRarityColor(rarity){
   const colors = {
-    'Mythic': '#2a1a0a',    
-    'Legendary': '#0f1225', 
-    'Epic': '#121826',      
-    'Rare': '#0a1a12',      
-    'Uncommon': '#1a1c20',
-    'Common': '#1a1c20'
+    'Mythic': '#f59e0b',    
+    'Legendary': '#8b5cf6', 
+    'Epic': '#d946ef',      
+    'Rare': '#3b82f6',      
+    'Uncommon': '#10b981',
+    'Common': '#9ca3af'
   };
-  return colors[rarity] || '#1a1c20';
+  return colors[rarity] || '#ffffff';
 }
 
 function renderCard(p){
@@ -502,30 +502,39 @@ function renderCard(p){
     curr: state.currency
   };
   const badgeHtml=p.badge?`<span class="card-badge-el ${badgeClass(p.badge,p.rarity)}">${badgeLabel(p.badge,p.rarity)}</span>`:'';
-  const bgColor = p.color || getRarityColor(p.rarity);
-  const borderCol = p.rarity === 'Mythic' ? 'rgba(245,158,11,0.4)' : 'rgba(255,255,255,0.06)';
+  const themeColor = p.color || getRarityColor(p.rarity);
+  
+  // High-end Glassmorphism Style
+  const cardStyle = `
+    --theme-color: ${themeColor};
+    background: rgba(13, 17, 23, 0.7) !important;
+    backdrop-filter: blur(16px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+    border: 1px solid ${themeColor}40 !important;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37), inset 0 0 0 1px ${themeColor}15 !important;
+  `;
 
-  return `<div class="product-card" data-id="${p.id}" onclick="addToCart('${p.id}',event)" style="background: ${bgColor} !important; border-color: ${borderCol}">
+  return `<div class="product-card" data-id="${p.id}" onclick="addToCart('${p.id}',event)" style="${cardStyle}">
     <div class="added-overlay">
       <div class="check-circle">
         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
       </div>
     </div>
-    <div class="card-img-wrap" style="background: transparent">
+    <div class="card-img-wrap" style="background: radial-gradient(circle at center, ${themeColor}15 0%, transparent 70%)">
       ${badgeHtml}
       <img src="${p.img}" alt="${p.name}" loading="lazy">
     </div>
-    <div class="card-info" style="background: rgba(0,0,0,0.25)">
+    <div class="card-info" style="background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.4))">
       <h3 class="card-title">${p.name}</h3>
-      <p class="card-category">${p.category||p.rarity||'Item'}</p>
+      <p class="card-category" style="color: ${themeColor}cc">${p.category||p.rarity||'Item'}</p>
       <div class="card-price-row">
         <div class="price-box">
           <span class="card-price">${pd.main}</span>
           <span class="card-currency">${pd.curr}</span>
         </div>
-        <button class="card-cart-btn" onclick="addToCart('${p.id}',event)">
+        <button class="card-cart-btn" onclick="addToCart('${p.id}',event)" style="border-color: ${themeColor}40; background: ${themeColor}10">
           <svg class="cart-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
-          <span class="plus-icon">+</span>
+          <span class="plus-icon" style="color: ${themeColor}">+</span>
         </button>
       </div>
     </div>

@@ -502,9 +502,9 @@ html, body {
 }
 
 .product-card:hover {
-  transform: translateY(-5px);
-  border-color: rgba(255,255,255,0.15);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  transform: translateY(-8px);
+  border-color: var(--theme-color) !important;
+  box-shadow: 0 15px 45px rgba(0,0,0,0.6), 0 0 20px var(--theme-color)33 !important;
 }
 
 /* Efecto Brillo Cristal */
@@ -533,7 +533,8 @@ html, body {
 
 /* Efecto Añadido al Carrito */
 .product-card.is-added {
-  background: #065f46 !important; /* Verde esmeralda fuerte */
+  background: var(--theme-color)33 !important; /* Theme color with 20% opacity */
+  border-color: var(--theme-color) !important;
 }
 
 .added-overlay {
@@ -695,7 +696,7 @@ html, body {
 }
   color: rgba(255,255,255,0.7);
 }
-.card-cart-btn:hover { background: #3b82f6; border-color: #3b82f6; color: #fff; opacity: 1; }
+.card-cart-btn:hover { background: var(--theme-color); border-color: var(--theme-color); color: #fff; opacity: 1; box-shadow: 0 0 15px var(--theme-color)66; }
 
 /* ===== SIDEBAR HEADER ===== */
 .sidebar-header-row {
