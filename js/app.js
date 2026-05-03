@@ -159,9 +159,12 @@ async function initApp() {
       document.getElementById('limitedsBanner').classList.add('hidden');
       document.getElementById('mm2Banner').classList.add('hidden');
 
-      // Update real counts for all games
+      // Update real counts and ensure PRODUCTS only contains items for listed games
+      const validGameIds = GAMES.map(g => g.id);
+      PRODUCTS = ALL_PRODUCTS.filter(p => validGameIds.includes(p.game));
+
       GAMES.forEach(g => {
-        g.count = ALL_PRODUCTS.filter(p => p.game === g.id).length;
+        g.count = PRODUCTS.filter(p => p.game === g.id).length;
       });
 
       renderSidebar();
