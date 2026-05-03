@@ -654,17 +654,10 @@ function renderTabs() {
   
   const tabs = GAME_CATEGORIES[state.activeGame] || ['Más Vendidos', 'Productos'];
   el.innerHTML = tabs.map(t => {
-    const icon = TAB_ICONS[t] || 'layout';
-    return `
-      <button class="category-tab ${t === activeTab ? 'active' : ''}" onclick="selectTab('${t}')">
-        <i data-lucide="${icon}" style="width: 14px; height: 14px;"></i>
-        ${t}
-      </button>
-    `;
+    return `<button class="category-tab ${t === activeTab ? 'active' : ''}" onclick="selectTab('${t}')">${t}</button>`;
   }).join('');
-  
-  if (window.lucide) lucide.createIcons();
 }
+
 
 window.selectTab = function (t) {
   activeTab = t;
@@ -776,7 +769,6 @@ function renderCatalog() {
       html += `
         <div class="space-y-6 mb-12">
           <div class="section-header">
-            <div class="section-icon-wrap" style="color: #3b82f6;">${getGameIcon(g.id)}</div>
             <div class="section-info">
               <h2 class="section-title-text">${g.label}</h2>
               <span class="section-count-badge">${items.length} productos</span>
@@ -792,7 +784,6 @@ function renderCatalog() {
       html += `
         <div class="space-y-6 mb-12">
           <div class="section-header">
-            <div class="section-icon-wrap" style="color: #3b82f6;">${getGameIcon(state.activeGame, section)}</div>
             <div class="section-info">
               <h2 class="section-title-text">${section}</h2>
               <span class="section-count-badge">${items.length} productos</span>
@@ -855,11 +846,24 @@ function selectGame(id) {
     const realCount = ALL_PRODUCTS.filter(p => p.game === id).length;
     document.getElementById('navGameName').textContent = g.label;
     document.getElementById('navGameCount').textContent = realCount + ' productos';
+    
     const thumb = document.getElementById('navGameThumb');
-    thumb.innerHTML = `<img src="${g.img}" style="width:100%;height:100%;object-fit:cover;border-radius:8px">`;
+    if (g.img) {
+      thumb.innerHTML = `<img src="${g.img}" style="width:100%;height:100%;object-fit:cover;border-radius:8px">`;
+    } else {
+      const gameIcon = id === 'murder-mystery-2' ? 'sword' : (id === 'limiteds' ? 'crown' : 'gamepad-2');
+      thumb.innerHTML = `
+        <div class="w-full h-full flex items-center justify-center bg-white/5 border border-white/10 rounded-lg">
+          <i data-lucide="${gameIcon}" style="width: 18px; height: 18px; color: #3b82f6;"></i>
+        </div>
+      `;
+    }
+    
     chip.style.display = 'flex';
     tabsWrap.style.display = 'block';
     activeTab = 'Más Vendidos';
+    
+    if (window.lucide) lucide.createIcons();
   } else {
     chip.style.display = 'none';
     tabsWrap.style.display = 'none';
