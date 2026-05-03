@@ -1704,3 +1704,33 @@ html, body {
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: rgba(255,255,255,0.2);
 }
+
+/* ===== OUT OF STOCK STYLES ===== */
+.badge-out-stock {
+  background: rgba(180, 83, 9, 0.2) !important;
+  color: #f97316 !important;
+  border: 1px solid rgba(249, 115, 22, 0.2);
+}
+
+.out-of-stock-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #eab308;
+  color: white;
+  padding: 8px 20px;
+  border-radius: 12px;
+  font-weight: 900;
+  font-size: 14px;
+  z-index: 15;
+  box-shadow: 0 4px 15px rgba(234, 179, 8, 0.4);
+  white-space: nowrap;
+}
+
+.card-cart-btn.out-of-stock {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: rgba(255, 255, 255, 0.3) !important;
+  cursor: not-allowed;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}

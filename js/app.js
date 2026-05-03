@@ -518,7 +518,11 @@ function renderCard(p) {
 
   // New Badges Logic
   let topBadgeHtml = '';
-  if (p.onRequest) {
+  const isOutOfStock = !p.onRequest && (p.stock === 0 || p.stock === '0');
+
+  if (isOutOfStock) {
+    topBadgeHtml = `<div class="card-top-badge badge-out-stock">Sin stock</div>`;
+  } else if (p.onRequest) {
     topBadgeHtml = `<div class="card-top-badge badge-on-request">Bajo pedido</div>`;
   } else if (p.stock > 0) {
     topBadgeHtml = `<div class="card-top-badge badge-stock">${p.stock} uds</div>`;
@@ -537,7 +541,9 @@ function renderCard(p) {
 
   // Subtitle Logic
   let subtitleHtml = '';
-  if (p.onRequest) {
+  if (isOutOfStock) {
+    subtitleHtml = `<p class="card-subtitle" style="color:#f97316 !important">Sin stock</p>`;
+  } else if (p.onRequest) {
     subtitleHtml = `<p class="card-subtitle">Bajo pedido · Lo conseguimos tras tu compra</p>`;
   } else if (p.stock > 0) {
     subtitleHtml = `<p class="card-subtitle">${p.stock} en stock</p>`;
@@ -572,8 +578,9 @@ function renderCard(p) {
       </div>
     </div>
     <div class="card-img-wrap" style="background: radial-gradient(circle at center, ${themeColor}25 0%, transparent 70%)">
+      ${isOutOfStock ? `<div class="out-of-stock-overlay"><span>SIN STOCK</span></div>` : ''}
       ${badgeHtml}
-      <img src="${p.img}" alt="${p.name}" loading="lazy">
+      <img src="${p.img}" alt="${p.name}" loading="lazy" style="${isOutOfStock ? 'opacity: 0.4; filter: grayscale(1);' : ''}">
     </div>
     <div class="card-info" style="background: linear-gradient(to bottom, transparent, ${themeColor}05, rgba(0,0,0,0.6))">
       <div class="flex items-center mb-1">
@@ -587,9 +594,11 @@ function renderCard(p) {
           <span class="card-price">${pd.main}</span>
           <span class="card-currency">${pd.curr}</span>
         </div>
-        <button class="card-cart-btn" onclick="addToCart('${p.id}',event)">
-          <svg class="cart-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
-          <span class="plus-icon">+</span>
+        <button class="card-cart-btn ${isOutOfStock ? 'out-of-stock' : ''}" onclick="addToCart('${p.id}',event)">
+          ${isOutOfStock ? 
+            `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>` :
+            `<svg class="cart-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg><span class="plus-icon">+</span>`
+          }
         </button>
       </div>
     </div>
@@ -803,8 +812,18 @@ function addToCart(id, e) {
 
   const existing = state.cart.find(x => String(x.id) === String(id));
   if (existing) {
+    // Validar stock si no es "bajo pedido"
+    if (!p.onRequest && p.stock !== undefined && p.stock !== null && existing.qty >= p.stock) {
+      showToast('❌ Sin stock suficiente (' + p.stock + ' máx)');
+      return;
+    }
     existing.qty++;
   } else {
+    // Si no existe, al menos validar que haya 1 de stock
+    if (!p.onRequest && p.stock !== undefined && p.stock !== null && p.stock < 1) {
+      showToast('❌ Producto agotado');
+      return;
+    }
     state.cart.push({ ...p, qty: 1 });
   }
 
