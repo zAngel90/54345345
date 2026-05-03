@@ -572,17 +572,24 @@ window.selectTab=function(t){
 function getGameIcon(id, type = null){
   const icons = {
     'blox-fruits': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5 3 6V3h3l11.5 11.5"/><path d="m13 19 2 2 7-7-2-2"/></svg>`,
-    'mm2': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14.7c-4.2-1.1-9.1-3.1-13-3.7l2.1-4.7c4.4 1 10.1 3.2 13.9 4.4l-3 4z"/></svg>`,
-    'pet-sim': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 5.172C10 3.42 11.42 2 13.172 2h7.656C22.58 2 24 3.42 24 5.172v7.656C24 14.58 22.58 16 20.828 16h-7.656C11.42 16 10 14.58 10 12.828V5.172Z"/></svg>`,
-    'adopt-me': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>`,
-    'rivals': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/></svg>`,
+    'mm2': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 21H3V7l9-4 9 4v14h-5"/><path d="M11 21v-7h4v7"/></svg>`,
+    'limiteds': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/></svg>`,
+    'murder-mystery-2': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 21H3V7l9-4 9 4v14h-5"/><path d="M11 21v-7h4v7"/></svg>`,
+    
+    // Categorías / Tipos
+    'Frutas': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 11 6a7 7 0 0 1 0 14Zm0-11v5m-3-2h6"/></svg>`,
     'Fruits': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 11 6a7 7 0 0 1 0 14Zm0-11v5m-3-2h6"/></svg>`,
-    'Gamepasses': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>`,
+    'Gamepasses': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/><path d="M7 15h.01"/><path d="M11 15h.01"/></svg>`,
     'Cajas': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>`,
     'Keys': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m21 2-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0 3 3L22 7l-3-3L15.5 7.5z"/></svg>`,
-    'Ancient': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m21 2-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0 3 3L22 7l-3-3L15.5 7.5z"/></svg>`,
-    'Guns': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m3 11 18-5v12L3 14v-3z"/></svg>`,
-    'Huge Pets': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 5.172C10 3.42 11.42 2 13.172 2h7.656C22.58 2 24 3.42 24 5.172v7.656C24 14.58 22.58 16 20.828 16h-7.656C11.42 16 10 14.58 10 12.828V5.172Z"/></svg>`
+    'Ancient': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M2 12h20L12 2z"/></svg>`,
+    'Guns': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11h15v4H3zM18 11l3 2-3 2v-4zM5 15v4"/></svg>`,
+    'Godlies': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>`,
+    'Pets': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 5.172C10 3.42 11.42 2 13.172 2h7.656C22.58 2 24 3.42 24 5.172v7.656C24 14.58 22.58 16 20.828 16h-7.656C11.42 16 10 14.58 10 12.828V5.172Z"/><path d="M2.828 16h7.656c1.752 0 3.172-1.42 3.172-3.172V5.172C13.656 3.42 12.236 2 10.484 2H2.828C1.42 2 0 3.42 0 5.172v7.656C0 14.58 1.42 16 2.828 16Z"/></svg>`,
+    'Faces': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>`,
+    'Accessories': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12l3 6v12H3V9l3-6z"/><path d="M3 9h18"/><path d="M9 21V9"/><path d="M15 21V9"/></svg>`,
+    'Bundles': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="8" x="3" y="3" rx="1"/><rect width="8" height="8" x="13" y="3" rx="1"/><rect width="8" height="8" x="3" y="13" rx="1"/><rect width="8" height="8" x="13" y="13" rx="1"/></svg>`,
+    'Swords': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5 3 6V3h3l11.5 11.5"/><path d="m13 19 2 2 7-7-2-2"/></svg>`
   };
   return icons[type] || icons[id] || `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>`;
 }
@@ -595,89 +602,71 @@ function renderCatalog(){
   void cat.offsetWidth; 
   cat.classList.add('animate-fade-in');
 
-  if (state.limitedMode) {
-    let filtered = PRODUCTS.filter(p => {
-      const sOk = state.search ? p.name.toLowerCase().includes(state.search.toLowerCase()) : true;
-      const tOk = activeTab === 'Más Vendidos' ? true : (p.category === activeTab);
-      return sOk && tOk;
-    });
-
-    if (!filtered.length) {
-      cat.innerHTML = '';
-      empty.style.display = 'flex';
-      return;
-    }
-    empty.style.display = 'none';
-    cat.innerHTML = `
-      <div class="space-y-6 mb-10">
-        <div class="section-header">
-          <div class="section-icon-wrap">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-blue-400"><path d="m2 4 3 12h14l3-12zm6 16a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm12 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0z"/></svg>
-          </div>
-          <div class="section-info">
-            <h2 class="section-title-text">${activeTab === 'Más Vendidos' ? 'Tienda de Limiteds' : activeTab}</h2>
-            <span class="section-count-badge">${filtered.length} items disponibles para intercambio</span>
-          </div>
-        </div>
-        <div class="product-grid">${filtered.map(renderCard).join('')}</div>
-      </div>
-    `;
-    return;
-  }
-
-  let filtered=PRODUCTS.filter(p=>{
-    const gOk=state.activeGame?p.game===state.activeGame:true;
-    const sOk=state.search?p.name.toLowerCase().includes(state.search.toLowerCase()):true;
-    const tOk=activeTab==='Más Vendidos'?true:(p.category===activeTab);
-    return gOk&&sOk&&tOk;
+  // 1. Filtrado
+  let filtered = PRODUCTS.filter(p => {
+    // Si estamos en un juego específico
+    const gOk = state.activeGame ? p.game === state.activeGame : true;
+    const sOk = state.search ? p.name.toLowerCase().includes(state.search.toLowerCase()) : true;
+    const tOk = activeTab === 'Más Vendidos' ? true : (p.category === activeTab);
+    return gOk && sOk && tOk;
   });
 
-  if(!filtered.length){
-    cat.innerHTML='';
+  if (!filtered.length) {
+    cat.innerHTML = '';
     empty.style.display = 'flex';
     return;
   }
   empty.style.display = 'none';
 
-  let html='';
-  if(!state.activeGame){
-    GAMES.forEach(g=>{
-      const items=sortProds(filtered.filter(p=>p.game===g.id));
-      if(!items.length)return;
-      html+=`<div class="space-y-6 mb-10">
-        <div class="section-header">
-          <div class="section-icon-wrap">${getGameIcon(g.id)}</div>
-          <div class="section-info">
-            <h2 class="section-title-text">${g.label}</h2>
-            <span class="section-count-badge">${items.length} productos disponibles</span>
+  // 2. Agrupación
+  const grouped = {};
+  filtered.forEach(p => {
+    // Si no hay juego activo (vista general), agrupamos por JUEGO
+    // Si hay juego activo, agrupamos por CATEGORIA (Admin) o TYPE
+    const groupKey = !state.activeGame ? p.game : (p.category || p.type || 'Otros');
+    if (!grouped[groupKey]) grouped[groupKey] = [];
+    grouped[groupKey].push(p);
+  });
+
+  // 3. Renderizado
+  let html = '';
+  
+  // Si estamos en vista general (sin juego activo), usamos los nombres de los juegos como títulos
+  if (!state.activeGame) {
+    GAMES.forEach(g => {
+      const items = sortProds(grouped[g.id] || []);
+      if (!items.length) return;
+      html += `
+        <div class="space-y-6 mb-12">
+          <div class="section-header">
+            <div class="section-icon-wrap" style="color: #3b82f6;">${getGameIcon(g.id)}</div>
+            <div class="section-info">
+              <h2 class="section-title-text">${g.label}</h2>
+              <span class="section-count-badge">${items.length} productos</span>
+            </div>
           </div>
-        </div>
-        <div class="product-grid">${items.map(renderCard).join('')}</div>
-      </div>`;
+          <div class="product-grid">${items.map(renderCard).join('')}</div>
+        </div>`;
     });
   } else {
-    const grouped = {};
-    filtered.forEach(p => {
-      const t = p.type || 'Otros';
-      if(!grouped[t]) grouped[t] = [];
-      grouped[t].push(p);
-    });
-
-    Object.keys(grouped).forEach(type => {
-      const items = sortProds(grouped[type]);
-      html += `<div class="space-y-6 mb-10">
-        <div class="section-header">
-          <div class="section-icon-wrap">${getGameIcon(state.activeGame, type)}</div>
-          <div class="section-info">
-            <h2 class="section-title-text">${type}</h2>
-            <span class="section-count-badge">${items.length} productos disponibles</span>
+    // Si estamos dentro de un juego, MM2 o Limiteds, usamos las categorías/tipos
+    Object.keys(grouped).forEach(section => {
+      const items = sortProds(grouped[section]);
+      html += `
+        <div class="space-y-6 mb-12">
+          <div class="section-header">
+            <div class="section-icon-wrap" style="color: #3b82f6;">${getGameIcon(state.activeGame, section)}</div>
+            <div class="section-info">
+              <h2 class="section-title-text">${section}</h2>
+              <span class="section-count-badge">${items.length} productos</span>
+            </div>
           </div>
-        </div>
-        <div class="product-grid">${items.map(renderCard).join('')}</div>
-      </div>`;
+          <div class="product-grid">${items.map(renderCard).join('')}</div>
+        </div>`;
     });
   }
-  cat.innerHTML=html;
+
+  cat.innerHTML = html;
   renderSeoInfo();
 }
 
