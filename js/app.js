@@ -543,6 +543,12 @@ function renderCard(p){
     subtitleHtml = `<p class="card-subtitle">${p.stock} en stock</p>`;
   }
 
+  // Themes based on rarity
+  let themeClass = '';
+  const r = (p.itemType || p.rarity || '').toUpperCase();
+  if (r === 'UNIQUE') themeClass = 'theme-unique';
+  if (r === 'GODLY') themeClass = 'theme-godly';
+
   // High-end Glassmorphism Style
   const cardStyle = `
     --theme-color: ${themeColor};
@@ -553,7 +559,7 @@ function renderCard(p){
     box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.45), inset 0 0 0 1px ${themeColor}25 !important;
   `;
 
-  return `<div class="product-card" data-id="${p.id}" onclick="addToCart('${p.id}',event)" style="${cardStyle}">
+  return `<div class="product-card ${themeClass}" data-id="${p.id}" onclick="addToCart('${p.id}',event)" style="${cardStyle}">
     ${topBadgeHtml}
     <div class="added-overlay">
       <div class="check-circle">
@@ -565,9 +571,9 @@ function renderCard(p){
       <img src="${p.img}" alt="${p.name}" loading="lazy">
     </div>
     <div class="card-info" style="background: linear-gradient(to bottom, transparent, ${themeColor}15, rgba(0,0,0,0.5)); box-shadow: inset 0 -20px 30px -15px ${themeColor}30">
-      <div class="flex items-center">
+      <div class="flex items-center mb-1">
         ${rarityLabelHtml}
-        <span class="card-year ml-auto">2026</span>
+        <span class="card-year ml-auto">${p.year || '2026'}</span>
       </div>
       <h3 class="card-title">${p.name}</h3>
       ${subtitleHtml}
