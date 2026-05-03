@@ -942,16 +942,19 @@ function renderUserUI() {
   if (!avatarBtn) return;
 
   if (state.user) {
+    // Priority: use provided avatar URL
     if (state.user.avatar) {
       avatarBtn.innerHTML = `<img src="${state.user.avatar}" class="w-full h-full object-cover">`;
     } else {
       avatarBtn.innerHTML = `<span>${(state.user.username || 'U').charAt(0).toUpperCase()}</span>`;
     }
-    avatarBtn.style.background = 'linear-gradient(135deg, #3b82f6, #8b5cf6)';
+    
+    avatarBtn.style.background = 'linear-gradient(135deg, #1e293b, #0f172a)';
+    avatarBtn.style.border = '2px solid rgba(255,255,255,0.1)';
+    
     if (nameLabel) nameLabel.textContent = state.user.displayName || state.user.username;
     if (roleLabel) roleLabel.textContent = state.user.role || 'Cliente';
     
-    // El botón ahora abre el dropdown en lugar de navegar
     avatarBtn.onclick = (e) => {
       e.stopPropagation();
       document.getElementById('notifDropdown').classList.add('hidden');
@@ -960,8 +963,9 @@ function renderUserUI() {
       document.getElementById('userDropdown').classList.toggle('hidden');
     };
   } else {
-    avatarBtn.innerHTML = '<span>L</span>';
-    avatarBtn.style.background = 'rgba(255,255,255,0.05)';
+    avatarBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-white/20"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
+    avatarBtn.style.background = 'rgba(255,255,255,0.03)';
+    avatarBtn.style.border = '1px solid rgba(255,255,255,0.05)';
     avatarBtn.onclick = () => window.parent.postMessage({ action: 'login' }, '*');
   }
 }
@@ -977,16 +981,25 @@ function renderNotifications() {
   // Actualizar contadores de las pestañas
   const allBadge = document.querySelector('.notif-tab[data-tab="all"] .notif-tab-badge');
   const ordersBadge = document.querySelector('.notif-tab[data-tab="orders"] .notif-tab-badge');
+  const chatsBadge = document.querySelector('.notif-tab[data-tab="chats"] .notif-tab-badge');
+  
   if (allBadge) allBadge.textContent = state.notifications.length;
   if (ordersBadge) {
-    const orderCount = state.notifications.filter(n => n.type === 'orders').length;
+    const orderCount = state.notifications.filter(n => n.type === 'orders' || n.type === 'order').length;
     ordersBadge.textContent = orderCount;
     ordersBadge.style.display = orderCount > 0 ? 'flex' : 'none';
+  }
+  if (chatsBadge) {
+    const chatCount = state.notifications.filter(n => n.type === 'chats' || n.type === 'chat').length;
+    chatsBadge.textContent = chatCount;
+    chatsBadge.style.display = chatCount > 0 ? 'flex' : 'none';
   }
 
   // Filtrar según pestaña activa
   const filtered = state.notifications.filter(n => {
     if (state.activeNotifTab === 'all') return true;
+    if (state.activeNotifTab === 'orders') return (n.type === 'orders' || n.type === 'order');
+    if (state.activeNotifTab === 'chats') return (n.type === 'chats' || n.type === 'chat');
     return n.type === state.activeNotifTab;
   });
 
