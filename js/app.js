@@ -276,9 +276,9 @@ function renderSeoInfo() {
       <div class="pt-10 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-6">
         <div class="text-white font-black uppercase text-sm">También te puede interesar</div>
         <div class="flex gap-4">
-          <a href="/catalog/robux" class="text-xs font-bold text-blue-400 hover:text-blue-300 transition-colors">Comprar Robux →</a>
+          <button onclick="window.parent.postMessage({ action: 'navigateTo', url: '/catalog/robux' }, '*')" class="text-xs font-bold text-blue-400 hover:text-blue-300 transition-colors bg-transparent border-none cursor-pointer">Comprar Robux →</button>
           <a href="?game=limiteds" class="text-xs font-bold text-blue-400 hover:text-blue-300 transition-colors">Roblox Limiteds →</a>
-          <a href="/catalog" class="text-xs font-bold text-blue-400 hover:text-blue-300 transition-colors">Items In-Game →</a>
+          <button onclick="window.parent.postMessage({ action: 'navigateTo', url: '/catalog' }, '*')" class="text-xs font-bold text-blue-400 hover:text-blue-300 transition-colors bg-transparent border-none cursor-pointer">Items In-Game →</button>
         </div>
       </div>
     `;
@@ -382,9 +382,9 @@ function renderSeoInfo() {
       <div class="pt-10 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-6">
         <div class="text-white font-black uppercase text-sm">Explora más en PIXEL STORE</div>
         <div class="flex gap-4">
-          <a href="/catalog/robux" class="text-xs font-bold text-blue-400 hover:text-blue-300 transition-colors">Comprar Robux →</a>
+          <button onclick="window.parent.postMessage({ action: 'navigateTo', url: '/catalog/robux' }, '*')" class="text-xs font-bold text-blue-400 hover:text-blue-300 transition-colors bg-transparent border-none cursor-pointer">Comprar Robux →</button>
           <a href="?game=mm2" class="text-xs font-bold text-blue-400 hover:text-blue-300 transition-colors">Items de MM2 →</a>
-          <a href="/catalog" class="text-xs font-bold text-blue-400 hover:text-blue-300 transition-colors">Items In-Game →</a>
+          <button onclick="window.parent.postMessage({ action: 'navigateTo', url: '/catalog' }, '*')" class="text-xs font-bold text-blue-400 hover:text-blue-300 transition-colors bg-transparent border-none cursor-pointer">Items In-Game →</button>
         </div>
       </div>
     `;
