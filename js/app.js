@@ -168,10 +168,20 @@ async function initApp() {
       });
 
       renderSidebar();
-      if (gameId && GAMES.some(g => g.id === gameId)) {
-        selectGame(gameId);
-      } else if (GAMES.length > 0) {
+      // Selección de juego estricta por ID o Slug
+      const foundGame = gameId ? GAMES.find(g => 
+        (g.id && String(g.id).toLowerCase() === String(gameId).toLowerCase()) || 
+        (g.slug && String(g.slug).toLowerCase() === String(gameId).toLowerCase())
+      ) : null;
+      
+      if (foundGame) {
+        selectGame(foundGame.id);
+      } else if (!gameId && GAMES.length > 0) {
+        // Solo cargamos el primero si NO se especificó ninguno en la URL
         selectGame(GAMES[0].id);
+      } else if (gameId) {
+        console.warn('⚠️ Juego no encontrado:', gameId);
+        // Opcional: mostrar un estado de "Juego no encontrado" o simplemente no cargar nada
       }
     }
 
