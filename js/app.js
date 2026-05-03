@@ -538,6 +538,7 @@ function renderCard(p) {
   }
 
   // Rarity Detection Ultra-Aggressive
+  let rarityLabelHtml = '';
   let r = (p.itemType || p.rarity || p.type || p.badge || '').toUpperCase();
   
   // Si estamos en MM2 y no hay rareza clara, intentar deducirla o forzarla
