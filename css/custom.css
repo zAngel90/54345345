@@ -621,7 +621,78 @@ html, body {
   font-size: 11px;
   color: rgba(255,255,255,0.3);
   font-weight: 500;
-  margin-bottom: 8px;
+  margin-bottom: 2px;
+}
+
+/* ===== NEW BADGES & SUBTITLES ===== */
+.card-top-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  z-index: 10;
+  background: rgba(13, 17, 23, 0.8);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+.badge-on-request {
+  color: #7dd3fc; /* sky-300 */
+  box-shadow: 0 0 15px rgba(125, 211, 252, 0.15);
+}
+
+.badge-stock {
+  color: #4ade80; /* green-400 */
+  box-shadow: 0 0 15px rgba(74, 222, 128, 0.15);
+}
+
+.rarity-label {
+  display: inline-flex;
+  padding: 3px 10px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  letter-spacing: 0.02em;
+}
+
+.label-unique {
+  background: rgba(168, 85, 247, 0.2);
+  color: #d8b4fe;
+  border: 1px solid rgba(168, 85, 247, 0.3);
+}
+
+.label-legendary {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fcd34d;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.label-godly {
+  background: rgba(234, 179, 8, 0.25);
+  color: #fef08a;
+  border: 1px solid rgba(234, 179, 8, 0.4);
+  box-shadow: 0 0 12px rgba(234, 179, 8, 0.15);
+}
+
+.card-subtitle {
+  font-size: 11px;
+  font-weight: 600;
+  color: #3b82f6; /* blue-500 */
+  margin-bottom: 12px;
+  opacity: 0.8;
+}
+
+.card-year {
+    font-size: 10px;
+    font-weight: 800;
+    color: rgba(255,255,255,0.15);
+    margin-left: auto;
 }
 
 .card-price-row {

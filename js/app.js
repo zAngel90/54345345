@@ -512,10 +512,38 @@ function renderCard(p){
     main: (p.price * CURRENCY_RATES[state.currency].rate).toLocaleString('en-US', { minimumFractionDigits: 2 }),
     curr: state.currency
   };
-  const badgeHtml=p.badge?`<span class="card-badge-el ${badgeClass(p.badge,p.rarity)}">${badgeLabel(p.badge,p.rarity)}</span>`:'';
+  
+  const badgeHtml = p.badge ? `<span class="card-badge-el ${badgeClass(p.badge,p.rarity)}">${badgeLabel(p.badge,p.rarity)}</span>` : '';
   const themeColor = p.color || getRarityColor(p.rarity);
   
-  // High-end Glassmorphism Style - Increased Vibrancy
+  // New Badges Logic
+  let topBadgeHtml = '';
+  if (p.onRequest) {
+    topBadgeHtml = `<div class="card-top-badge badge-on-request">Bajo pedido</div>`;
+  } else if (p.stock > 0) {
+    topBadgeHtml = `<div class="card-top-badge badge-stock">${p.stock} uds</div>`;
+  }
+
+  // Rarity Label Logic
+  let rarityLabelHtml = '';
+  const r = (p.itemType || p.rarity || '').toUpperCase();
+  if (r === 'UNIQUE') {
+    rarityLabelHtml = `<span class="rarity-label label-unique">UNIQUE</span>`;
+  } else if (r === 'LEGENDARY') {
+    rarityLabelHtml = `<span class="rarity-label label-legendary">LEGENDARY</span>`;
+  } else if (r === 'GODLY') {
+    rarityLabelHtml = `<span class="rarity-label label-godly">GODLY</span>`;
+  }
+
+  // Subtitle Logic
+  let subtitleHtml = '';
+  if (p.onRequest) {
+    subtitleHtml = `<p class="card-subtitle">Bajo pedido · Lo conseguimos tras tu compra</p>`;
+  } else if (p.stock > 0) {
+    subtitleHtml = `<p class="card-subtitle">${p.stock} en stock</p>`;
+  }
+
+  // High-end Glassmorphism Style
   const cardStyle = `
     --theme-color: ${themeColor};
     background: rgba(13, 17, 23, 0.75) !important;
@@ -526,6 +554,7 @@ function renderCard(p){
   `;
 
   return `<div class="product-card" data-id="${p.id}" onclick="addToCart('${p.id}',event)" style="${cardStyle}">
+    ${topBadgeHtml}
     <div class="added-overlay">
       <div class="check-circle">
         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
@@ -536,8 +565,12 @@ function renderCard(p){
       <img src="${p.img}" alt="${p.name}" loading="lazy">
     </div>
     <div class="card-info" style="background: linear-gradient(to bottom, transparent, ${themeColor}15, rgba(0,0,0,0.5)); box-shadow: inset 0 -20px 30px -15px ${themeColor}30">
+      <div class="flex items-center">
+        ${rarityLabelHtml}
+        <span class="card-year ml-auto">2026</span>
+      </div>
       <h3 class="card-title">${p.name}</h3>
-      <p class="card-category">${p.category||p.rarity||'Item'}</p>
+      ${subtitleHtml}
       <div class="card-price-row">
         <div class="price-box">
           <span class="card-price">${pd.main}</span>
