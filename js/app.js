@@ -571,27 +571,30 @@ window.selectTab=function(t){
 // ===== RENDER CATALOG =====
 function getGameIcon(id, type = null){
   const icons = {
-    'blox-fruits': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5 3 6V3h3l11.5 11.5"/><path d="m13 19 2 2 7-7-2-2"/></svg>`,
-    'mm2': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 21H3V7l9-4 9 4v14h-5"/><path d="M11 21v-7h4v7"/></svg>`,
-    'limiteds': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/></svg>`,
-    'murder-mystery-2': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 21H3V7l9-4 9 4v14h-5"/><path d="M11 21v-7h4v7"/></svg>`,
+    // Juegos
+    'blox-fruits': 'sword',
+    'mm2': 'knife',
+    'murder-mystery-2': 'knife',
+    'limiteds': 'gem',
     
     // Categorías / Tipos
-    'Frutas': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 11 6a7 7 0 0 1 0 14Zm0-11v5m-3-2h6"/></svg>`,
-    'Fruits': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 11 6a7 7 0 0 1 0 14Zm0-11v5m-3-2h6"/></svg>`,
-    'Gamepasses': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/><path d="M7 15h.01"/><path d="M11 15h.01"/></svg>`,
-    'Cajas': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>`,
-    'Keys': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m21 2-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0 3 3L22 7l-3-3L15.5 7.5z"/></svg>`,
-    'Ancient': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M2 12h20L12 2z"/></svg>`,
-    'Guns': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11h15v4H3zM18 11l3 2-3 2v-4zM5 15v4"/></svg>`,
-    'Godlies': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>`,
-    'Pets': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 5.172C10 3.42 11.42 2 13.172 2h7.656C22.58 2 24 3.42 24 5.172v7.656C24 14.58 22.58 16 20.828 16h-7.656C11.42 16 10 14.58 10 12.828V5.172Z"/><path d="M2.828 16h7.656c1.752 0 3.172-1.42 3.172-3.172V5.172C13.656 3.42 12.236 2 10.484 2H2.828C1.42 2 0 3.42 0 5.172v7.656C0 14.58 1.42 16 2.828 16Z"/></svg>`,
-    'Faces': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>`,
-    'Accessories': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12l3 6v12H3V9l3-6z"/><path d="M3 9h18"/><path d="M9 21V9"/><path d="M15 21V9"/></svg>`,
-    'Bundles': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="8" x="3" y="3" rx="1"/><rect width="8" height="8" x="13" y="3" rx="1"/><rect width="8" height="8" x="3" y="13" rx="1"/><rect width="8" height="8" x="13" y="13" rx="1"/></svg>`,
-    'Swords': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5 3 6V3h3l11.5 11.5"/><path d="m13 19 2 2 7-7-2-2"/></svg>`
+    'Frutas': 'apple',
+    'Fruits': 'apple',
+    'Gamepasses': 'ticket',
+    'Cajas': 'package',
+    'Keys': 'key',
+    'Ancient': 'swords',
+    'Guns': 'crosshair', 
+    'Godlies': 'sparkles',
+    'Pets': 'dog',
+    'Faces': 'smile',
+    'Accessories': 'shirt',
+    'Bundles': 'layers',
+    'Swords': 'sword'
   };
-  return icons[type] || icons[id] || `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>`;
+  
+  const iconName = icons[type] || icons[id] || 'layout-grid';
+  return `<i data-lucide="${iconName}" style="width: 20px; height: 20px;"></i>`;
 }
 
 function renderCatalog(){
@@ -668,6 +671,11 @@ function renderCatalog(){
 
   cat.innerHTML = html;
   renderSeoInfo();
+  
+  // Convertir los placeholders de i data-lucide en SVGs reales
+  if (window.lucide) {
+    lucide.createIcons();
+  }
 }
 
 // ===== RENDER SIDEBAR =====
@@ -689,6 +697,7 @@ function renderSidebar(){
     </div>`).join('');
     
     setTimeout(updateSidebarIndicator, 50);
+    if (window.lucide) lucide.createIcons();
 }
 
 // ===== SELECT GAME =====
