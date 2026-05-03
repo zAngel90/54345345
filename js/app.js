@@ -943,8 +943,13 @@ function renderUserUI() {
 
   if (state.user) {
     // Priority: use provided avatar URL
-    if (state.user.avatar) {
-      avatarBtn.innerHTML = `<img src="${state.user.avatar}" class="w-full h-full object-cover">`;
+    let avatarUrl = state.user.avatar;
+    if (avatarUrl && !avatarUrl.startsWith('http')) {
+      avatarUrl = `${SERVER_URL}${avatarUrl.startsWith('/') ? '' : '/'}${avatarUrl}`;
+    }
+
+    if (avatarUrl) {
+      avatarBtn.innerHTML = `<img src="${avatarUrl}" class="w-full h-full object-cover">`;
     } else {
       avatarBtn.innerHTML = `<span>${(state.user.username || 'U').charAt(0).toUpperCase()}</span>`;
     }
