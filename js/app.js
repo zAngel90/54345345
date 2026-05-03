@@ -79,6 +79,7 @@ async function initApp() {
       purchases: Math.floor(Math.random() * 1000) + 100,
       img: p.image ? (p.image.startsWith('http') ? p.image : `${SERVER_URL}${p.image}`) : ''
     }));
+    // Asegurar que PRODUCTS tenga datos antes de construir categorías
     PRODUCTS = [...ALL_PRODUCTS];
 
     // 3. Construir categorías dinámicas
@@ -152,6 +153,7 @@ async function initApp() {
         document.getElementById('navGameChip').style.display = 'flex';
         document.getElementById('categoryTabsWrap').style.display = 'block';
         renderTabs();
+        renderCatalog(); // Forzar renderizado inmediato tras cargar productos
       }
     } else {
       document.getElementById('limitedsBanner').classList.add('hidden');
@@ -171,9 +173,16 @@ async function initApp() {
     }
 
     updateCart();
-    renderCatalog();
     renderSeoInfo();
     initRecentUsers();
+    
+    // Si no estamos en modo especial, la selección de juego ya dispara renderCatalog/renderTabs
+    if (!state.limitedMode && !state.mm2Mode) {
+      // Ya se llamó a selectGame arriba
+    } else {
+      renderCatalog();
+    }
+
     // Avisar al padre que estamos listos para recibir el usuario
     window.parent.postMessage({ action: 'ready' }, '*');
   } catch (err) {
