@@ -692,9 +692,14 @@ function renderCatalog() {
     const tOk = activeTab === 'Más Vendidos' ? true : (p.category === activeTab);
 
     // Excluir items que pertenecen explícitamente a MM2 o Limiteds de la vista normal
+    const r = (p.rarity || p.badge || p.type || p.itemType || '').toUpperCase();
+    const isSpecialRarity = (r === 'GODLY' || r === 'UNIQUE' || r === 'ANCIENT' || r.includes('GODLY'));
     const isSpecialItem = (p.game === 'mm2' || p.game === 'murder-mystery-2' || p.game === 'limiteds');
+    
     const isSpecialMode = (state.activeGame === 'murder-mystery-2' || state.activeGame === 'limiteds' || state.mm2Mode || state.limitedMode);
-    if (!isSpecialMode && isSpecialItem) return false;
+    
+    // Si NO estamos en modo especial, bloqueamos cualquier item especial o con rareza especial
+    if (!isSpecialMode && (isSpecialItem || isSpecialRarity)) return false;
 
     return gOk && sOk && tOk;
   });
