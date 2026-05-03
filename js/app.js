@@ -161,10 +161,231 @@ async function initApp() {
 
     updateCart();
     renderCatalog();
+    renderSeoInfo();
     // Avisar al padre que estamos listos para recibir el usuario
     window.parent.postMessage({ action: 'ready' }, '*');
   } catch (err) {
     console.error('Error initializing app:', err);
+  }
+}
+
+function renderSeoInfo() {
+  const container = document.getElementById('seoInfoSection');
+  const content = document.getElementById('seoInfoContent');
+  if (!container || !content) return;
+
+  if (state.mm2Mode) {
+    container.classList.remove('hidden');
+    content.innerHTML = `
+      <!-- Murder Mystery 2 SEO -->
+      <div class="space-y-6">
+        <h1 class="text-3xl font-black text-white uppercase tracking-tight">Comprar Armas y Items de MM2 — Murder Mystery 2</h1>
+        <p class="text-white/50 leading-relaxed">
+          Compra las mejores armas y items de Murder Mystery 2 en <span class="text-blue-400 font-bold">PIXEL STORE</span>. Encuentra cuchillos Godly, pistolas Legendary, mascotas y collectibles de MM2 al mejor precio. Entrega segura directa a tu cuenta de Roblox con soporte 24/7.
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-12">
+        <div class="space-y-4">
+          <h3 class="text-xl font-bold text-white uppercase">Por qué comprar items de MM2 en PIXEL</h3>
+          <ul class="space-y-4">
+            <li class="flex gap-3">
+              <div class="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2 shrink-0"></div>
+              <div>
+                <strong class="text-white block text-sm font-bold">Armas Godly y Legendary verificadas</strong>
+                <p class="text-white/40 text-xs mt-1">Todas nuestras armas de Murder Mystery 2 son verificadas antes de la venta. Cuchillos, pistolas y mascotas Godly, Legendary, Vintage y más al mejor precio del mercado.</p>
+              </div>
+            </li>
+            <li class="flex gap-3">
+              <div class="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2 shrink-0"></div>
+              <div>
+                <strong class="text-white block text-sm font-bold">Entrega directa a tu cuenta</strong>
+                <p class="text-white/40 text-xs mt-1">Recibes tus items de MM2 directamente en tu inventario de Roblox. El proceso es rápido y seguro, sin riesgo para tu cuenta.</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div class="space-y-4">
+          <h3 class="text-xl font-bold text-white uppercase invisible">.</h3>
+          <ul class="space-y-4">
+            <li class="flex gap-3">
+              <div class="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2 shrink-0"></div>
+              <div>
+                <strong class="text-white block text-sm font-bold">Catálogo actualizado diariamente</strong>
+                <p class="text-white/40 text-xs mt-1">Actualizamos nuestro inventario de Murder Mystery 2 todos los días con los items más buscados. Si no encuentras lo que buscas, contáctanos.</p>
+              </div>
+            </li>
+            <li class="flex gap-3">
+              <div class="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2 shrink-0"></div>
+              <div>
+                <strong class="text-white block text-sm font-bold">Precios justos de mercado</strong>
+                <p class="text-white/40 text-xs mt-1">Nuestros precios de armas MM2 se basan en los valores actuales del mercado. Sin sobreprecios, sin sorpresas.</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="space-y-8">
+        <h3 class="text-xl font-bold text-white uppercase text-center">Categorías de items MM2</h3>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div class="p-4 bg-white/5 border border-white/10 rounded-2xl text-center">
+            <span class="text-white font-bold text-sm block mb-1">Cuchillos</span>
+            <p class="text-white/30 text-[10px] uppercase">Godly, Legendary, Vintage</p>
+          </div>
+          <div class="p-4 bg-white/5 border border-white/10 rounded-2xl text-center">
+            <span class="text-white font-bold text-sm block mb-1">Pistolas</span>
+            <p class="text-white/30 text-[10px] uppercase">Exclusivas MM2</p>
+          </div>
+          <div class="p-4 bg-white/5 border border-white/10 rounded-2xl text-center">
+            <span class="text-white font-bold text-sm block mb-1">Mascotas</span>
+            <p class="text-white/30 text-[10px] uppercase">Coleccionables</p>
+          </div>
+          <div class="p-4 bg-white/5 border border-white/10 rounded-2xl text-center">
+            <span class="text-white font-bold text-sm block mb-1">Sets</span>
+            <p class="text-white/30 text-[10px] uppercase">Bundles Godly</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-8">
+        <h3 class="text-xl font-bold text-white uppercase">Preguntas frecuentes sobre items de MM2</h3>
+        <div class="grid md:grid-cols-2 gap-6">
+          <div class="space-y-2">
+            <h4 class="text-white text-sm font-bold">¿Cómo recibo mis items de Murder Mystery 2?</h4>
+            <p class="text-white/40 text-xs leading-relaxed">Después de tu compra, nos unimos a un servidor de MM2 contigo y te entregamos los items directamente en el juego a través del sistema de intercambio de Roblox.</p>
+          </div>
+          <div class="space-y-2">
+            <h4 class="text-white text-sm font-bold">¿Los items de MM2 son permanentes?</h4>
+            <p class="text-white/40 text-xs leading-relaxed">Sí, todos los items que compras son permanentes y se quedan en tu inventario de Roblox para siempre. No hay expiración ni restricciones.</p>
+          </div>
+          <div class="space-y-2">
+            <h4 class="text-white text-sm font-bold">¿Es seguro comprar items de Murder Mystery 2?</h4>
+            <p class="text-white/40 text-xs leading-relaxed">Completamente seguro. Utilizamos el sistema de intercambio oficial de Roblox. Tu cuenta no corre ningún riesgo y todos los items son legítimos.</p>
+          </div>
+          <div class="space-y-2">
+            <h4 class="text-white text-sm font-bold">¿Qué hago si no encuentro el item que busco?</h4>
+            <p class="text-white/40 text-xs leading-relaxed">Contáctanos por Discord y te ayudamos a conseguir cualquier item de MM2. Tenemos acceso a un amplio inventario que no siempre está en la web.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-10 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div class="text-white font-black uppercase text-sm">También te puede interesar</div>
+        <div class="flex gap-4">
+          <a href="/catalog/robux" class="text-xs font-bold text-blue-400 hover:text-blue-300 transition-colors">Comprar Robux →</a>
+          <a href="?game=limiteds" class="text-xs font-bold text-blue-400 hover:text-blue-300 transition-colors">Roblox Limiteds →</a>
+          <a href="/catalog" class="text-xs font-bold text-blue-400 hover:text-blue-300 transition-colors">Items In-Game →</a>
+        </div>
+      </div>
+    `;
+  } else if (state.limitedMode) {
+    container.classList.remove('hidden');
+    content.innerHTML = `
+      <!-- Limiteds SEO -->
+      <div class="space-y-6">
+        <h1 class="text-3xl font-black text-white uppercase tracking-tight">Comprar Roblox Limiteds — Items Exclusivos al Mejor Precio</h1>
+        <p class="text-white/50 leading-relaxed">
+          Compra items Limitados de Roblox al mejor precio en <span class="text-blue-400 font-bold">PIXEL STORE</span>. Encuentra Faces, Hats, Accessories y más items exclusivos Limited y Limited U. Envío seguro directo a tu cuenta con soporte 24/7. Necesitas Roblox Premium para recibir Limiteds.
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-12">
+        <div class="space-y-4">
+          <h3 class="text-xl font-bold text-white uppercase">Por qué comprar Limiteds en PIXEL</h3>
+          <ul class="space-y-4">
+            <li class="flex gap-3">
+              <div class="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2 shrink-0"></div>
+              <div>
+                <strong class="text-white block text-sm font-bold">Items verificados y legítimos</strong>
+                <p class="text-white/40 text-xs mt-1">Todos nuestros Roblox Limiteds son verificados antes de la venta. Garantizamos autenticidad y valor de mercado correcto.</p>
+              </div>
+            </li>
+            <li class="flex gap-3">
+              <div class="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2 shrink-0"></div>
+              <div>
+                <strong class="text-white block text-sm font-bold">Envío seguro a tu cuenta</strong>
+                <p class="text-white/40 text-xs mt-1">Los Limiteds se transfieren directamente a tu inventario de Roblox de forma segura. Necesitas Roblox Premium activo para recibir items.</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div class="space-y-4">
+          <h3 class="text-xl font-bold text-white uppercase invisible">.</h3>
+          <ul class="space-y-4">
+            <li class="flex gap-3">
+              <div class="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2 shrink-0"></div>
+              <div>
+                <strong class="text-white block text-sm font-bold">Precios competitivos actualizados</strong>
+                <p class="text-white/40 text-xs mt-1">Nuestros precios de Roblox Limiteds se actualizan según el valor de mercado. Ofrecemos las mejores tarifas comparado con otras tiendas.</p>
+              </div>
+            </li>
+            <li class="flex gap-3">
+              <div class="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2 shrink-0"></div>
+              <div>
+                <strong class="text-white block text-sm font-bold">Inventario diverso y actualizado</strong>
+                <p class="text-white/40 text-xs mt-1">Desde Faces clásicos hasta Hats exclusivos, tenemos una selección amplia de items Limitados que se actualiza constantemente.</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="space-y-8">
+        <h3 class="text-xl font-bold text-white uppercase text-center">Tipos de Roblox Limiteds</h3>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div class="p-4 bg-white/5 border border-white/10 rounded-2xl text-center">
+            <span class="text-white font-bold text-sm block mb-1">Faces</span>
+            <p class="text-white/30 text-[10px] uppercase">Limitados y Exclusivos</p>
+          </div>
+          <div class="p-4 bg-white/5 border border-white/10 rounded-2xl text-center">
+            <span class="text-white font-bold text-sm block mb-1">Hats</span>
+            <p class="text-white/30 text-[10px] uppercase">Limited y Limited U</p>
+          </div>
+          <div class="p-4 bg-white/5 border border-white/10 rounded-2xl text-center">
+            <span class="text-white font-bold text-sm block mb-1">Accessories</span>
+            <p class="text-white/30 text-[10px] uppercase">Back, Neck, Shoulder</p>
+          </div>
+          <div class="p-4 bg-white/5 border border-white/10 rounded-2xl text-center">
+            <span class="text-white font-bold text-sm block mb-1">Bundles</span>
+            <p class="text-white/30 text-[10px] uppercase">Paquetes Especiales</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-8">
+        <h3 class="text-xl font-bold text-white uppercase">Preguntas frecuentes sobre Roblox Limiteds</h3>
+        <div class="grid md:grid-cols-2 gap-6">
+          <div class="space-y-2">
+            <h4 class="text-white text-sm font-bold">¿Necesito Roblox Premium para comprar Limiteds?</h4>
+            <p class="text-white/40 text-xs leading-relaxed">Sí, necesitas tener Roblox Premium activo en tu cuenta para poder recibir items Limitados a través del sistema de intercambio de Roblox.</p>
+          </div>
+          <div class="space-y-2">
+            <h4 class="text-white text-sm font-bold">¿Cómo recibo mis Roblox Limiteds?</h4>
+            <p class="text-white/40 text-xs leading-relaxed">Después de tu compra, te enviamos los items a través del sistema de intercambio oficial de Roblox. Es rápido, seguro y los items aparecen directamente en tu inventario.</p>
+          </div>
+          <div class="space-y-2">
+            <h4 class="text-white text-sm font-bold">¿Los Limiteds mantienen su valor?</h4>
+            <p class="text-white/40 text-xs leading-relaxed">Los items Limitados de Roblox pueden subir o bajar de valor según la demanda del mercado. Algunos Limiteds clásicos han aumentado significativamente su valor con el tiempo.</p>
+          </div>
+          <div class="space-y-2">
+            <h4 class="text-white text-sm font-bold">¿Es seguro comprar Limiteds aquí?</h4>
+            <p class="text-white/40 text-xs leading-relaxed">Totalmente. Usamos el sistema de intercambio oficial de Roblox. Tu cuenta no está en riesgo y todos los items son legítimos y verificados.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-10 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div class="text-white font-black uppercase text-sm">Explora más en PIXEL STORE</div>
+        <div class="flex gap-4">
+          <a href="/catalog/robux" class="text-xs font-bold text-blue-400 hover:text-blue-300 transition-colors">Comprar Robux →</a>
+          <a href="?game=mm2" class="text-xs font-bold text-blue-400 hover:text-blue-300 transition-colors">Items de MM2 →</a>
+          <a href="/catalog" class="text-xs font-bold text-blue-400 hover:text-blue-300 transition-colors">Items In-Game →</a>
+        </div>
+      </div>
+    `;
+  } else {
+    container.classList.add('hidden');
   }
 }
 
