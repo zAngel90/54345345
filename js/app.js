@@ -240,12 +240,12 @@ function selectRecentUser(inputId, dropdownId, name, id) {
   
   // Directly select the user since we already have the data
   if (inputId === 'robloxUserInput') {
-    if (typeof selectRobloxUser === 'function') {
-      selectRobloxUser(id, name, name);
+    if (typeof window.selectRobloxUser === 'function') {
+      window.selectRobloxUser(id, name, name);
     }
   } else if (inputId === 'tradeRobloxInput') {
-    if (typeof selectTradeUser === 'function') {
-      selectTradeUser(id, name, name);
+    if (typeof window.selectTradeUser === 'function') {
+      window.selectTradeUser(id, name, name);
     }
   }
 }
