@@ -687,6 +687,7 @@ function renderCatalog() {
   // 1. Filtrado
   let filtered = PRODUCTS.filter(p => {
     // Si estamos en un juego específico
+    const gOk = state.activeGame ? p.game === state.activeGame : true;
     const sOk = state.search ? p.name.toLowerCase().includes(state.search.toLowerCase()) : true;
     const tOk = activeTab === 'Más Vendidos' ? true : (p.category === activeTab);
 
