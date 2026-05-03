@@ -43,7 +43,18 @@ let GAMES = [];
 let ALL_PRODUCTS = [];
 let PRODUCTS = [];
 let GAME_CATEGORIES = {};
-let state = { currency: 'PEN', sort: 'popular', activeGame: null, search: '', cart: [], gameSearch: '', user: null, notifications: [], activeNotifTab: 'all' };
+let state = {
+  currency: 'PEN',
+  sort: 'popular',
+  activeGame: null,
+  search: '',
+  cart: [],
+  gameSearch: '',
+  user: null,
+  notifications: [],
+  activeNotifTab: 'all',
+  categoryIcons: {} // Mapeo de Categoría -> Icono Imagen
+};
 let lastAddedId = null;
 let selectedUser = null;
 let searchTimeout = null;
@@ -122,7 +133,7 @@ async function initApp() {
         state.activeGame = 'limiteds';
         document.getElementById('navGameName').textContent = 'Limiteds';
         document.getElementById('navGameCount').textContent = PRODUCTS.length + ' productos';
-        
+
         // Inyectar el icono de la corona
         document.getElementById('navGameThumb').innerHTML = `
           <div class="w-full h-full flex items-center justify-center bg-white/10 border border-white/20 rounded-lg">
@@ -159,7 +170,7 @@ async function initApp() {
         state.activeGame = 'murder-mystery-2';
         document.getElementById('navGameName').textContent = 'Murder Mystery 2';
         document.getElementById('navGameCount').textContent = PRODUCTS.length + ' productos';
-        
+
         // Inyectar el icono de la espada
         document.getElementById('navGameThumb').innerHTML = `
           <div class="w-full h-full flex items-center justify-center bg-white/10 border border-white/20 rounded-lg">
@@ -184,6 +195,17 @@ async function initApp() {
       GAMES.forEach(g => {
         g.count = PRODUCTS.filter(p => p.game === g.id).length;
       });
+
+      // Cargar mapeo de iconos de categorías
+      try {
+        console.log('📡 Cargando iconos de categorías...');
+        const iconsRes = await fetch(`${API_BASE_URL}/admin/category-icons-config`);
+        const iconsData = await iconsRes.json();
+        if (iconsData.success) {
+          state.categoryIcons = iconsData.data;
+          console.log('✅ Iconos cargados:', state.categoryIcons);
+        }
+      } catch (e) { console.warn('❌ Error cargando iconos:', e); }
 
       renderSidebar();
       // Selección de juego estricta por ID o Slug
@@ -749,9 +771,9 @@ function renderCatalog() {
     const r = (p.rarity || p.badge || p.type || p.itemType || '').toUpperCase();
     const isSpecialRarity = (r === 'GODLY' || r === 'UNIQUE' || r === 'ANCIENT' || r.includes('GODLY'));
     const isSpecialItem = (p.game === 'mm2' || p.game === 'murder-mystery-2' || p.game === 'limiteds');
-    
+
     const isSpecialMode = (state.activeGame === 'murder-mystery-2' || state.activeGame === 'limiteds' || state.mm2Mode || state.limitedMode);
-    
+
     // Si NO estamos en modo especial, bloqueamos cualquier item especial o con rareza especial
     if (!isSpecialMode && (isSpecialItem || isSpecialRarity)) return false;
 
@@ -787,6 +809,9 @@ function renderCatalog() {
       html += `
         <div class="space-y-6 mb-12">
           <div class="section-header">
+            <div class="section-icon-wrap" style="background: rgba(59, 130, 246, 0.05); border-color: rgba(59, 130, 246, 0.1);">
+              ${g.img ? `<img src="${g.img}" style="width: 24px; height: 24px; object-fit: contain; border-radius: 6px;">` : `<i data-lucide="layout-grid" style="width: 20px; height: 20px; color: #3b82f6;"></i>`}
+            </div>
             <div class="section-info">
               <h2 class="section-title-text">${g.label}</h2>
               <span class="section-count-badge">${items.length} productos</span>
@@ -796,12 +821,32 @@ function renderCatalog() {
         </div>`;
     });
   } else {
-    // Si estamos dentro de un juego, MM2 o Limiteds, usamos las categorías/tipos
     Object.keys(grouped).forEach(section => {
       const items = sortProds(grouped[section]);
+
+      // Mapeo inteligente de iconos según el nombre de la categoría
+      const s = section.toLowerCase();
+      let iconName = 'layout-grid'; // Default
+
+      if (s.includes('fruta')) iconName = 'apple';
+      else if (s.includes('arma') || s.includes('sword') || s.includes('cuchillo') || s.includes('skin')) iconName = 'sword';
+      else if (s.includes('pass') || s.includes('ticket')) iconName = 'ticket';
+      else if (s.includes('gema') || s.includes('moneda') || s.includes('gem') || s.includes('currency')) iconName = 'gem';
+      else if (s.includes('pet') || s.includes('mascota')) iconName = 'dog';
+      else if (s.includes('item') || s.includes('objeto') || s.includes('box')) iconName = 'package';
+      else if (s.includes('limited')) iconName = 'crown';
+
+      // Si el cliente definió uno específico en la configuración, lo usamos
+      if (state.categoryIcons && state.categoryIcons[section]) {
+        iconName = state.categoryIcons[section];
+      }
+
       html += `
         <div class="space-y-6 mb-12">
           <div class="section-header">
+            <div class="section-icon-wrap" style="background: rgba(59, 130, 246, 0.05); border-color: rgba(59, 130, 246, 0.1);">
+              <i data-lucide="${iconName}" style="width: 18px; height: 18px; color: #3b82f6;"></i>
+            </div>
             <div class="section-info">
               <h2 class="section-title-text">${section}</h2>
               <span class="section-count-badge">${items.length} productos</span>
@@ -810,6 +855,11 @@ function renderCatalog() {
           <div class="product-grid">${items.map(renderCard).join('')}</div>
         </div>`;
     });
+
+    // Ejecutar Lucide para transformar los iconos nuevos
+    setTimeout(() => { if (window.lucide) lucide.createIcons(); }, 10);
+    setTimeout(() => { if (window.lucide) lucide.createIcons(); }, 100);
+    setTimeout(() => { if (window.lucide) lucide.createIcons(); }, 500);
   }
 
   cat.innerHTML = html;
@@ -855,10 +905,10 @@ function renderSidebar() {
 function selectGame(id) {
   state.activeGame = state.activeGame === id ? null : id;
   const gid = String(id).toLowerCase();
-  
+
   // Buscar juego de forma robusta (por ID o por Nombre)
   const g = GAMES.find(x => String(x.id).toLowerCase() === gid || x.label.toLowerCase().includes('murder') || x.label.toLowerCase().includes('limited'));
-  
+
   const chip = document.getElementById('navGameChip');
   const tabsWrap = document.getElementById('categoryTabsWrap');
 
@@ -870,10 +920,10 @@ function selectGame(id) {
     const realCount = ALL_PRODUCTS.filter(p => p.game === g.id || p.game === id).length;
     document.getElementById('navGameName').textContent = g.label;
     document.getElementById('navGameCount').textContent = realCount + ' productos';
-    
+
     const thumb = document.getElementById('navGameThumb');
     const label = g.label.toLowerCase();
-    
+
     if (g.img) {
       thumb.innerHTML = `<img src="${g.img}" style="width:100%;height:100%;object-fit:cover;border-radius:8px">`;
     } else {
@@ -892,7 +942,7 @@ function selectGame(id) {
     chip.style.display = 'flex';
     tabsWrap.style.display = 'block';
     activeTab = 'Más Vendidos';
-    
+
     if (window.lucide) setTimeout(() => lucide.createIcons(), 50);
   } else {
     chip.style.display = 'none';
