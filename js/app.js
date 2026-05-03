@@ -831,7 +831,10 @@ function renderSidebar() {
       <div>
         <p class="game-list-name">${g.label}</p>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
+
+
 
   setTimeout(updateSidebarIndicator, 50);
   if (window.lucide) lucide.createIcons();
