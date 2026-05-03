@@ -545,7 +545,6 @@ function renderCard(p){
 
   // Themes based on rarity
   let themeClass = '';
-  const r = (p.itemType || p.rarity || '').toUpperCase();
   if (r === 'UNIQUE') themeClass = 'theme-unique';
   if (r === 'GODLY') themeClass = 'theme-godly';
 
