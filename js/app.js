@@ -528,14 +528,20 @@ function renderCard(p) {
     topBadgeHtml = `<div class="card-top-badge badge-stock">${p.stock} uds</div>`;
   }
 
-  // Rarity Label Logic
-  let rarityLabelHtml = '';
-  const r = (p.itemType || p.rarity || '').toUpperCase();
+  // Rarity Detection Ultra-Aggressive
+  let r = (p.itemType || p.rarity || p.type || p.badge || '').toUpperCase();
+  
+  // Si estamos en MM2 y no hay rareza clara, intentar deducirla o forzarla
+  if (!r && p.game === 'murder-mystery-2') {
+    r = 'GODLY'; // En MM2 la mayoría son Godly
+  }
+
   if (r === 'UNIQUE') {
     rarityLabelHtml = `<span class="rarity-label label-unique">UNIQUE</span>`;
   } else if (r === 'LEGENDARY') {
     rarityLabelHtml = `<span class="rarity-label label-legendary">LEGENDARY</span>`;
-  } else if (r === 'GODLY') {
+  } else if (r === 'GODLY' || r.includes('GODLY')) {
+    r = 'GODLY'; // Normalizar
     rarityLabelHtml = `<span class="rarity-label label-godly">GODLY</span>`;
   }
 
@@ -554,14 +560,14 @@ function renderCard(p) {
   if (r === 'UNIQUE') themeClass = 'theme-unique';
   if (r === 'GODLY') {
     themeClass = 'theme-godly';
-    // Force Godly to use the "Admin Color" effect with yellow
-    themeColor = '#eab308';
+    // For Godly, we use the PINK theme for background but keep notch yellow via CSS
+    themeColor = '#db2777'; 
   }
 
   // High-end Glassmorphism Style
   const cardStyle = `
     --theme-color: ${themeColor};
-    background: linear-gradient(165deg, #0d1117 70%, ${themeColor}15) !important;
+    background: linear-gradient(165deg, ${ (r === 'UNIQUE' || r === 'GODLY') ? '#11060c' : '#0d1117'} 60%, ${themeColor}15) !important;
     backdrop-filter: blur(16px) saturate(180%) !important;
     -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
     ${(r === 'UNIQUE' || r === 'GODLY') ? '' : `border: 1px solid ${themeColor}30 !important;`}
@@ -577,12 +583,12 @@ function renderCard(p) {
         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
       </div>
     </div>
-    <div class="card-img-wrap" style="background: radial-gradient(circle at center, ${themeColor}25 0%, transparent 70%)">
-      ${isOutOfStock ? `<div class="out-of-stock-overlay"><span>SIN STOCK</span></div>` : ''}
+    <div class="card-img-wrap" style="background: radial-gradient(circle at center, ${themeColor}25 0%, transparent 80%)">
+      ${isOutOfStock ? `<div class="out-of-stock-overlay"><div class="out-of-stock-label">SIN STOCK</div></div>` : ''}
       ${badgeHtml}
-      <img src="${p.img}" alt="${p.name}" loading="lazy" style="${isOutOfStock ? 'opacity: 0.4; filter: grayscale(1);' : ''}">
+      <img src="${p.img}" alt="${p.name}" loading="lazy">
     </div>
-    <div class="card-info" style="background: linear-gradient(to bottom, transparent, ${themeColor}05, rgba(0,0,0,0.6))">
+    <div class="card-info" style="background: linear-gradient(to bottom, transparent, ${themeColor}05, rgba(0,0,0,0.5))">
       <div class="flex items-center mb-1">
         ${rarityLabelHtml}
         <span class="card-year ml-auto">${p.year || '2026'}</span>
