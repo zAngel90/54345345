@@ -680,15 +680,13 @@ html, body {
 
 /* Themes por Rareza para la Card Completa */
 .product-card.theme-godly {
-  border-color: #eab308 !important; /* yellow-500 puro */
-  box-shadow: 0 0 30px rgba(234, 179, 8, 0.25) !important;
-  background: linear-gradient(135deg, rgba(13, 17, 23, 0.8), rgba(133, 77, 14, 0.1)) !important;
+  border-color: #eab308 !important;
+  box-shadow: 0 0 35px rgba(234, 179, 8, 0.2) !important;
 }
 
 .product-card.theme-unique {
-  border-color: #db2777 !important; /* pink-600 */
-  box-shadow: 0 0 30px rgba(219, 39, 119, 0.25) !important;
-  background: linear-gradient(135deg, rgba(13, 17, 23, 0.8), rgba(190, 24, 93, 0.1)) !important;
+  border-color: #db2777 !important;
+  box-shadow: 0 0 35px rgba(219, 39, 119, 0.2) !important;
 }
 
 .card-subtitle {

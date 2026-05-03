@@ -546,14 +546,18 @@ function renderCard(p){
   // Themes based on rarity
   let themeClass = '';
   if (r === 'UNIQUE') themeClass = 'theme-unique';
-  if (r === 'GODLY') themeClass = 'theme-godly';
+  if (r === 'GODLY') {
+    themeClass = 'theme-godly';
+    // Force Godly to use the "Admin Color" effect with yellow
+    themeColor = '#eab308';
+  }
 
   // High-end Glassmorphism Style
   const cardStyle = `
     --theme-color: ${themeColor};
-    background: rgba(13, 17, 23, 0.75) !important;
-    backdrop-filter: blur(16px) saturate(180%) !important;
-    -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+    background: linear-gradient(165deg, rgba(13, 17, 23, 0.88), ${themeColor}${r === 'UNIQUE' ? '08' : '15'});
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
     border: 1px solid ${themeColor}70;
     box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.45), inset 0 0 0 1px ${themeColor}25;
   `;
