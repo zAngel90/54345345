@@ -572,7 +572,7 @@ function renderCard(p) {
   let themeClass = '';
   // Solo aplicamos el tema inmersivo (fondo rosa/púrpura) a los LIMITEDS
   const isLimitedGodlyOrUnique = (r === 'UNIQUE' || r === 'GODLY') && p.game === 'limiteds';
-  
+
   if (isLimitedGodlyOrUnique) {
     themeClass = r === 'UNIQUE' ? 'theme-unique' : 'theme-godly';
     themeColor = '#db2777'; // Forzar rosa para Limiteds Premium
@@ -587,7 +587,7 @@ function renderCard(p) {
   // High-end Glassmorphism Style
   const cardStyle = `
     --theme-color: ${themeColor};
-    background: linear-gradient(165deg, ${ isPremiumTheme ? '#11060c' : '#0d1117'} 60%, ${themeColor}15) !important;
+    background: linear-gradient(165deg, ${isPremiumTheme ? '#11060c' : '#0d1117'} 60%, ${themeColor}15) !important;
     backdrop-filter: blur(16px) saturate(180%) !important;
     -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
     border: 1px solid ${isPremiumTheme ? 'transparent' : `${themeColor}30`} !important;
@@ -687,9 +687,14 @@ function renderCatalog() {
   // 1. Filtrado
   let filtered = PRODUCTS.filter(p => {
     // Si estamos en un juego específico
-    const gOk = state.activeGame ? p.game === state.activeGame : true;
     const sOk = state.search ? p.name.toLowerCase().includes(state.search.toLowerCase()) : true;
     const tOk = activeTab === 'Más Vendidos' ? true : (p.category === activeTab);
+
+    // Excluir items que pertenecen explícitamente a MM2 o Limiteds de la vista normal
+    const isSpecialItem = (p.game === 'mm2' || p.game === 'murder-mystery-2' || p.game === 'limiteds');
+    const isSpecialMode = (state.activeGame === 'murder-mystery-2' || state.activeGame === 'limiteds' || state.mm2Mode || state.limitedMode);
+    if (!isSpecialMode && isSpecialItem) return false;
+
     return gOk && sOk && tOk;
   });
 
