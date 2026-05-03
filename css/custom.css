@@ -690,6 +690,12 @@ html, body {
   height: 100%;
   position: relative;
   overflow: hidden;
+  background: #0d1117; /* Fondo base sólido */
+}
+
+/* Eliminar cualquier sombra o degradado extra que cause el hueco */
+.product-card::after {
+  display: none !important;
 }
 
 .card-content {
@@ -697,12 +703,12 @@ html, body {
   display: flex;
   flex-direction: column;
   padding: 1.25rem;
-  padding-bottom: 1.25rem !important; /* Asegurar padding constante */
+  padding-bottom: 0.5rem !important; /* Reducir padding inferior */
 }
 
 .card-footer {
   margin-top: auto;
-  padding-top: 1rem;
+  padding: 1rem 0; /* Ajustar padding del footer */
   display: flex;
   align-items: center;
   justify-content: space-between;
