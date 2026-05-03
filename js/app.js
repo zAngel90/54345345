@@ -524,7 +524,7 @@ function renderCard(p){
       ${badgeHtml}
       <img src="${p.img}" alt="${p.name}" loading="lazy">
     </div>
-    <div class="card-info" style="background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.5))">
+    <div class="card-info" style="background: linear-gradient(to bottom, transparent, ${themeColor}15, rgba(0,0,0,0.5)); box-shadow: inset 0 -20px 30px -15px ${themeColor}30">
       <h3 class="card-title">${p.name}</h3>
       <p class="card-category">${p.category||p.rarity||'Item'}</p>
       <div class="card-price-row">
