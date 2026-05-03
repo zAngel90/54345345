@@ -43,7 +43,7 @@ let GAMES = [];
 let ALL_PRODUCTS = [];
 let PRODUCTS = [];
 let GAME_CATEGORIES = {};
-let state={currency:'PEN',sort:'popular',activeGame:null,search:'',cart:[],gameSearch:'',user:null,notifications:[],activeNotifTab:'all'};
+let state = { currency: 'PEN', sort: 'popular', activeGame: null, search: '', cart: [], gameSearch: '', user: null, notifications: [], activeNotifTab: 'all' };
 let lastAddedId = null;
 let selectedUser = null;
 let searchTimeout = null;
@@ -112,13 +112,13 @@ async function initApp() {
         }));
         document.getElementById('limitedsBanner').classList.remove('hidden');
         document.getElementById('mm2Banner').classList.add('hidden');
-        
+
         GAME_CATEGORIES['limiteds'] = ['Más Vendidos'];
         PRODUCTS.forEach(p => {
           const cat = p.category || 'General';
           if (!GAME_CATEGORIES['limiteds'].includes(cat)) GAME_CATEGORIES['limiteds'].push(cat);
         });
-            state.activeGame = 'limiteds';
+        state.activeGame = 'limiteds';
         document.getElementById('navGameName').textContent = 'Limiteds';
         document.getElementById('navGameCount').textContent = PRODUCTS.length + ' productos';
         document.getElementById('navGameChip').style.display = 'flex';
@@ -139,13 +139,13 @@ async function initApp() {
         }));
         document.getElementById('mm2Banner').classList.remove('hidden');
         document.getElementById('limitedsBanner').classList.add('hidden');
-        
+
         GAME_CATEGORIES['murder-mystery-2'] = ['Más Vendidos'];
         PRODUCTS.forEach(p => {
           const cat = p.category || 'Skins';
           if (!GAME_CATEGORIES['murder-mystery-2'].includes(cat)) GAME_CATEGORIES['murder-mystery-2'].push(cat);
         });
-        
+
         state.activeGame = 'murder-mystery-2';
         document.getElementById('navGameName').textContent = 'Murder Mystery 2';
         document.getElementById('navGameCount').textContent = PRODUCTS.length + ' productos';
@@ -156,7 +156,7 @@ async function initApp() {
     } else {
       document.getElementById('limitedsBanner').classList.add('hidden');
       document.getElementById('mm2Banner').classList.add('hidden');
-      
+
       // Update real counts for all games
       GAMES.forEach(g => {
         g.count = ALL_PRODUCTS.filter(p => p.game === g.id).length;
@@ -248,7 +248,7 @@ function selectRecentUser(inputId, dropdownId, name, id) {
   const dropdown = document.getElementById(dropdownId);
   input.value = name;
   dropdown.style.display = 'none';
-  
+
   // Directly select the user since we already have the data
   if (inputId === 'robloxUserInput') {
     if (typeof window.selectRobloxUser === 'function') {
@@ -486,36 +486,36 @@ function renderSeoInfo() {
 }
 
 // ===== HELPERS =====
-function fmt(p){const c=CURRENCY_RATES[state.currency];const v=p*c.rate;return c.symbol+(v>=1000?v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}):v.toFixed(2))+' '+state.currency;}
-function fmtByCurr(p, curr){const c=CURRENCY_RATES[curr]||CURRENCY_RATES['USD'];const v=p*c.rate;return c.symbol+(v>=1000?v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}):v.toFixed(2))+' '+curr;}
-function formatPrice(p){return p>=1000?p.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}):p.toFixed(2);}
-function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
-function badgeClass(badge,rarity){if(badge==='hot')return'badge-hot';if(badge==='new')return'badge-new';if(badge==='trending')return'badge-trending';if(rarity==='Mythic')return'badge-mythic';if(rarity==='Legendary')return'badge-legendary';if(rarity==='Epic')return'badge-epic';return'badge-rare';}
-function badgeLabel(badge,rarity){if(badge==='hot')return'HOT';if(badge==='new')return'NEW';if(badge==='trending')return'TOP';return (rarity||'ITEM').toUpperCase();}
-function sortProds(arr){const s=[...arr];if(state.sort==='popular')return s.sort((a,b)=>b.purchases-a.purchases);if(state.sort==='priceAsc')return s.sort((a,b)=>a.price-b.price);if(state.sort==='priceDesc')return s.sort((a,b)=>b.price-a.price);if(state.sort==='nameAsc')return s.sort((a,b)=>a.name.localeCompare(b.name));if(state.sort==='nameDesc')return s.sort((a,b)=>a.name.localeCompare(b.name));return s;}
+function fmt(p) { const c = CURRENCY_RATES[state.currency]; const v = p * c.rate; return c.symbol + (v >= 1000 ? v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : v.toFixed(2)) + ' ' + state.currency; }
+function fmtByCurr(p, curr) { const c = CURRENCY_RATES[curr] || CURRENCY_RATES['USD']; const v = p * c.rate; return c.symbol + (v >= 1000 ? v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : v.toFixed(2)) + ' ' + curr; }
+function formatPrice(p) { return p >= 1000 ? p.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : p.toFixed(2); }
+function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2500); }
+function badgeClass(badge, rarity) { if (badge === 'hot') return 'badge-hot'; if (badge === 'new') return 'badge-new'; if (badge === 'trending') return 'badge-trending'; if (rarity === 'Mythic') return 'badge-mythic'; if (rarity === 'Legendary') return 'badge-legendary'; if (rarity === 'Epic') return 'badge-epic'; return 'badge-rare'; }
+function badgeLabel(badge, rarity) { if (badge === 'hot') return 'HOT'; if (badge === 'new') return 'NEW'; if (badge === 'trending') return 'TOP'; return (rarity || 'ITEM').toUpperCase(); }
+function sortProds(arr) { const s = [...arr]; if (state.sort === 'popular') return s.sort((a, b) => b.purchases - a.purchases); if (state.sort === 'priceAsc') return s.sort((a, b) => a.price - b.price); if (state.sort === 'priceDesc') return s.sort((a, b) => b.price - a.price); if (state.sort === 'nameAsc') return s.sort((a, b) => a.name.localeCompare(b.name)); if (state.sort === 'nameDesc') return s.sort((a, b) => a.name.localeCompare(b.name)); return s; }
 
 // ===== RENDER CARD =====
-function getRarityColor(rarity){
+function getRarityColor(rarity) {
   const colors = {
-    'Mythic': '#f59e0b',    
-    'Legendary': '#8b5cf6', 
-    'Epic': '#d946ef',      
-    'Rare': '#3b82f6',      
+    'Mythic': '#f59e0b',
+    'Legendary': '#8b5cf6',
+    'Epic': '#d946ef',
+    'Rare': '#3b82f6',
     'Uncommon': '#10b981',
     'Common': '#9ca3af'
   };
   return colors[rarity] || '#ffffff';
 }
 
-function renderCard(p){
+function renderCard(p) {
   const pd = {
     main: (p.price * CURRENCY_RATES[state.currency].rate).toLocaleString('en-US', { minimumFractionDigits: 2 }),
     curr: state.currency
   };
-  
-  const badgeHtml = p.badge ? `<span class="card-badge-el ${badgeClass(p.badge,p.rarity)}">${badgeLabel(p.badge,p.rarity)}</span>` : '';
+
+  const badgeHtml = p.badge ? `<span class="card-badge-el ${badgeClass(p.badge, p.rarity)}">${badgeLabel(p.badge, p.rarity)}</span>` : '';
   let themeColor = p.color || getRarityColor(p.rarity);
-  
+
   // New Badges Logic
   let topBadgeHtml = '';
   if (p.onRequest) {
@@ -555,13 +555,13 @@ function renderCard(p){
   // High-end Glassmorphism Style
   const cardStyle = `
     --theme-color: ${themeColor};
-    background: #0d1117 !important;
-    background-image: radial-gradient(circle at top right, ${themeColor}${r === 'UNIQUE' ? '15' : '18'}, transparent 80%) !important;
+    background: linear-gradient(165deg, #0d1117 70%, ${themeColor}15) !important;
     backdrop-filter: blur(16px) saturate(180%) !important;
     -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
-    border: 1px solid ${themeColor}30 !important;
-    box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.45), inset 0 0 0 1px ${themeColor}15 !important;
+    ${(r === 'UNIQUE' || r === 'GODLY') ? '' : `border: 1px solid ${themeColor}30 !important;`}
+    box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.45), inset 0 0 0 1px ${themeColor}10 !important;
     padding-bottom: 0 !important;
+    margin-bottom: 0 !important;
   `;
 
   return `<div class="product-card ${themeClass}" data-id="${p.id}" onclick="addToCart('${p.id}',event)" style="${cardStyle}">
@@ -575,7 +575,7 @@ function renderCard(p){
       ${badgeHtml}
       <img src="${p.img}" alt="${p.name}" loading="lazy">
     </div>
-    <div class="card-info" style="background: linear-gradient(to bottom, transparent, ${themeColor}15, rgba(0,0,0,0.5)); box-shadow: inset 0 -20px 30px -15px ${themeColor}30">
+    <div class="card-info" style="background: linear-gradient(to bottom, transparent, ${themeColor}05, rgba(0,0,0,0.6))">
       <div class="flex items-center mb-1">
         ${rarityLabelHtml}
         <span class="card-year ml-auto">${p.year || '2026'}</span>
@@ -597,30 +597,30 @@ function renderCard(p){
 }
 
 // ===== CATEGORY TABS =====
-let activeTab='Más Vendidos';
+let activeTab = 'Más Vendidos';
 
-function renderTabs(){
-  const el=document.getElementById('categoryTabs');
-  if(!el)return;
-  if(!state.activeGame){el.innerHTML='';return;}
-  const tabs=GAME_CATEGORIES[state.activeGame]||['Más Vendidos','Productos'];
-  el.innerHTML=tabs.map(t=>`<button class="category-tab ${t===activeTab?'active':''}" onclick="selectTab('${t}')">${t}</button>`).join('');
+function renderTabs() {
+  const el = document.getElementById('categoryTabs');
+  if (!el) return;
+  if (!state.activeGame) { el.innerHTML = ''; return; }
+  const tabs = GAME_CATEGORIES[state.activeGame] || ['Más Vendidos', 'Productos'];
+  el.innerHTML = tabs.map(t => `<button class="category-tab ${t === activeTab ? 'active' : ''}" onclick="selectTab('${t}')">${t}</button>`).join('');
 }
-window.selectTab=function(t){
-  activeTab=t;
+window.selectTab = function (t) {
+  activeTab = t;
   renderTabs();
   renderCatalog();
 };
 
 // ===== RENDER CATALOG =====
-function getGameIcon(id, type = null){
+function getGameIcon(id, type = null) {
   const icons = {
     // Juegos
     'blox-fruits': 'sword',
     'mm2': 'knife',
     'murder-mystery-2': 'knife',
     'limiteds': 'gem',
-    
+
     // Categorías / Tipos
     'Frutas': 'apple',
     'Fruits': 'apple',
@@ -628,7 +628,7 @@ function getGameIcon(id, type = null){
     'Cajas': 'package',
     'Keys': 'key',
     'Ancient': 'swords',
-    'Guns': 'crosshair', 
+    'Guns': 'crosshair',
     'Godlies': 'sparkles',
     'Pets': 'dog',
     'Faces': 'smile',
@@ -636,17 +636,17 @@ function getGameIcon(id, type = null){
     'Bundles': 'layers',
     'Swords': 'sword'
   };
-  
+
   const iconName = icons[type] || icons[id] || 'layout-grid';
   return `<i data-lucide="${iconName}" style="width: 20px; height: 20px;"></i>`;
 }
 
-function renderCatalog(){
-  const cat=document.getElementById('catalogContent');
-  const empty=document.getElementById('emptyState');
-  
+function renderCatalog() {
+  const cat = document.getElementById('catalogContent');
+  const empty = document.getElementById('emptyState');
+
   cat.classList.remove('animate-fade-in');
-  void cat.offsetWidth; 
+  void cat.offsetWidth;
   cat.classList.add('animate-fade-in');
 
   // 1. Filtrado
@@ -677,7 +677,7 @@ function renderCatalog(){
 
   // 3. Renderizado
   let html = '';
-  
+
   // Si estamos en vista general (sin juego activo), usamos los nombres de los juegos como títulos
   if (!state.activeGame) {
     GAMES.forEach(g => {
@@ -715,7 +715,7 @@ function renderCatalog(){
 
   cat.innerHTML = html;
   renderSeoInfo();
-  
+
   // Convertir los placeholders de i data-lucide en SVGs reales
   if (window.lucide) {
     lucide.createIcons();
@@ -723,14 +723,14 @@ function renderCatalog(){
 }
 
 // ===== RENDER SIDEBAR =====
-function renderSidebar(){
-  const list=document.getElementById('gameItemsContainer');
-  const q=state.gameSearch.toLowerCase();
-  const games=q?GAMES.filter(g=>g.label.toLowerCase().includes(q)):GAMES;
-  if(!games.length){list.innerHTML='<p class="text-white/40 text-xs text-center py-4">No se encontraron juegos</p>';return;}
-  
-  list.innerHTML=games.map((g, idx)=>`
-    <div id="game-item-${g.id}" class="game-list-item ${state.activeGame===g.id?'active':''}" 
+function renderSidebar() {
+  const list = document.getElementById('gameItemsContainer');
+  const q = state.gameSearch.toLowerCase();
+  const games = q ? GAMES.filter(g => g.label.toLowerCase().includes(q)) : GAMES;
+  if (!games.length) { list.innerHTML = '<p class="text-white/40 text-xs text-center py-4">No se encontraron juegos</p>'; return; }
+
+  list.innerHTML = games.map((g, idx) => `
+    <div id="game-item-${g.id}" class="game-list-item ${state.activeGame === g.id ? 'active' : ''}" 
          onclick="selectGame('${g.id}')">
       <div class="game-list-thumb">
         <img src="${g.img}" alt="${g.label}">
@@ -739,13 +739,13 @@ function renderSidebar(){
         <p class="game-list-name">${g.label}</p>
       </div>
     </div>`).join('');
-    
-    setTimeout(updateSidebarIndicator, 50);
-    if (window.lucide) lucide.createIcons();
+
+  setTimeout(updateSidebarIndicator, 50);
+  if (window.lucide) lucide.createIcons();
 }
 
 // ===== SELECT GAME =====
-function selectGame(id){
+function selectGame(id) {
   state.activeGame = state.activeGame === id ? null : id;
   const g = GAMES.find(x => x.id === id);
   const chip = document.getElementById('navGameChip');
@@ -755,7 +755,7 @@ function selectGame(id){
     item.classList.toggle('active', item.id === `game-item-${state.activeGame}`);
   });
 
-  if(state.activeGame && g){
+  if (state.activeGame && g) {
     const realCount = ALL_PRODUCTS.filter(p => p.game === id).length;
     document.getElementById('navGameName').textContent = g.label;
     document.getElementById('navGameCount').textContent = realCount + ' productos';
@@ -768,8 +768,8 @@ function selectGame(id){
     chip.style.display = 'none';
     tabsWrap.style.display = 'none';
   }
-  
-  renderCatalog(); 
+
+  renderCatalog();
   renderTabs();
   updateSidebarIndicator();
 }
@@ -777,7 +777,7 @@ function selectGame(id){
 function updateSidebarIndicator() {
   const indicator = document.getElementById('sidebar-indicator');
   const activeItem = document.querySelector('.game-list-item.active');
-  
+
   if (activeItem && state.activeGame) {
     indicator.style.opacity = '1';
     indicator.style.height = activeItem.offsetHeight + 'px';
@@ -788,45 +788,45 @@ function updateSidebarIndicator() {
 }
 
 // ===== CART =====
-function addToCart(id,e){
-  if(e)e.stopPropagation();
-  
+function addToCart(id, e) {
+  if (e) e.stopPropagation();
+
   // Buscar en la vista actual o en la lista global de productos
   let p = PRODUCTS.find(x => String(x.id) === String(id));
   if (!p) p = ALL_PRODUCTS.find(x => String(x.id) === String(id));
   if (!p) p = state.cart.find(x => String(x.id) === String(id));
 
-  if(!p){
+  if (!p) {
     console.error('Product not found for ID:', id);
     return;
   }
 
-  const existing=state.cart.find(x=>String(x.id)===String(id));
-  if(existing){
+  const existing = state.cart.find(x => String(x.id) === String(id));
+  if (existing) {
     existing.qty++;
-  }else{
-    state.cart.push({...p,qty:1});
+  } else {
+    state.cart.push({ ...p, qty: 1 });
   }
-  
+
   const card = document.querySelector(`.product-card[data-id="${id}"]`);
-  if(card){
+  if (card) {
     card.classList.add('is-added');
-    setTimeout(()=>card.classList.remove('is-added'), 2000);
+    setTimeout(() => card.classList.remove('is-added'), 2000);
   }
-  
-  lastAddedId = id; 
+
+  lastAddedId = id;
   updateCart();
-  showToast('✓ '+p.name+' añadido al carrito');
-  
+  showToast('✓ ' + p.name + ' añadido al carrito');
+
   setTimeout(() => { lastAddedId = null; }, 500);
 }
 
-function decreaseQty(id, e){
-  if(e) e.stopPropagation();
+function decreaseQty(id, e) {
+  if (e) e.stopPropagation();
   const item = state.cart.find(x => String(x.id) === String(id));
-  if(!item) return;
-  
-  if(item.qty > 1) {
+  if (!item) return;
+
+  if (item.qty > 1) {
     item.qty--;
     updateCart();
   } else {
@@ -834,11 +834,11 @@ function decreaseQty(id, e){
   }
 }
 
-function removeFromCart(id, event){
-  if(event) event.stopPropagation();
+function removeFromCart(id, event) {
+  if (event) event.stopPropagation();
   const targetEl = document.querySelector(`.cart-item-premium[data-id="${id}"]`);
 
-  if(targetEl){
+  if (targetEl) {
     targetEl.classList.add('animate-slide-out');
     setTimeout(() => {
       state.cart = state.cart.filter(x => String(x.id) !== String(id));
@@ -849,9 +849,9 @@ function removeFromCart(id, event){
     updateCart();
   }
 }
-function clearCart(){state.cart=[];updateCart();}
+function clearCart() { state.cart = []; updateCart(); }
 
-function updateCart(){
+function updateCart() {
   const cartList = document.getElementById('cartItemsList');
   const subtitle = document.getElementById('cartSubtitle');
   const empty = document.getElementById('cartEmpty');
@@ -859,34 +859,34 @@ function updateCart(){
   const cartTotal = document.getElementById('cartTotal');
   const cartSubtotal = document.getElementById('cartSubtotal');
   const cartBadge = document.getElementById('cartBadge');
-  
-  const total = state.cart.reduce((s,x)=>s+x.price*x.qty,0);
-  const count = state.cart.reduce((s,x)=>s+x.qty,0);
-  
-  if(cartBadge) cartBadge.textContent = count;
-  if(subtitle) subtitle.textContent = `${count} ${count === 1 ? 'producto' : 'productos'}`;
 
-  if(!state.cart.length){
-    if(empty) empty.classList.remove('hidden');
-    if(cartList) cartList.classList.add('hidden');
-    if(footer) footer.classList.add('hidden');
+  const total = state.cart.reduce((s, x) => s + x.price * x.qty, 0);
+  const count = state.cart.reduce((s, x) => s + x.qty, 0);
+
+  if (cartBadge) cartBadge.textContent = count;
+  if (subtitle) subtitle.textContent = `${count} ${count === 1 ? 'producto' : 'productos'}`;
+
+  if (!state.cart.length) {
+    if (empty) empty.classList.remove('hidden');
+    if (cartList) cartList.classList.add('hidden');
+    if (footer) footer.classList.add('hidden');
     return;
   }
-  
-  if(empty) empty.classList.add('hidden');
-  if(cartList) cartList.classList.remove('hidden');
-  if(footer) footer.classList.remove('hidden');
 
-  if(cartSubtotal) cartSubtotal.textContent = fmt(total);
-  if(cartTotal) cartTotal.textContent = fmt(total);
+  if (empty) empty.classList.add('hidden');
+  if (cartList) cartList.classList.remove('hidden');
+  if (footer) footer.classList.remove('hidden');
+
+  if (cartSubtotal) cartSubtotal.textContent = fmt(total);
+  if (cartTotal) cartTotal.textContent = fmt(total);
 
   let html = `
     <div class="space-y-3">
       ${state.cart.map(item => {
-        const pStr = fmt(item.price * item.qty);
-        const animClass = (item.id === lastAddedId) ? 'animate-pop' : '';
-        
-        return `
+    const pStr = fmt(item.price * item.qty);
+    const animClass = (item.id === lastAddedId) ? 'animate-pop' : '';
+
+    return `
         <div class="cart-item-premium ${animClass}" data-id="${item.id}">
           <div class="cart-item-img-wrap">
             <img src="${item.img}" alt="${item.name}">
@@ -912,16 +912,16 @@ function updateCart(){
             </div>
           </div>
         </div>`;
-      }).join('')}
+  }).join('')}
     </div>
   `;
-  
-  if(cartList) cartList.innerHTML = html;
+
+  if (cartList) cartList.innerHTML = html;
 }
 
 function renderCurrencies() {
   const container = document.getElementById('currencyDropdown');
-  if(!container) return;
+  if (!container) return;
   container.innerHTML = Object.keys(CURRENCY_RATES).map(code => {
     const config = CURRENCY_RATES[code];
     return `
@@ -931,16 +931,16 @@ function renderCurrencies() {
       </button>
     `;
   }).join('');
-  document.querySelectorAll('.peek-dropdown-item[data-code]').forEach(b=>b.addEventListener('click',()=>setCurrency(b.dataset.code)));
+  document.querySelectorAll('.peek-dropdown-item[data-code]').forEach(b => b.addEventListener('click', () => setCurrency(b.dataset.code)));
 }
 
 // ===== CURRENCY =====
-function setCurrency(code){
-  state.currency=code;
-  currentCurrency=code;
-  document.getElementById('currencyLabel').textContent=code;
+function setCurrency(code) {
+  state.currency = code;
+  currentCurrency = code;
+  document.getElementById('currencyLabel').textContent = code;
   const flagImg = document.getElementById('currencyFlagImg');
-  if(flagImg) flagImg.src = `https://flagcdn.com/w80/${CURRENCY_RATES[code].flag}.png`;
+  if (flagImg) flagImg.src = `https://flagcdn.com/w80/${CURRENCY_RATES[code].flag}.png`;
 
   renderCurrencies();
   renderCatalog();
@@ -949,19 +949,19 @@ function setCurrency(code){
 }
 
 // ===== DROPDOWNS =====
-document.getElementById('notifBtn').addEventListener('click',e=>{
+document.getElementById('notifBtn').addEventListener('click', e => {
   e.stopPropagation();
   document.getElementById('currencyDropdown').classList.add('hidden');
   document.getElementById('sortDropdown').classList.add('hidden');
   document.getElementById('notifDropdown').classList.toggle('hidden');
 });
-document.getElementById('currencyBtn').addEventListener('click',e=>{
+document.getElementById('currencyBtn').addEventListener('click', e => {
   e.stopPropagation();
   document.getElementById('sortDropdown').classList.add('hidden');
   document.getElementById('notifDropdown').classList.add('hidden');
   document.getElementById('currencyDropdown').classList.toggle('hidden');
 });
-document.getElementById('sortBtn').addEventListener('click',e=>{
+document.getElementById('sortBtn').addEventListener('click', e => {
   e.stopPropagation();
   document.getElementById('currencyDropdown').classList.add('hidden');
   document.getElementById('notifDropdown').classList.add('hidden');
@@ -995,13 +995,13 @@ function renderUserUI() {
     } else {
       avatarBtn.innerHTML = `<span>${(state.user.username || 'U').charAt(0).toUpperCase()}</span>`;
     }
-    
+
     avatarBtn.style.background = 'linear-gradient(135deg, #1e293b, #0f172a)';
     avatarBtn.style.border = '2px solid rgba(255,255,255,0.1)';
-    
+
     if (nameLabel) nameLabel.textContent = state.user.displayName || state.user.username;
     if (roleLabel) roleLabel.textContent = state.user.role || 'Cliente';
-    
+
     avatarBtn.onclick = (e) => {
       e.stopPropagation();
       document.getElementById('notifDropdown').classList.add('hidden');
@@ -1029,7 +1029,7 @@ function renderNotifications() {
   const allBadge = document.querySelector('.notif-tab[data-tab="all"] .notif-tab-badge');
   const ordersBadge = document.querySelector('.notif-tab[data-tab="orders"] .notif-tab-badge');
   const chatsBadge = document.querySelector('.notif-tab[data-tab="chats"] .notif-tab-badge');
-  
+
   if (allBadge) allBadge.textContent = state.notifications.length;
   if (ordersBadge) {
     const orderCount = state.notifications.filter(n => n.type === 'orders' || n.type === 'order').length;
@@ -1069,16 +1069,16 @@ function renderNotifications() {
   `).join('');
 }
 
-document.addEventListener('click',()=>{
+document.addEventListener('click', () => {
   document.getElementById('currencyDropdown').classList.add('hidden');
   document.getElementById('sortDropdown').classList.add('hidden');
   document.getElementById('notifDropdown').classList.add('hidden');
   document.getElementById('userDropdown').classList.add('hidden');
 });
-document.querySelectorAll('.peek-dropdown-item[data-sort]').forEach(b=>b.addEventListener('click',()=>{
-  state.sort=b.dataset.sort;
-  document.getElementById('sortLabel').textContent=b.textContent.replace(/^..\s/,'');
-  document.querySelectorAll('.peek-dropdown-item[data-sort]').forEach(x=>x.classList.remove('active'));
+document.querySelectorAll('.peek-dropdown-item[data-sort]').forEach(b => b.addEventListener('click', () => {
+  state.sort = b.dataset.sort;
+  document.getElementById('sortLabel').textContent = b.textContent.replace(/^..\s/, '');
+  document.querySelectorAll('.peek-dropdown-item[data-sort]').forEach(x => x.classList.remove('active'));
   b.classList.add('active');
   document.getElementById('sortDropdown').classList.add('hidden');
   renderCatalog();
@@ -1087,7 +1087,7 @@ document.querySelectorAll('.peek-dropdown-item[data-sort]').forEach(b=>b.addEven
 // Notification Tabs Logic
 document.querySelectorAll('.notif-tab').forEach(tab => {
   tab.addEventListener('click', (e) => {
-    e.stopPropagation(); 
+    e.stopPropagation();
     document.querySelectorAll('.notif-tab').forEach(t => t.classList.remove('active'));
     tab.classList.add('active');
     state.activeNotifTab = tab.dataset.tab;
@@ -1096,14 +1096,14 @@ document.querySelectorAll('.notif-tab').forEach(tab => {
 });
 
 // ===== SEARCH =====
-document.getElementById('searchInput').addEventListener('input',e=>{state.search=e.target.value;renderCatalog();});
-window.clearSearch=function(){state.search='';document.getElementById('searchInput').value='';renderCatalog();};
+document.getElementById('searchInput').addEventListener('input', e => { state.search = e.target.value; renderCatalog(); });
+window.clearSearch = function () { state.search = ''; document.getElementById('searchInput').value = ''; renderCatalog(); };
 
 // ===== GAME SEARCH =====
-document.getElementById('gameSearch').addEventListener('input',e=>{state.gameSearch=e.target.value;renderSidebar();});
+document.getElementById('gameSearch').addEventListener('input', e => { state.gameSearch = e.target.value; renderSidebar(); });
 
 // ===== CHECKOUT MODAL LOGIC =====
-window.openCheckoutModal = function() {
+window.openCheckoutModal = function () {
   if (state.cart.length === 0) {
     showToast('❌ Tu carrito está vacío');
     return;
@@ -1120,7 +1120,7 @@ window.openCheckoutModal = function() {
   const modalList = document.getElementById('modalItemsList');
   const modalTotal = document.getElementById('modalTotalAmount');
   const modalCurrency = document.getElementById('modalTotalCurrency');
-  
+
   modalList.innerHTML = state.cart.map(item => `
     <div class="modal-summary-item">
       <img src="${item.img}" class="modal-summary-img" alt="">
@@ -1134,11 +1134,11 @@ window.openCheckoutModal = function() {
       </div>
     </div>
   `).join('');
-  
+
   const total = state.cart.reduce((s, x) => s + (x.price * x.qty), 0);
   modalTotal.textContent = fmt(total).split(' ')[0];
   modalCurrency.textContent = state.currency;
-  
+
   const checkoutModal = document.getElementById('checkoutModal');
   if (checkoutModal) {
     checkoutModal.classList.remove('hidden');
@@ -1146,7 +1146,7 @@ window.openCheckoutModal = function() {
   }
 };
 
-window.closeCheckoutModal = function() {
+window.closeCheckoutModal = function () {
   document.getElementById('checkoutModal').classList.add('hidden');
   selectedUser = null;
   updateConfirmButton();
@@ -1160,22 +1160,22 @@ document.getElementById('robloxUserInput').addEventListener('input', (e) => {
   const q = e.target.value.trim();
   const resultsDiv = document.getElementById('userSearchResults');
   const status = document.getElementById('userSearchStatus');
-  
+
   clearTimeout(searchTimeout);
-  
+
   if (q.length < 3) {
     resultsDiv.classList.add('hidden');
     status.textContent = 'Escribe al menos 3 caracteres...';
     return;
   }
-  
+
   status.textContent = 'Buscando usuario...';
-  
+
   searchTimeout = setTimeout(async () => {
     try {
       const res = await fetch(`${SERVER_URL}/api/users/search?username=${q}`);
       const data = await res.json();
-      
+
       if (data.success && data.data && data.data.length > 0) {
         resultsDiv.innerHTML = data.data.map(user => {
           const avatar = user.avatarUrl.startsWith('http') ? user.avatarUrl : `${SERVER_URL}${user.avatarUrl}`;
@@ -1201,9 +1201,9 @@ document.getElementById('robloxUserInput').addEventListener('input', (e) => {
   }, 500);
 });
 
-window.selectRobloxUser = function(id, name, displayName) {
+window.selectRobloxUser = function (id, name, displayName) {
   selectedUser = { id, name, displayName };
-  
+
   const resultsDiv = document.getElementById('userSearchResults');
   resultsDiv.innerHTML = `
     <div class="user-result-item selected">
@@ -1217,15 +1217,15 @@ window.selectRobloxUser = function(id, name, displayName) {
       </div>
     </div>
   `;
-  
+
   document.getElementById('userSearchStatus').textContent = '¡Usuario seleccionado correctamente!';
   updateConfirmButton();
 
   // Save to recent
-  saveRecentUser({ 
-    name, 
-    id, 
-    avatar: `${SERVER_URL}/api/users/avatar/${id}` 
+  saveRecentUser({
+    name,
+    id,
+    avatar: `${SERVER_URL}/api/users/avatar/${id}`
   });
 };
 
@@ -1250,7 +1250,7 @@ function updateConfirmButton() {
 
 function confirmCheckout() {
   if (!selectedUser) return;
-  
+
   const checkoutData = {
     action: 'checkout',
     user: selectedUser,
@@ -1258,14 +1258,14 @@ function confirmCheckout() {
     total: state.cart.reduce((s, x) => s + (x.price * CURRENCY_RATES[state.currency].rate * x.qty), 0),
     currency: state.currency
   };
-  
+
   window.parent.postMessage(checkoutData, '*');
 }
 
 // ===== TRADE MODAL LOGIC (REDESIGN COMPACT) =====
-window.openTradeModal = function(productId) {
+window.openTradeModal = function (productId) {
   tradeTargetProduct = PRODUCTS.find(p => String(p.id) === String(productId));
-  
+
   currentTradeStep = 1;
   tradeSelectedUser = null;
   tradeSelectedInventoryItem = null;
@@ -1273,14 +1273,14 @@ window.openTradeModal = function(productId) {
 
   document.getElementById('tradeModal').classList.remove('hidden');
   updateTradeStepUI();
-  
+
   // Reset Step 1
   document.getElementById('tradeRobloxInput').value = '';
   document.getElementById('tradeSearchResults').innerHTML = '';
   setTimeout(() => document.getElementById('tradeRobloxInput').focus(), 100);
 };
 
-window.closeTradeModal = function() {
+window.closeTradeModal = function () {
   document.getElementById('tradeModal').classList.add('hidden');
 };
 
@@ -1292,15 +1292,15 @@ function updateTradeStepUI() {
   const nextBtnText = document.getElementById('trade-btn-text');
   const nextBtn = document.getElementById('trade-next-btn');
   const backBtn = document.getElementById('trade-back-btn');
-  
+
   // Hide all steps
   document.getElementById('trade-step-1').classList.add('hidden');
   document.getElementById('trade-step-2').classList.add('hidden');
   document.getElementById('trade-step-3').classList.add('hidden');
-  
+
   // Show active step
   document.getElementById(`trade-step-${currentTradeStep}`).classList.remove('hidden');
-  
+
   icons.forEach((icon, idx) => {
     icon.classList.remove('active', 'completed');
     if (idx + 1 < currentTradeStep) icon.classList.add('completed');
@@ -1314,15 +1314,15 @@ function updateTradeStepUI() {
   if (currentTradeStep === 1) {
     title.innerText = 'Verificación';
     desc.innerText = 'Busca tu usuario de Roblox para continuar';
-    
+
     const searchView = document.getElementById('trade-search-view');
     const confirmView = document.getElementById('trade-confirm-view');
-    
+
     if (tradeSelectedUser) {
       searchView.classList.add('hidden');
       confirmView.classList.remove('hidden');
       backBtn.classList.remove('hidden'); // Show back button to return to search
-      
+
       document.getElementById('step1-user-card').innerHTML = `
         <div class="user-result-item !bg-white/5 !border-white/10 !p-5">
           <img src="${tradeSelectedUser.avatarUrl}" class="user-result-avatar !size-14" alt="">
@@ -1350,7 +1350,7 @@ function updateTradeStepUI() {
     desc.innerText = 'Selecciona un item para el trade';
     nextBtnText.innerText = tradeSelectedInventoryItem ? 'Continuar' : 'Selecciona un item';
     nextBtn.disabled = !tradeSelectedInventoryItem;
-    
+
     if (tradeSelectedUser) {
       document.getElementById('trade-selected-user-card').innerHTML = `
         <div class="user-result-item">
@@ -1369,7 +1369,7 @@ function updateTradeStepUI() {
     }
   } else if (currentTradeStep === 3) {
     title.innerText = 'Confirmar Compra';
-    
+
     // Forzamos PEN para el trade si está disponible
     const tradeCurrency = CURRENCY_RATES['PEN'] ? 'PEN' : state.currency;
     const totalUSD = state.cart.reduce((s, i) => s + (i.price * i.qty), 0);
@@ -1395,7 +1395,7 @@ function updateTradeStepUI() {
       document.getElementById('final-buy-name').innerText = state.cart.length > 1 ? `${mainItem.name} + ${state.cart.length - 1} más` : mainItem.name;
       document.getElementById('final-buy-img').innerHTML = `<img src="${mainItem.img}" alt="">`;
       document.getElementById('final-buy-price').innerText = fmtByCurr(totalUSD, tradeCurrency);
-      
+
       document.getElementById('final-subtotal').innerText = fmtByCurr(totalUSD, tradeCurrency);
       document.getElementById('final-total').innerText = formatPrice(totalUSD * (CURRENCY_RATES[tradeCurrency]?.rate || 1));
       document.getElementById('final-currency').innerText = tradeCurrency;
@@ -1409,7 +1409,7 @@ function updateTradeStepUI() {
   }
 }
 
-window.tradeNextStep = function() {
+window.tradeNextStep = function () {
   if (currentTradeStep === 1 && tradeSelectedUser) {
     currentTradeStep = 2;
     fetchUserInventory();
@@ -1440,28 +1440,28 @@ document.getElementById('tradeRobloxInput').addEventListener('input', (e) => {
   const q = e.target.value.trim();
   const resultsDiv = document.getElementById('tradeSearchResults');
   const status = document.getElementById('tradeSearchStatus');
-  
+
   clearTimeout(searchTimeout);
   if (q.length < 3) {
     resultsDiv.innerHTML = '';
     status.textContent = 'Escribe al menos 3 caracteres...';
     return;
   }
-  
-    if (status) status.textContent = 'Buscando usuario...';
-    resultsDiv.innerHTML = `
+
+  if (status) status.textContent = 'Buscando usuario...';
+  resultsDiv.innerHTML = `
       <div class="py-10 flex flex-col items-center gap-3">
         <div class="size-8 rounded-full border-2 border-white/5 border-t-blue-500 animate-spin"></div>
         <p class="text-[10px] text-white/20 font-black uppercase tracking-widest">Buscando usuario...</p>
       </div>
     `;
 
-    searchTimeout = setTimeout(async () => {
-      try {
-        const res = await fetch(`${SERVER_URL}/api/users/search?username=${q}`);
-        const data = await res.json();
-        if (data.success && data.data && data.data.length > 0) {
-          resultsDiv.innerHTML = data.data.map(user => `
+  searchTimeout = setTimeout(async () => {
+    try {
+      const res = await fetch(`${SERVER_URL}/api/users/search?username=${q}`);
+      const data = await res.json();
+      if (data.success && data.data && data.data.length > 0) {
+        resultsDiv.innerHTML = data.data.map(user => `
             <div class="user-result-item" onclick="selectTradeUser('${user.id}', '${user.name}', '${user.displayName}')">
               <img src="${user.avatarUrl.startsWith('http') ? user.avatarUrl : `${SERVER_URL}${user.avatarUrl}`}" class="user-result-avatar" alt="">
               <div class="flex-1">
@@ -1471,19 +1471,19 @@ document.getElementById('tradeRobloxInput').addEventListener('input', (e) => {
               <svg class="text-white/10" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m9 18 6-6-6-6"/></svg>
             </div>
           `).join('');
-          if (status) status.textContent = 'Selecciona tu perfil';
-        } else {
-          resultsDiv.innerHTML = '';
-          if (status) status.textContent = 'Usuario no encontrado';
-        }
-      } catch (err) { 
+        if (status) status.textContent = 'Selecciona tu perfil';
+      } else {
         resultsDiv.innerHTML = '';
-        if (status) status.textContent = 'Error de conexión'; 
+        if (status) status.textContent = 'Usuario no encontrado';
       }
-    }, 500);
+    } catch (err) {
+      resultsDiv.innerHTML = '';
+      if (status) status.textContent = 'Error de conexión';
+    }
+  }, 500);
 });
 
-window.selectTradeUser = function(id, name, displayName) {
+window.selectTradeUser = function (id, name, displayName) {
   const avatarUrl = `${SERVER_URL}/api/users/avatar/${id}`;
   tradeSelectedUser = { id, name, displayName, avatarUrl };
   updateTradeStepUI();
@@ -1497,14 +1497,14 @@ async function fetchUserInventory() {
   const grid = document.getElementById('tradeInventoryGrid');
   const empty = document.getElementById('tradeInventoryEmpty');
   const countLabel = document.getElementById('user-inv-count');
-  
+
   grid.innerHTML = '<div class="col-span-full py-10 flex flex-col items-center gap-3"><div class="size-8 rounded-full border-2 border-white/5 border-t-blue-500 animate-spin"></div><p class="text-[10px] text-white/30 font-black uppercase tracking-widest">Consultando Inventario...</p></div>';
   empty.classList.add('hidden');
-  
+
   try {
     const res = await fetch(`${API_BASE_URL}/users/${tradeSelectedUser.id}/collectibles`);
     const data = await res.json();
-    
+
     if (data.data && data.data.length > 0) {
       tradeInventoryItems = data.data;
       countLabel.textContent = `${data.data.length} Items`;
@@ -1530,7 +1530,7 @@ async function fetchUserInventory() {
   }
 }
 
-window.selectTradeItem = function(assetId) {
+window.selectTradeItem = function (assetId) {
   tradeSelectedInventoryItem = tradeInventoryItems.find(i => String(i.assetId) === String(assetId));
   document.querySelectorAll('.inv-item-card').forEach(el => {
     el.classList.toggle('active', el.dataset.assetId === String(assetId));
@@ -1542,10 +1542,10 @@ window.selectTradeItem = function(assetId) {
 function prepareTradeConfirmation() {
   document.getElementById('final-buy-img').innerHTML = `<img src="${tradeTargetProduct.img}" class="size-full object-contain">`;
   document.getElementById('final-buy-name').textContent = tradeTargetProduct.name;
-  
+
   document.getElementById('final-trade-img').innerHTML = `<img src="${tradeSelectedInventoryItem.thumbnail}" class="size-full object-contain">`;
   document.getElementById('final-trade-name').textContent = tradeSelectedInventoryItem.name;
-  
+
   // Limpiamos cualquier rastro de robux en el rap de confirmación
   const rapEl = document.getElementById('final-trade-rap');
   if (rapEl) {
@@ -1569,7 +1569,7 @@ function confirmTrade() {
     currency: tradeCurrency,
     cart: state.cart
   };
-  
+
   window.parent.postMessage(tradeData, '*');
   closeTradeModal();
   showToast('✓ Solicitud de intercambio enviada');

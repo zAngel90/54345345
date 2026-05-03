@@ -923,6 +923,29 @@
   </div>
 
   <div id="toast" class="peek-toast"></div>
+  <!-- Menú de Debug Temporal -->
+  <!--
+  <div id="debug-menu" style="position: fixed; bottom: 80px; right: 20px; z-index: 9999; background: rgba(13, 17, 23, 0.9); border: 1px solid rgba(255,255,255,0.1); padding: 15px; border-radius: 20px; backdrop-filter: blur(10px); display: flex; flex-direction: column; gap: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+    <p style="color: white; font-size: 10px; font-weight: 900; text-transform: uppercase; margin-bottom: 5px; opacity: 0.5;">Cambiar Modo Tienda</p>
+    <button onclick="switchMode('mm2')" style="background: #eab308; color: black; border: none; padding: 8px 15px; border-radius: 10px; font-weight: 900; font-size: 11px; cursor: pointer;">VER MM2 (GODLY)</button>
+    <button onclick="switchMode('limiteds')" style="background: #db2777; color: white; border: none; padding: 8px 15px; border-radius: 10px; font-weight: 900; font-size: 11px; cursor: pointer;">VER LIMITEDS (UNIQUE)</button>
+    <button onclick="switchMode(null)" style="background: #3b82f6; color: white; border: none; padding: 8px 15px; border-radius: 10px; font-weight: 900; font-size: 11px; cursor: pointer;">VER TODO (NORMAL)</button>
+    <button onclick="document.getElementById('debug-menu').remove()" style="background: rgba(255,255,255,0.05); color: white; border: none; padding: 5px; border-radius: 8px; font-size: 10px; margin-top: 5px; cursor: pointer;">CERRAR DEBUG</button>
+  </div>
+  -->
+
+  <script>
+    function switchMode(modeId) {
+      const url = new URL(window.location.href);
+      if (modeId) {
+        url.searchParams.set('game', modeId);
+      } else {
+        url.searchParams.delete('game');
+      }
+      window.location.href = url.toString();
+    }
+  </script>
+
   <script src="js/app.js"></script>
 </body>
 
