@@ -555,7 +555,8 @@ function renderCard(p){
   // High-end Glassmorphism Style
   const cardStyle = `
     --theme-color: ${themeColor};
-    background: linear-gradient(165deg, rgba(13, 17, 23, 0.88), ${themeColor}${r === 'UNIQUE' ? '12' : '15'});
+    background: #0d1117;
+    background-image: radial-gradient(circle at top right, ${themeColor}${r === 'UNIQUE' ? '15' : '18'}, transparent 80%);
     backdrop-filter: blur(16px) saturate(180%);
     -webkit-backdrop-filter: blur(16px) saturate(180%);
     border: 1px solid ${themeColor}30;
