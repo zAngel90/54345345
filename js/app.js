@@ -185,9 +185,12 @@ async function initApp() {
       }
     }
 
-    updateCart();
-    renderSeoInfo();
     initRecentUsers();
+    
+    // Log de depuración para ver qué juego se está intentando cargar realmente
+    const activeG = GAMES.find(g => String(g.id) === String(state.activeGame));
+    console.log(`🚀 Pixel Store | Juego Activo: ${activeG ? activeG.label : 'No encontrado'} | ID: ${state.activeGame}`);
+
 
     // Si no estamos en modo especial, la selección de juego ya dispara renderCatalog/renderTabs
     if (!state.limitedMode && !state.mm2Mode) {
