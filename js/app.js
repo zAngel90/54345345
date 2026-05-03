@@ -174,7 +174,10 @@ function renderSeoInfo() {
   const content = document.getElementById('seoInfoContent');
   if (!container || !content) return;
 
+  console.log('Rendering SEO Info - Mode:', { mm2: state.mm2Mode, limited: state.limitedMode });
+
   if (state.mm2Mode) {
+    container.style.display = 'block';
     container.classList.remove('hidden');
     content.innerHTML = `
       <!-- Murder Mystery 2 SEO -->
@@ -280,6 +283,7 @@ function renderSeoInfo() {
       </div>
     `;
   } else if (state.limitedMode) {
+    container.style.display = 'block';
     container.classList.remove('hidden');
     content.innerHTML = `
       <!-- Limiteds SEO -->
@@ -385,7 +389,7 @@ function renderSeoInfo() {
       </div>
     `;
   } else {
-    container.classList.add('hidden');
+    container.style.display = 'none';
   }
 }
 
@@ -573,6 +577,7 @@ function renderCatalog(){
     });
   }
   cat.innerHTML=html;
+  renderSeoInfo();
 }
 
 // ===== RENDER SIDEBAR =====
