@@ -696,7 +696,7 @@ html, body {
 }
   color: rgba(255,255,255,0.7);
 }
-.card-cart-btn:hover { background: var(--theme-color); border-color: var(--theme-color); color: #fff; opacity: 1; box-shadow: 0 0 15px var(--theme-color)66; }
+.card-cart-btn:hover { background: #3b82f6; border-color: #3b82f6; color: #fff; opacity: 1; box-shadow: 0 0 15px rgba(59, 130, 246, 0.5); }
 
 /* ===== SIDEBAR HEADER ===== */
 .sidebar-header-row {
