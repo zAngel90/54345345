@@ -17,12 +17,23 @@
       -ms-user-select: none;
     }
     .dropdown-enter {
-      animation: dropdownSlideBlur 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation: dropdownSlideBlur 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
       transform-origin: top;
     }
     @keyframes dropdownSlideBlur {
-      from { opacity: 0; transform: translateY(-10px) scaleY(0.95); filter: blur(10px); }
-      to { opacity: 1; transform: translateY(0) scaleY(1); filter: blur(0px); }
+      from { opacity: 0; transform: translateY(-4px) scale(0.98); filter: blur(8px); }
+      to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0px); }
+    }
+    .recent-list {
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    .recent-list::-webkit-scrollbar {
+      width: 4px;
+    }
+    .recent-list::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.1);
+      border-radius: 10px;
     }
     .recent-user-item {
       display: flex;
@@ -611,7 +622,7 @@
 
   <!-- Checkout Modal -->
   <div id="checkoutModal" class="modal-overlay hidden">
-    <div class="modal-content max-w-lg">
+    <div class="modal-content max-w-lg !overflow-visible">
       <div class="modal-header">
         <div>
           <h3 class="text-xl font-black text-white uppercase">Finalizar Compra</h3>
@@ -643,8 +654,8 @@
               class="w-full h-12 bg-white/5 border border-white/10 rounded-2xl pl-12 pr-4 text-white placeholder:text-white/20 focus:border-blue-500/50 focus:bg-white/[0.08] transition-all outline-none">
             
             <!-- Recent Users Dropdown (Checkout) -->
-            <div id="checkout-recent-users" style="display:none" class="absolute top-[calc(100%+8px)] left-0 right-0 z-[60] bg-[#111827]/95 backdrop-blur-xl border border-white/10 rounded-2xl p-2 shadow-2xl dropdown-enter">
-              <div class="px-3 py-2 flex items-center gap-2 mb-1">
+            <div id="checkout-recent-users" style="display:none" class="absolute top-[calc(100%+6px)] left-0 right-0 z-[100] bg-[#1a1f2e] backdrop-blur-2xl border border-white/10 rounded-2xl p-2 shadow-[0_20px_50px_rgba(0,0,0,0.5)] dropdown-enter">
+              <div class="px-3 py-2 flex items-center gap-2 mb-1 border-b border-white/5">
                 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white/20"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="m12 7 0 5 3 3"/></svg>
                 <span class="text-[10px] font-black text-white/30 uppercase tracking-widest">Recientes</span>
               </div>
@@ -695,7 +706,7 @@
   <!-- Trade Modal (Rediseñado - Compacto) -->
   <div id="tradeModal" class="modal-overlay hidden">
     <div
-      class="modal-content max-w-[460px] !p-0 overflow-hidden !rounded-[32px] border-white/10 shadow-[0_32px_80px_rgba(0,0,0,0.6)]">
+      class="modal-content max-w-[460px] !p-0 !overflow-visible !rounded-[32px] border-white/10 shadow-[0_32px_80px_rgba(0,0,0,0.6)]">
 
       <!-- Stepper Header -->
       <div class="bg-[#161B22]/50 p-8 pb-4 border-b border-white/5 relative">
@@ -754,10 +765,10 @@
         </div>
       </div>
 
-      <div class="modal-body p-8 pt-6">
+      <div class="modal-body p-8 pt-6 !overflow-visible">
 
         <!-- STEP 1: Search -->
-        <div id="trade-step-1" class="space-y-6">
+        <div id="trade-step-1" class="space-y-6 relative z-[10]">
           <div id="trade-search-view" class="space-y-4">
             <!-- Recent Users (Optional Mock) -->
             <div class="space-y-2">
@@ -789,8 +800,8 @@
                 class="relative w-full h-14 bg-white/5 border border-white/10 rounded-2xl pl-12 pr-4 text-white placeholder:text-white/20 focus:border-blue-500/50 focus:bg-white/[0.08] transition-all outline-none">
               
               <!-- Recent Users Dropdown (Trade) -->
-              <div id="trade-recent-users" style="display:none" class="absolute top-[calc(100%+8px)] left-0 right-0 z-[60] bg-[#111827]/95 backdrop-blur-xl border border-white/10 rounded-2xl p-2 shadow-2xl dropdown-enter">
-                <div class="px-3 py-2 flex items-center gap-2 mb-1">
+              <div id="trade-recent-users" style="display:none" class="absolute top-[calc(100%+6px)] left-0 right-0 z-[100] bg-[#1a1f2e] backdrop-blur-2xl border border-white/10 rounded-2xl p-2 shadow-[0_20px_50px_rgba(0,0,0,0.5)] dropdown-enter">
+                <div class="px-3 py-2 flex items-center gap-2 mb-1 border-b border-white/5">
                   <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white/20"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="m12 7 0 5 3 3"/></svg>
                   <span class="text-[10px] font-black text-white/30 uppercase tracking-widest">Recientes</span>
                 </div>
