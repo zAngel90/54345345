@@ -651,9 +651,21 @@ function renderTabs() {
   const el = document.getElementById('categoryTabs');
   if (!el) return;
   if (!state.activeGame) { el.innerHTML = ''; return; }
+  
   const tabs = GAME_CATEGORIES[state.activeGame] || ['Más Vendidos', 'Productos'];
-  el.innerHTML = tabs.map(t => `<button class="category-tab ${t === activeTab ? 'active' : ''}" onclick="selectTab('${t}')">${t}</button>`).join('');
+  el.innerHTML = tabs.map(t => {
+    const icon = TAB_ICONS[t] || 'layout';
+    return `
+      <button class="category-tab ${t === activeTab ? 'active' : ''}" onclick="selectTab('${t}')">
+        <i data-lucide="${icon}" style="width: 14px; height: 14px;"></i>
+        ${t}
+      </button>
+    `;
+  }).join('');
+  
+  if (window.lucide) lucide.createIcons();
 }
+
 window.selectTab = function (t) {
   activeTab = t;
   renderTabs();
@@ -668,8 +680,6 @@ function getGameIcon(id, type = null) {
     'mm2': 'knife',
     'murder-mystery-2': 'knife',
     'limiteds': 'gem',
-
-    // Categorías / Tipos
     'Frutas': 'apple',
     'Fruits': 'apple',
     'Gamepasses': 'ticket',
@@ -682,12 +692,33 @@ function getGameIcon(id, type = null) {
     'Faces': 'smile',
     'Accessories': 'shirt',
     'Bundles': 'layers',
-    'Swords': 'sword'
+    'Swords': 'sword',
+    'Cuchillos': 'knife',
+    'Pistolas': 'target',
+    'Poderes': 'zap',
+    'Tradables': 'refresh-cw',
+    'Venta': 'tag'
   };
+
 
   const iconName = icons[type] || icons[id] || 'layout-grid';
   return `<i data-lucide="${iconName}" style="width: 20px; height: 20px;"></i>`;
 }
+
+const TAB_ICONS = {
+  'Más Vendidos': 'sparkles',
+  'Frutas': 'sword',
+  'Gamepasses': 'zap',
+  'Ancient': 'star',
+  'Knives': 'knife',
+  'Cuchillos': 'knife',
+  'Guns': 'target',
+  'Pistolas': 'target',
+  'Skins': 'palette',
+  'Limiteds': 'crown',
+  'Items': 'package',
+  'Tradables': 'refresh-cw'
+};
 
 function renderCatalog() {
   const cat = document.getElementById('catalogContent');
@@ -788,11 +819,14 @@ function renderSidebar() {
   const games = q ? GAMES.filter(g => g.label.toLowerCase().includes(q)) : GAMES;
   if (!games.length) { list.innerHTML = '<p class="text-white/40 text-xs text-center py-4">No se encontraron juegos</p>'; return; }
 
-  list.innerHTML = games.map((g, idx) => `
-    <div id="game-item-${g.id}" class="game-list-item ${state.activeGame === g.id ? 'active' : ''}" 
+  list.innerHTML = games.map((g, idx) => {
+    const gameIcon = g.id === 'murder-mystery-2' ? 'sword' : (g.id === 'limiteds' ? 'crown' : 'gamepad-2');
+    const activeClass = state.activeGame === g.id ? 'active' : '';
+    return `
+    <div id="game-item-${g.id}" class="game-list-item ${activeClass}" 
          onclick="selectGame('${g.id}')">
       <div class="game-list-thumb">
-        <img src="${g.img}" alt="${g.label}">
+        ${g.img ? `<img src="${g.img}" alt="${g.label}">` : `<i data-lucide="${gameIcon}"></i>`}
       </div>
       <div>
         <p class="game-list-name">${g.label}</p>
