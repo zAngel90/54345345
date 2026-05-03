@@ -238,11 +238,15 @@ function selectRecentUser(inputId, dropdownId, name, id) {
   input.value = name;
   dropdown.style.display = 'none';
   
-  // Trigger verification/search automatically
+  // Directly select the user since we already have the data
   if (inputId === 'robloxUserInput') {
-    searchRobloxUser();
+    if (typeof selectRobloxUser === 'function') {
+      selectRobloxUser(id, name, name);
+    }
   } else if (inputId === 'tradeRobloxInput') {
-    searchTradeUser();
+    if (typeof selectTradeUser === 'function') {
+      selectTradeUser(id, name, name);
+    }
   }
 }
 
