@@ -175,7 +175,7 @@ async function initApp() {
     updateCart();
     renderSeoInfo();
     initRecentUsers();
-    
+
     // Si no estamos en modo especial, la selección de juego ya dispara renderCatalog/renderTabs
     if (!state.limitedMode && !state.mm2Mode) {
       // Ya se llamó a selectGame arriba
@@ -540,7 +540,7 @@ function renderCard(p) {
   // Rarity Detection Ultra-Aggressive
   let rarityLabelHtml = '';
   let r = (p.itemType || p.rarity || p.type || p.badge || '').toUpperCase();
-  
+
   // Si estamos en MM2 y no hay rareza clara, intentar deducirla o forzarla
   if (!r && p.game === 'murder-mystery-2') {
     r = 'GODLY'; // En MM2 la mayoría son Godly
@@ -567,20 +567,27 @@ function renderCard(p) {
 
   // Themes based on rarity
   let themeClass = '';
-  if (r === 'UNIQUE') themeClass = 'theme-unique';
-  if (r === 'GODLY') {
-    themeClass = 'theme-godly';
-    // For Godly, we use the PINK theme for background but keep notch yellow via CSS
-    themeColor = '#db2777'; 
+  // Solo aplicamos el tema inmersivo (fondo rosa/púrpura) a los LIMITEDS
+  const isLimitedGodlyOrUnique = (r === 'UNIQUE' || r === 'GODLY') && p.game === 'limiteds';
+  
+  if (isLimitedGodlyOrUnique) {
+    themeClass = r === 'UNIQUE' ? 'theme-unique' : 'theme-godly';
+    themeColor = '#db2777'; // Forzar rosa para Limiteds Premium
+  } else if (r === 'GODLY' || r === 'UNIQUE') {
+    // Si es MM2 o normal, NO usamos el tema inmersivo, solo la clase para el notch
+    themeClass = r === 'UNIQUE' ? 'theme-unique' : 'theme-godly';
+    themeColor = p.color || getRarityColor(p.rarity);
   }
+
+  const isPremiumTheme = isLimitedGodlyOrUnique;
 
   // High-end Glassmorphism Style
   const cardStyle = `
     --theme-color: ${themeColor};
-    background: linear-gradient(165deg, ${ (r === 'UNIQUE' || r === 'GODLY') ? '#11060c' : '#0d1117'} 60%, ${themeColor}15) !important;
+    background: linear-gradient(165deg, ${ isPremiumTheme ? '#11060c' : '#0d1117'} 60%, ${themeColor}15) !important;
     backdrop-filter: blur(16px) saturate(180%) !important;
     -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
-    ${(r === 'UNIQUE' || r === 'GODLY') ? '' : `border: 1px solid ${themeColor}30 !important;`}
+    border: 1px solid ${isPremiumTheme ? 'transparent' : `${themeColor}30`} !important;
     box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.45), inset 0 0 0 1px ${themeColor}10 !important;
     padding-bottom: 0 !important;
     margin-bottom: 0 !important;
@@ -611,10 +618,10 @@ function renderCard(p) {
           <span class="card-currency">${pd.curr}</span>
         </div>
         <button class="card-cart-btn ${isOutOfStock ? 'out-of-stock' : ''}" onclick="addToCart('${p.id}',event)">
-          ${isOutOfStock ? 
-            `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>` :
-            `<svg class="cart-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg><span class="plus-icon">+</span>`
-          }
+          ${isOutOfStock ?
+      `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>` :
+      `<svg class="cart-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg><span class="plus-icon">+</span>`
+    }
         </button>
       </div>
     </div>
