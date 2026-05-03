@@ -554,8 +554,8 @@ function renderCard(p){
     background: rgba(13, 17, 23, 0.75) !important;
     backdrop-filter: blur(16px) saturate(180%) !important;
     -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
-    border: 1px solid ${themeColor}70 !important;
-    box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.45), inset 0 0 0 1px ${themeColor}25 !important;
+    border: 1px solid ${themeColor}70;
+    box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.45), inset 0 0 0 1px ${themeColor}25;
   `;
 
   return `<div class="product-card ${themeClass}" data-id="${p.id}" onclick="addToCart('${p.id}',event)" style="${cardStyle}">
