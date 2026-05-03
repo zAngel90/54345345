@@ -162,10 +162,85 @@ async function initApp() {
     updateCart();
     renderCatalog();
     renderSeoInfo();
+    initRecentUsers();
     // Avisar al padre que estamos listos para recibir el usuario
     window.parent.postMessage({ action: 'ready' }, '*');
   } catch (err) {
     console.error('Error initializing app:', err);
+  }
+}
+
+// ===== RECENT USERS LOGIC =====
+function initRecentUsers() {
+  const inputs = [
+    { id: 'robloxUserInput', dropdown: 'checkout-recent-users' },
+    { id: 'tradeRobloxInput', dropdown: 'trade-recent-users' }
+  ];
+
+  inputs.forEach(({ id, dropdown }) => {
+    const input = document.getElementById(id);
+    const box = document.getElementById(dropdown);
+    if (!input || !box) return;
+
+    input.addEventListener('focus', () => renderRecentList(id, dropdown));
+    input.addEventListener('click', (e) => {
+      e.stopPropagation();
+      renderRecentList(id, dropdown);
+    });
+
+    // Hide dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!input.contains(e.target) && !box.contains(e.target)) {
+        box.style.display = 'none';
+      }
+    });
+  });
+}
+
+function saveRecentUser(user) {
+  if (!user || !user.name || !user.id) return;
+  let recents = JSON.parse(localStorage.getItem('recent_roblox_users') || '[]');
+  // Remove if exists to re-add at top
+  recents = recents.filter(u => u.name.toLowerCase() !== user.name.toLowerCase());
+  recents.unshift({ name: user.name, id: user.id, avatar: user.avatar });
+  // Keep last 5
+  if (recents.length > 5) recents.pop();
+  localStorage.setItem('recent_roblox_users', JSON.stringify(recents));
+}
+
+function renderRecentList(inputId, dropdownId) {
+  const box = document.getElementById(dropdownId);
+  const list = box.querySelector('.recent-list');
+  const recents = JSON.parse(localStorage.getItem('recent_roblox_users') || '[]');
+
+  if (recents.length === 0) {
+    box.style.display = 'none';
+    return;
+  }
+
+  box.style.display = 'block';
+  list.innerHTML = recents.map(u => `
+    <div class="recent-user-item" onclick="selectRecentUser('${inputId}', '${dropdownId}', '${u.name}', '${u.id}')">
+      <img src="${u.avatar || `https://ui-avatars.com/api/?name=${u.name}&background=random`}" class="recent-user-avatar" />
+      <div class="flex-1 min-w-0">
+        <p class="text-[13px] font-bold text-white truncate">${u.name}</p>
+        <p class="text-[10px] text-white/30 truncate">ID: ${u.id}</p>
+      </div>
+    </div>
+  `).join('');
+}
+
+function selectRecentUser(inputId, dropdownId, name, id) {
+  const input = document.getElementById(inputId);
+  const dropdown = document.getElementById(dropdownId);
+  input.value = name;
+  dropdown.style.display = 'none';
+  
+  // Trigger verification/search automatically
+  if (inputId === 'robloxUserInput') {
+    searchRobloxUser();
+  } else if (inputId === 'tradeRobloxInput') {
+    searchTradeUser();
   }
 }
 
@@ -1058,6 +1133,13 @@ window.selectRobloxUser = function(id, name, displayName) {
   
   document.getElementById('userSearchStatus').textContent = '¡Usuario seleccionado correctamente!';
   updateConfirmButton();
+
+  // Save to recent
+  saveRecentUser({ 
+    name, 
+    id, 
+    avatar: `${SERVER_URL}/api/users/avatar/${id}` 
+  });
 };
 
 function updateConfirmButton() {
@@ -1318,6 +1400,9 @@ window.selectTradeUser = function(id, name, displayName) {
   const avatarUrl = `${SERVER_URL}/api/users/avatar/${id}`;
   tradeSelectedUser = { id, name, displayName, avatarUrl };
   updateTradeStepUI();
+
+  // Save to recent
+  saveRecentUser({ name, id, avatar: avatarUrl });
 };
 
 // Step 2: Inventory
