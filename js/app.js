@@ -169,11 +169,11 @@ async function initApp() {
 
       renderSidebar();
       // Selección de juego estricta por ID o Slug
-      const foundGame = gameId ? GAMES.find(g => 
-        (g.id && String(g.id).toLowerCase() === String(gameId).toLowerCase()) || 
+      const foundGame = gameId ? GAMES.find(g =>
+        (g.id && String(g.id).toLowerCase() === String(gameId).toLowerCase()) ||
         (g.slug && String(g.slug).toLowerCase() === String(gameId).toLowerCase())
       ) : null;
-      
+
       if (foundGame) {
         selectGame(foundGame.id);
       } else if (!gameId && GAMES.length > 0) {
@@ -186,7 +186,7 @@ async function initApp() {
     }
 
     initRecentUsers();
-    
+
     // Log de depuración para ver qué juego se está intentando cargar realmente
     const activeG = GAMES.find(g => String(g.id) === String(state.activeGame));
     console.log(`🚀 Pixel Store | Juego Activo: ${activeG ? activeG.label : 'No encontrado'} | ID: ${state.activeGame}`);
@@ -651,7 +651,7 @@ function renderTabs() {
   const el = document.getElementById('categoryTabs');
   if (!el) return;
   if (!state.activeGame) { el.innerHTML = ''; return; }
-  
+
   const tabs = GAME_CATEGORIES[state.activeGame] || ['Más Vendidos', 'Productos'];
   el.innerHTML = tabs.map(t => {
     return `<button class="category-tab ${t === activeTab ? 'active' : ''}" onclick="selectTab('${t}')">${t}</button>`;
@@ -732,9 +732,9 @@ function renderCatalog() {
     const r = (p.rarity || p.badge || p.type || p.itemType || '').toUpperCase();
     const isSpecialRarity = (r === 'GODLY' || r === 'UNIQUE' || r === 'ANCIENT' || r.includes('GODLY'));
     const isSpecialItem = (p.game === 'mm2' || p.game === 'murder-mystery-2' || p.game === 'limiteds');
-    
+
     const isSpecialMode = (state.activeGame === 'murder-mystery-2' || state.activeGame === 'limiteds' || state.mm2Mode || state.limitedMode);
-    
+
     // Si NO estamos en modo especial, bloqueamos cualquier item especial o con rareza especial
     if (!isSpecialMode && (isSpecialItem || isSpecialRarity)) return false;
 
@@ -811,13 +811,15 @@ function renderSidebar() {
   if (!games.length) { list.innerHTML = '<p class="text-white/40 text-xs text-center py-4">No se encontraron juegos</p>'; return; }
 
   list.innerHTML = games.map((g, idx) => {
-    const gameIcon = g.id === 'murder-mystery-2' ? 'sword' : (g.id === 'limiteds' ? 'crown' : 'gamepad-2');
     const activeClass = state.activeGame === g.id ? 'active' : '';
+    const gid = String(g.id).toLowerCase();
+    const gameIcon = (gid === 'murder-mystery-2' || gid === 'mm2') ? 'sword' : (gid === 'limiteds' ? 'crown' : 'gamepad-2');
+
     return `
     <div id="game-item-${g.id}" class="game-list-item ${activeClass}" 
          onclick="selectGame('${g.id}')">
       <div class="game-list-thumb">
-        ${g.img ? `<img src="${g.img}" alt="${g.label}">` : `<i data-lucide="${gameIcon}"></i>`}
+        ${g.img ? `<img src="${g.img}" alt="${g.label}">` : `<div class="w-full h-full flex items-center justify-center bg-white/5 border border-white/10 rounded-lg"><i data-lucide="${gameIcon}" style="width: 14px; height: 14px; color: #3b82f6;"></i></div>`}
       </div>
       <div>
         <p class="game-list-name">${g.label}</p>
@@ -846,23 +848,34 @@ function selectGame(id) {
     const realCount = ALL_PRODUCTS.filter(p => p.game === id).length;
     document.getElementById('navGameName').textContent = g.label;
     document.getElementById('navGameCount').textContent = realCount + ' productos';
-    
+
     const thumb = document.getElementById('navGameThumb');
     if (g.img) {
       thumb.innerHTML = `<img src="${g.img}" style="width:100%;height:100%;object-fit:cover;border-radius:8px">`;
     } else {
-      const gameIcon = id === 'murder-mystery-2' ? 'sword' : (id === 'limiteds' ? 'crown' : 'gamepad-2');
+      const gid = String(id).toLowerCase();
+      let svgIcon = '';
+      
+      // Iconos en crudo (SVG) para máxima fiabilidad
+      if (gid === 'murder-mystery-2' || gid === 'mm2') {
+        svgIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" x2="19" y1="19" y2="13"/><line x1="16" x2="20" y1="16" y2="20"/><line x1="19" x2="21" y1="21" y2="19"/></svg>`;
+      } else if (gid === 'limiteds') {
+        svgIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/></svg>`;
+      } else {
+        svgIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="6" x2="10" y1="11" y2="11"/><line x1="8" x2="8" y1="9" y2="13"/><path d="M12 2a10 10 0 0 1 10 10c0 4.41-4 8-10 8s-10-3.59-10-8c0-4.41 3.59-6 10-10z"/><circle cx="12" cy="13" r="5"/></svg>`;
+      }
+
       thumb.innerHTML = `
-        <div class="w-full h-full flex items-center justify-center bg-white/5 border border-white/10 rounded-lg">
-          <i data-lucide="${gameIcon}" style="width: 18px; height: 18px; color: #3b82f6;"></i>
+        <div class="w-full h-full flex items-center justify-center bg-white/10 border border-white/20 rounded-lg">
+          ${svgIcon}
         </div>
       `;
     }
-    
+
     chip.style.display = 'flex';
     tabsWrap.style.display = 'block';
     activeTab = 'Más Vendidos';
-    
+
     if (window.lucide) lucide.createIcons();
   } else {
     chip.style.display = 'none';
