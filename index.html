@@ -637,7 +637,7 @@
         </button>
       </div>
 
-      <div class="modal-body space-y-6 relative z-[20] !overflow-visible">
+      <div class="modal-body space-y-6 relative z-[100] !overflow-visible">
         <!-- User Search Section -->
         <div class="space-y-4">
           <label class="text-[10px] font-black tracking-widest text-white/30 uppercase">¿A quién enviamos los
@@ -654,7 +654,7 @@
               class="w-full h-12 bg-white/5 border border-white/10 rounded-2xl pl-12 pr-4 text-white placeholder:text-white/20 focus:border-blue-500/50 focus:bg-white/[0.08] transition-all outline-none">
             
             <!-- Recent Users Dropdown (Checkout) -->
-            <div id="checkout-recent-users" style="display:none" class="absolute top-[calc(100%+8px)] left-0 right-0 z-[100] bg-[#0F172A] border border-white/20 rounded-2xl p-2 shadow-[0_20px_50px_rgba(0,0,0,0.8)] dropdown-enter">
+            <div id="checkout-recent-users" style="display:none; background-color: #0b0f1a !important; opacity: 1 !important;" class="absolute top-[calc(100%+8px)] left-0 right-0 z-[1000] border border-white/20 rounded-2xl p-2 shadow-[0_20px_50px_rgba(0,0,0,1)] dropdown-enter">
               <div class="px-3 py-2 flex items-center gap-2 mb-1 border-b border-white/10">
                 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="text-blue-400"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="m12 7 0 5 3 3"/></svg>
                 <span class="text-[10px] font-black text-white uppercase tracking-widest">Usuarios Recientes</span>
@@ -686,7 +686,7 @@
         </div>
       </div>
 
-      <div class="modal-footer p-8 pt-0 flex gap-3 mt-8 relative z-[10]">
+      <div class="modal-footer p-8 pt-0 flex gap-3 mt-8 relative z-[1]">
         <button onclick="closeCheckoutModal()"
           class="flex-1 h-12 rounded-xl bg-white/5 border border-white/10 text-white/60 font-bold hover:bg-white/10 transition-all">Cancelar</button>
         <button id="confirmCheckoutBtn" disabled
@@ -765,7 +765,7 @@
         </div>
       </div>
 
-      <div class="modal-body p-8 pt-6 !overflow-visible relative z-[20]">
+      <div class="modal-body p-8 pt-6 !overflow-visible relative z-[100]">
 
         <!-- STEP 1: Search -->
         <div id="trade-step-1" class="space-y-6 relative z-[10]">
@@ -800,7 +800,7 @@
                 class="relative w-full h-14 bg-white/5 border border-white/10 rounded-2xl pl-12 pr-4 text-white placeholder:text-white/20 focus:border-blue-500/50 focus:bg-white/[0.08] transition-all outline-none">
               
               <!-- Recent Users Dropdown (Trade) -->
-              <div id="trade-recent-users" style="display:none" class="absolute top-[calc(100%+8px)] left-0 right-0 z-[100] bg-[#0F172A] border border-white/20 rounded-2xl p-2 shadow-[0_20px_50px_rgba(0,0,0,0.8)] dropdown-enter">
+              <div id="trade-recent-users" style="display:none; background-color: #0b0f1a !important; opacity: 1 !important;" class="absolute top-[calc(100%+8px)] left-0 right-0 z-[1000] border border-white/20 rounded-2xl p-2 shadow-[0_20px_50px_rgba(0,0,0,1)] dropdown-enter">
                 <div class="px-3 py-2 flex items-center gap-2 mb-1 border-b border-white/10">
                   <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="text-blue-400"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="m12 7 0 5 3 3"/></svg>
                   <span class="text-[10px] font-black text-white uppercase tracking-widest">Usuarios Recientes</span>
@@ -897,7 +897,7 @@
 
       </div>
 
-      <div class="p-8 pt-0 flex gap-3 relative z-[10]">
+      <div class="p-8 pt-0 flex gap-3 relative z-[1]">
         <button id="trade-back-btn" onclick="tradePrevStep()"
           class="hidden h-14 px-6 rounded-2xl bg-white/5 border border-white/10 text-white font-bold hover:bg-white/10 transition-all uppercase text-[11px] tracking-widest">Atrás</button>
         <button id="trade-next-btn" onclick="tradeNextStep()" disabled
