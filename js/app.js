@@ -190,9 +190,11 @@ function initRecentUsers() {
 
     // Hide dropdown when clicking outside
     document.addEventListener('click', (e) => {
-      if (!input.contains(e.target) && !box.contains(e.target)) {
-        box.style.display = 'none';
-      }
+      setTimeout(() => {
+        if (!input.contains(e.target) && !box.contains(e.target)) {
+          box.style.display = 'none';
+        }
+      }, 100);
     });
   });
 }
