@@ -1309,6 +1309,11 @@ color: rgba(255, 255, 255, 0.7);
   background: #fff;
   border-radius: 50%;
   box-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+  transition: right 0.3s ease;
+}
+
+.sidebar-indicator.is-added-game .sidebar-dot {
+  right: 52px;
 }
 
 /* ===== ANIMATIONS ===== */

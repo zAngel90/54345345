@@ -64,10 +64,12 @@ let tradeInventoryItems = [];
 let tradeSelectedInventoryItem = null;
 let tradeTargetProduct = null;
 
-// ===== INITIALIZATION =====
 async function initApp() {
   try {
-    // 0. Cargar mapeo de iconos de categorías primero
+    // 0. Cargar juegos agregados y configuración de avisos
+    loadAddedGames();
+
+    // 1. Cargar mapeo de iconos de categorías primero
     try {
       console.log('📡 Cargando iconos de categorías...');
       const iconsRes = await fetch(`${API_BASE_URL}/admin/category-icons-config`);
@@ -90,7 +92,7 @@ async function initApp() {
       GAMES = gamesData.data.map(g => ({
         id: g.id,
         label: g.name,
-        img: g.image ? (g.image.startsWith('http') ? g.image : `${SERVER_URL}${g.image}`) : '',
+        image: g.image ? (g.image.startsWith('http') ? g.image : `${SERVER_URL}${g.image}`) : '',
         hidden: !!g.hidden,
         count: 0
       }));
@@ -893,10 +895,10 @@ function renderSidebar() {
   const q = state.gameSearch.toLowerCase();
 
   // Si hay búsqueda, mostrar todos los que coincidan (incluyendo ocultos)
-  // Si no hay búsqueda, solo mostrar los NO ocultos
+  // Si no hay búsqueda, mostrar los NO ocultos + los agregados manualmente
   const games = q
     ? GAMES.filter(g => g.label.toLowerCase().includes(q))
-    : GAMES.filter(g => g.hidden !== true);
+    : GAMES.filter(g => g.hidden !== true || (state.addedGames && state.addedGames.includes(g.id)));
 
   if (!games.length) {
     list.innerHTML = `<p class="text-white/40 text-xs text-center py-4">${q ? 'No se encontraron juegos' : 'No hay juegos listados'}</p>`;
@@ -908,15 +910,22 @@ function renderSidebar() {
     const gid = String(g.id).toLowerCase();
     const gameIcon = (gid === 'murder-mystery-2' || gid === 'mm2') ? 'sword' : (gid === 'limiteds' ? 'crown' : 'gamepad-2');
 
+    const isAdded = state.addedGames && state.addedGames.includes(g.id);
+
     return `
-    <div id="game-item-${g.id}" class="game-list-item ${activeClass}" 
+    <div id="game-item-${g.id}" class="game-list-item ${activeClass} group/game" 
          onclick="selectGame('${g.id}')">
       <div class="game-list-thumb">
-        ${g.img ? `<img src="${g.img}" alt="${g.label}">` : `<div class="w-full h-full flex items-center justify-center bg-white/5 border border-white/10 rounded-lg"><i data-lucide="${gameIcon}" style="width: 14px; height: 14px; color: #3b82f6;"></i></div>`}
+        ${g.image ? `<img src="${g.image}" alt="${g.label}">` : `<div class="w-full h-full flex items-center justify-center bg-white/5 border border-white/10 rounded-lg"><i data-lucide="${gameIcon}" style="width: 14px; height: 14px; color: #3b82f6;"></i></div>`}
       </div>
-      <div>
-        <p class="game-list-name">${g.label}</p>
+      <div class="flex-1 min-w-0">
+        <p class="game-list-name truncate">${g.label}</p>
       </div>
+      ${isAdded ? `
+        <button onclick="removeGameFromSidebar(event, '${g.id}')" class="px-2 text-red-500 hover:text-red-400 transition-colors shrink-0">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+        </button>
+      ` : ''}
     </div>`;
   }).join('');
 
@@ -931,8 +940,17 @@ function selectGame(id) {
   state.activeGame = state.activeGame === id ? null : id;
   const gid = String(id).toLowerCase();
 
-  // Buscar juego de forma robusta (por ID o por Nombre)
-  const g = GAMES.find(x => String(x.id).toLowerCase() === gid || x.label.toLowerCase().includes('murder') || x.label.toLowerCase().includes('limited'));
+  // Buscar juego de forma robusta
+  const g = GAMES.find(x => String(x.id).toLowerCase() === gid);
+
+  // Si es un juego oculto, mostrar aviso importante (solo una vez por sesión por juego)
+  if (state.activeGame && g && g.hidden) {
+    if (!state.shownImportantGames) state.shownImportantGames = [];
+    if (!state.shownImportantGames.includes(id)) {
+      document.getElementById('importantModal').classList.remove('hidden');
+      state.shownImportantGames.push(id);
+    }
+  }
 
   const chip = document.getElementById('navGameChip');
   const tabsWrap = document.getElementById('categoryTabsWrap');
@@ -949,8 +967,8 @@ function selectGame(id) {
     const thumb = document.getElementById('navGameThumb');
     const label = g.label.toLowerCase();
 
-    if (g.img) {
-      thumb.innerHTML = `<img src="${g.img}" style="width:100%;height:100%;object-fit:cover;border-radius:8px">`;
+    if (g.image) {
+      thumb.innerHTML = `<img src="${g.image}" style="width:100%;height:100%;object-fit:cover;border-radius:8px">`;
     } else {
       let svgIcon = '';
       if (label.includes('murder') || gid.includes('mm2')) {
@@ -984,6 +1002,10 @@ function updateSidebarIndicator() {
   const activeItem = document.querySelector('.game-list-item.active');
 
   if (activeItem && state.activeGame) {
+    // Verificar si es un juego agregado para mover el punto
+    const isAdded = state.addedGames && state.addedGames.includes(state.activeGame);
+    indicator.classList.toggle('is-added-game', isAdded);
+
     indicator.style.opacity = '1';
     indicator.style.height = activeItem.offsetHeight + 'px';
     indicator.style.transform = `translateY(${activeItem.offsetTop}px)`;
@@ -993,8 +1015,8 @@ function updateSidebarIndicator() {
 }
 
 // ===== CART =====
-function addToCart(id, e) {
-  if (e) e.stopPropagation();
+function addToCart(id, e, bypassVerify = false) {
+  if (e && e.stopPropagation) e.stopPropagation();
 
   // Buscar en la vista actual o en la lista global de productos
   let p = PRODUCTS.find(x => String(x.id) === String(id));
@@ -1003,6 +1025,18 @@ function addToCart(id, e) {
 
   if (!p) {
     console.error('Product not found for ID:', id);
+    return;
+  }
+
+  // Validación de Verificación para Juegos Ocultos
+  const game = GAMES.find(g => g.id === p.game);
+  const hideVerify = localStorage.getItem('pixel_store_hide_verify_modal') === 'true';
+
+  if (game && game.hidden && !bypassVerify && !hideVerify) {
+    pendingProductToAdd = { id };
+    document.getElementById('verifyGameName').textContent = game.label;
+    document.getElementById('verifyProductName').textContent = p.name;
+    document.getElementById('verifyProductModal').classList.remove('hidden');
     return;
   }
 
@@ -1344,25 +1378,139 @@ window.clearSearch = function () { state.search = ''; document.getElementById('s
 // ===== GAME SEARCH =====
 document.getElementById('gameSearch').addEventListener('input', e => { state.gameSearch = e.target.value; renderSidebar(); });
 
-// Botón "Otro juego" - Búsqueda global (incluyendo ocultos)
-const otroJuegoBtn = document.querySelector('.otro-juego-card');
+// Botón "Otro juego" - Búsqueda dinámica global
+const otroJuegoBtn = document.getElementById('otroJuegoBtn');
+const otroJuegoSearchWrap = document.getElementById('otroJuegoSearchWrap');
+const otroJuegoInput = document.getElementById('otroJuegoInput');
+const otroJuegoResults = document.getElementById('otroJuegoResults');
+
 if (otroJuegoBtn) {
   otroJuegoBtn.addEventListener('click', () => {
-    const term = prompt("¿Qué juego buscas en Roblox?");
-    if (term) {
-      state.gameSearch = term;
-      const searchInput = document.getElementById('gameSearch');
-      if (searchInput) searchInput.value = term;
-      renderSidebar();
-      
-      // Si solo hay un resultado, seleccionarlo
-      const filtered = GAMES.filter(g => g.label.toLowerCase().includes(term.toLowerCase()));
-      if (filtered.length === 1) {
-        selectGame(filtered[0].id);
-      }
+    otroJuegoSearchWrap.classList.toggle('hidden');
+    otroJuegoResults.classList.toggle('hidden');
+    if (!otroJuegoSearchWrap.classList.contains('hidden')) {
+      otroJuegoInput.focus();
     }
   });
 }
+
+if (otroJuegoInput) {
+  otroJuegoInput.addEventListener('input', (e) => {
+    const q = e.target.value.toLowerCase();
+    if (!q) {
+      otroJuegoResults.innerHTML = `
+        <div class="p-4 text-center">
+          <p class="text-[11px] font-bold text-white/20 uppercase tracking-widest">Escribe para buscar</p>
+        </div>
+      `;
+      return;
+    }
+
+    const filtered = GAMES.filter(g => g.hidden === true && g.label.toLowerCase().includes(q));
+
+    if (filtered.length === 0) {
+      otroJuegoResults.innerHTML = `
+        <div class="p-4 text-center">
+          <p class="text-[11px] font-bold text-white/20 uppercase tracking-widest">No se encontraron resultados</p>
+        </div>
+      `;
+      return;
+    }
+
+    otroJuegoResults.innerHTML = filtered.map(g => {
+      const gid = String(g.id).toLowerCase();
+      const gameIcon = (gid === 'murder-mystery-2' || gid === 'mm2') ? 'sword' : (gid === 'limiteds' ? 'crown' : 'gamepad-2');
+      const gameImg = g.image ? (g.image.startsWith('http') ? g.image : `${SERVER_URL}${g.image}`) : '';
+
+      return `
+        <div class="flex items-center gap-3 p-3 hover:bg-white/5 cursor-pointer transition-all border-b border-white/[0.03] group" onclick="addGameToSidebar('${g.id}')">
+          <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 overflow-hidden shrink-0">
+            ${gameImg ? `<img src="${gameImg}" class="w-full h-full object-cover">` : `<div class="w-full h-full flex items-center justify-center text-white/20"><i data-lucide="${gameIcon}" style="width:16px;height:16px"></i></div>`}
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-[12px] font-bold text-white truncate">${g.label}</p>
+          </div>
+          <div class="text-white/20 group-hover:text-blue-500 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    if (window.lucide) lucide.createIcons();
+  });
+}
+
+function addGameToSidebar(gameId) {
+  if (!state.addedGames) state.addedGames = [];
+  if (!state.addedGames.includes(gameId)) {
+    state.addedGames.push(gameId);
+    saveAddedGames();
+  }
+
+  // Limpiar y ocultar buscador
+  otroJuegoInput.value = '';
+  otroJuegoSearchWrap.classList.add('hidden');
+  otroJuegoResults.classList.add('hidden');
+  otroJuegoResults.innerHTML = `
+    <div class="p-4 text-center">
+      <p class="text-[11px] font-bold text-white/20 uppercase tracking-widest">Escribe para buscar</p>
+    </div>
+  `;
+
+  renderSidebar();
+  selectGame(gameId);
+}
+window.addGameToSidebar = addGameToSidebar;
+
+function removeGameFromSidebar(e, gameId) {
+  if (e) e.stopPropagation();
+  if (!state.addedGames) return;
+  state.addedGames = state.addedGames.filter(id => id !== gameId);
+  saveAddedGames();
+  renderSidebar();
+
+  // Si era el juego activo, ir al primero disponible
+  if (state.activeGame === gameId) {
+    const firstGame = GAMES.find(g => g.hidden !== true);
+    if (firstGame) selectGame(firstGame.id);
+  }
+}
+window.removeGameFromSidebar = removeGameFromSidebar;
+
+function saveAddedGames() {
+  localStorage.setItem('pixel_store_added_games', JSON.stringify(state.addedGames || []));
+}
+
+function loadAddedGames() {
+  const saved = localStorage.getItem('pixel_store_added_games');
+  if (saved) {
+    state.addedGames = JSON.parse(saved);
+  }
+}
+
+// Modales de Verificación
+let pendingProductToAdd = null;
+
+window.closeImportantModal = function () {
+  document.getElementById('importantModal').classList.add('hidden');
+};
+
+window.closeVerifyProductModal = function (confirm) {
+  const modal = document.getElementById('verifyProductModal');
+  const dontShow = document.getElementById('dontShowVerifyAgain').checked;
+
+  if (dontShow) {
+    localStorage.setItem('pixel_store_hide_verify_modal', 'true');
+  }
+
+  modal.classList.add('hidden');
+
+  if (confirm && pendingProductToAdd) {
+    addToCart(pendingProductToAdd.id, pendingProductToAdd.variationId, true);
+  }
+  pendingProductToAdd = null;
+};
 
 // ===== CHECKOUT MODAL LOGIC =====
 window.openCheckoutModal = function () {

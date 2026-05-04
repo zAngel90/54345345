@@ -79,6 +79,44 @@
       background: rgba(255, 255, 255, 0.1);
       object-fit: cover;
     }
+
+    /* Custom Checkbox */
+    .custom-checkbox {
+      position: relative;
+      width: 18px;
+      height: 18px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    input[type="checkbox"]:checked + .custom-checkbox {
+      background: #3b82f6;
+      border-color: #3b82f6;
+      box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+    }
+
+    .custom-checkbox svg {
+      width: 12px;
+      height: 12px;
+      color: white;
+      transform: scale(0);
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    input[type="checkbox"]:checked + .custom-checkbox svg {
+      transform: scale(1);
+    }
+
+    .custom-checkbox:hover {
+      border-color: rgba(255, 255, 255, 0.3);
+      background: rgba(255, 255, 255, 0.08);
+    }
   </style>
 </head>
 
@@ -102,7 +140,7 @@
       </div>
 
       <!-- Otro juego card -->
-      <button class="otro-juego-card group overflow-hidden relative">
+      <button class="otro-juego-card group overflow-hidden relative" id="otroJuegoBtn">
         <div
           class="absolute inset-0 bg-gradient-to-r from-blue-500/0 via-blue-500/5 to-blue-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000">
         </div>
@@ -113,6 +151,21 @@
           <p class="text-[11px] text-white/30 leading-tight">Busca entre todos los juegos de Roblox</p>
         </div>
       </button>
+
+      <!-- Dynamic Search for Hidden Games -->
+      <div id="otroJuegoSearchWrap" class="sidebar-search-wrap hidden" style="margin-bottom: 0px; border-bottom-left-radius: 0px; border-bottom-right-radius: 0px; transition: all 0.3s ease;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white/20">
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.34-4.34" />
+        </svg>
+        <input id="otroJuegoInput" type="text" placeholder="Buscar juego..." class="sidebar-search-input">
+      </div>
+      <div id="otroJuegoResults" class="hidden overflow-y-auto scrollbar-hide" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-top: none; border-bottom-left-radius: 16px; border-bottom-right-radius: 16px; max-height: 280px; margin-bottom: 12px; transition: all 0.3s ease;">
+        <div class="p-4 text-center">
+          <p class="text-[11px] font-bold text-white/20 uppercase tracking-widest">Escribe para buscar</p>
+        </div>
+      </div>
 
       <!-- Sidebar Search -->
       <div class="sidebar-search-wrap">
@@ -665,6 +718,66 @@
     </div>
 
   </div><!-- end root -->
+
+  <!-- Modal Importante (Juego Oculto) -->
+  <div id="importantModal" class="modal-overlay hidden">
+    <div class="modal-content max-w-[400px] !p-8 text-center">
+      <div class="flex justify-center mb-6">
+        <div class="w-16 h-16 rounded-full bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center text-yellow-500">
+          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+        </div>
+      </div>
+      <h3 class="text-2xl font-black text-white mb-4">Importante</h3>
+      <p class="text-white/60 text-sm leading-relaxed mb-8">
+        Por favor, <span class="text-yellow-500 font-bold">revisa antes de comprar</span> que el producto que deseas comprar se pueda <span class="text-yellow-500 font-bold">regalar</span> y esté <span class="text-yellow-500 font-bold">activo</span> en el juego.
+      </p>
+      <button onclick="closeImportantModal()" class="w-full py-4 bg-yellow-500 hover:bg-yellow-600 text-black font-black rounded-2xl shadow-xl shadow-yellow-500/20 transition-all">
+        Entendido
+      </button>
+    </div>
+  </div>
+
+  <!-- Modal Verificar Producto -->
+  <div id="verifyProductModal" class="modal-overlay hidden">
+    <div class="modal-content max-w-[440px] !p-8">
+      <div class="flex justify-center mb-6">
+        <div class="w-16 h-16 rounded-full bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-500">
+          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+        </div>
+      </div>
+      <h3 class="text-xl font-black text-white text-center mb-6">Verificar producto</h3>
+      
+      <div class="bg-white/5 border border-white/10 rounded-2xl p-4 space-y-3 mb-6">
+        <div class="flex justify-between text-xs">
+          <span class="text-white/30">Juego:</span>
+          <span id="verifyGameName" class="text-white font-bold text-right"></span>
+        </div>
+        <div class="flex justify-between text-xs">
+          <span class="text-white/30">Producto:</span>
+          <span id="verifyProductName" class="text-white font-bold text-right"></span>
+        </div>
+      </div>
+
+      <p class="text-white/60 text-xs text-center leading-relaxed mb-8">
+        ¿Verificaste que este producto <span class="text-blue-400 font-bold">exista en el juego</span>, se pueda <span class="text-blue-400 font-bold">regalar</span> y esté <span class="text-blue-400 font-bold">activo</span>?
+      </p>
+
+      <div class="flex gap-3 mb-6">
+        <button onclick="closeVerifyProductModal(false)" class="flex-1 py-3 bg-white/5 hover:bg-white/10 text-white/60 font-bold rounded-xl transition-all">Cancelar</button>
+        <button onclick="closeVerifyProductModal(true)" class="flex-1 py-3 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-xl shadow-lg shadow-blue-500/20 transition-all">Confirmar</button>
+      </div>
+
+      <label class="flex items-center justify-center gap-3 cursor-pointer group select-none">
+        <div class="relative">
+          <input type="checkbox" id="dontShowVerifyAgain" class="peer hidden">
+          <div class="custom-checkbox">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          </div>
+        </div>
+        <span class="text-[10px] font-bold text-white/20 group-hover:text-white/50 transition-colors uppercase tracking-widest">No mostrar de nuevo</span>
+      </label>
+    </div>
+  </div>
 
   <!-- Checkout Modal -->
   <div id="checkoutModal" class="modal-overlay hidden">
