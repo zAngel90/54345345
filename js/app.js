@@ -121,15 +121,15 @@ async function initApp() {
 
     const urlParams = new URLSearchParams(window.location.search);
     const gameId = urlParams.get('game');
-    const gameToAdd = urlParams.get('add_game');
+    const addFlag = urlParams.get('add_game');
 
-    if (gameToAdd) {
+    if (addFlag === '1' && gameId) {
       if (!state.addedGames) state.addedGames = [];
-      if (!state.addedGames.includes(gameToAdd)) {
-        state.addedGames.push(gameToAdd);
+      if (!state.addedGames.includes(gameId)) {
+        state.addedGames.push(gameId);
         saveAddedGames();
       }
-      state.activeGame = gameToAdd;
+      state.activeGame = gameId;
     } else if (gameId) {
       state.activeGame = gameId;
     }
