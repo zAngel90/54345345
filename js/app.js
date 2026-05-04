@@ -838,7 +838,7 @@ function renderCatalog() {
         <div class="space-y-6 mb-12">
           <div class="section-header">
             <div class="section-icon-wrap" style="background: rgba(59, 130, 246, 0.05); border-color: rgba(59, 130, 246, 0.1);">
-              ${g.img ? `<img src="${g.img}" style="width: 24px; height: 24px; object-fit: contain; border-radius: 6px;">` : `<i data-lucide="layout-grid" style="width: 20px; height: 20px; color: #3b82f6;"></i>`}
+              ${g.image ? `<img src="${g.image}" style="width: 24px; height: 24px; object-fit: contain; border-radius: 6px;">` : `<i data-lucide="layout-grid" style="width: 20px; height: 20px; color: #3b82f6;"></i>`}
             </div>
             <div class="section-info">
               <h2 class="section-title-text">${g.label}</h2>
