@@ -129,9 +129,6 @@ async function initApp() {
         state.addedGames.push(gameId);
         saveAddedGames();
       }
-      state.activeGame = gameId;
-    } else if (gameId) {
-      state.activeGame = gameId;
     }
 
     state.limitedMode = (gameId === 'limiteds');
