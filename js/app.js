@@ -1191,7 +1191,9 @@ window.addEventListener('message', (event) => {
 function renderUserUI() {
   const avatarBtn = document.querySelector('.peek-avatar-btn');
   const nameLabel = document.getElementById('dropdownUserName');
-  const roleLabel = document.getElementById('dropdownUserRole');
+  const emailLabel = document.getElementById('dropdownUserEmail');
+  const avatarImg = document.getElementById('dropdownUserAvatar');
+  
   if (!avatarBtn) return;
 
   if (state.user) {
@@ -1203,15 +1205,17 @@ function renderUserUI() {
 
     if (avatarUrl) {
       avatarBtn.innerHTML = `<img src="${avatarUrl}" class="w-full h-full object-cover">`;
+      if (avatarImg) avatarImg.src = avatarUrl;
     } else {
       avatarBtn.innerHTML = `<span>${(state.user.username || 'U').charAt(0).toUpperCase()}</span>`;
+      if (avatarImg) avatarImg.src = 'images/avatar.png';
     }
 
     avatarBtn.style.background = 'linear-gradient(135deg, #1e293b, #0f172a)';
     avatarBtn.style.border = '2px solid rgba(255,255,255,0.1)';
 
     if (nameLabel) nameLabel.textContent = state.user.displayName || state.user.username;
-    if (roleLabel) roleLabel.textContent = state.user.role || 'Cliente';
+    if (emailLabel) emailLabel.textContent = state.user.email || 'email@example.com';
 
     avatarBtn.onclick = (e) => {
       e.stopPropagation();

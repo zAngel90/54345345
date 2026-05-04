@@ -184,16 +184,17 @@ body {
   right: 0;
   top: calc(100% + 12px);
   z-index: 99999;
-  width: 260px;
-  padding: 6px;
-  background: rgba(13, 17, 23, 0.95) !important;
-  backdrop-filter: blur(20px) saturate(120%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(120%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 20px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
-  transform-origin: top center;
+  width: 280px;
+  background: rgba(22, 21, 48, 0.75) !important;
+  backdrop-filter: blur(32px) saturate(150%) brightness(102%) !important;
+  -webkit-backdrop-filter: blur(32px) saturate(150%) brightness(102%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.6);
+  transform-origin: top right;
+  overflow: hidden;
   font-family: 'Inter', sans-serif !important;
+  ring: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 #notifDropdown {
@@ -202,74 +203,34 @@ body {
 
 .peek-dropdown:not(.hidden) {
   display: block;
-  animation: simpleInDown 0.25s ease-out both;
-}
-
-.peek-dropdown:not(.hidden) .peek-dropdown-item {
-  opacity: 0;
-  animation: simpleInDown 0.25s ease-out both;
-}
-
-/* Staggered delay for each item */
-.peek-dropdown:not(.hidden) .peek-dropdown-item:nth-child(1) {
-  animation-delay: 0.05s;
-}
-
-.peek-dropdown:not(.hidden) .peek-dropdown-item:nth-child(2) {
-  animation-delay: 0.10s;
-}
-
-.peek-dropdown:not(.hidden) .peek-dropdown-item:nth-child(3) {
-  animation-delay: 0.15s;
-}
-
-.peek-dropdown:not(.hidden) .peek-dropdown-item:nth-child(4) {
-  animation-delay: 0.20s;
-}
-
-.peek-dropdown:not(.hidden) .peek-dropdown-item:nth-child(5) {
-  animation-delay: 0.25s;
-}
-
-.peek-dropdown:not(.hidden) .peek-dropdown-item:nth-child(6) {
-  animation-delay: 0.30s;
-}
-
-.peek-dropdown:not(.hidden) .peek-dropdown-item:nth-child(7) {
-  animation-delay: 0.35s;
-}
-
-.peek-dropdown:not(.hidden) .peek-dropdown-item:nth-child(8) {
-  animation-delay: 0.40s;
+  animation: dropdownSlideBlur 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .peek-dropdown-item {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   width: 100%;
-  padding: 8px 12px;
-  border-radius: 14px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 10px 12px;
+  border-radius: 16px;
+  transition: all 0.2s ease-out;
   text-align: left;
   background: transparent;
-  border: 1px solid transparent;
+  border: none;
   cursor: pointer;
-  font-family: 'Inter', sans-serif !important;
-  color: rgba(255, 255, 255, 0.85);
+  color: rgba(255, 255, 255, 0.6);
   font-size: 13px;
   font-weight: 700;
 }
 
 .peek-dropdown-item:hover {
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.05);
   color: #fff;
-  transform: translateX(4px);
+  transform: none;
 }
 
 .peek-dropdown-item.active {
   background: rgba(37, 99, 235, 0.1);
-  border-color: rgba(37, 99, 235, 0.4);
 }
 
 .dropdown-flag {
