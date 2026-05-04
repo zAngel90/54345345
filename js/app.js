@@ -91,6 +91,7 @@ async function initApp() {
         id: g.id,
         label: g.name,
         img: g.image ? (g.image.startsWith('http') ? g.image : `${SERVER_URL}${g.image}`) : '',
+        hidden: !!g.hidden,
         count: 0
       }));
     }
@@ -890,8 +891,17 @@ function renderCatalog() {
 function renderSidebar() {
   const list = document.getElementById('gameItemsContainer');
   const q = state.gameSearch.toLowerCase();
-  const games = q ? GAMES.filter(g => g.label.toLowerCase().includes(q)) : GAMES;
-  if (!games.length) { list.innerHTML = '<p class="text-white/40 text-xs text-center py-4">No se encontraron juegos</p>'; return; }
+  
+  // Si hay búsqueda, mostrar todos los que coincidan (incluyendo ocultos)
+  // Si no hay búsqueda, solo mostrar los NO ocultos
+  const games = q 
+    ? GAMES.filter(g => g.label.toLowerCase().includes(q)) 
+    : GAMES.filter(g => !g.hidden);
+
+  if (!games.length) { 
+    list.innerHTML = `<p class="text-white/40 text-xs text-center py-4">${q ? 'No se encontraron juegos' : 'No hay juegos listados'}</p>`; 
+    return; 
+  }
 
   list.innerHTML = games.map((g, idx) => {
     const activeClass = state.activeGame === g.id ? 'active' : '';
@@ -1333,6 +1343,18 @@ window.clearSearch = function () { state.search = ''; document.getElementById('s
 
 // ===== GAME SEARCH =====
 document.getElementById('gameSearch').addEventListener('input', e => { state.gameSearch = e.target.value; renderSidebar(); });
+
+// Botón "Otro juego" - Enfocar búsqueda
+const otroJuegoBtn = document.querySelector('.otro-juego-card');
+if (otroJuegoBtn) {
+  otroJuegoBtn.addEventListener('click', () => {
+    const searchInput = document.getElementById('gameSearch');
+    if (searchInput) {
+      searchInput.focus();
+      // Opcional: mostrar un tooltip o mensaje si no hay búsqueda
+    }
+  });
+}
 
 // ===== CHECKOUT MODAL LOGIC =====
 window.openCheckoutModal = function () {
