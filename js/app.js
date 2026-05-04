@@ -121,6 +121,19 @@ async function initApp() {
 
     const urlParams = new URLSearchParams(window.location.search);
     const gameId = urlParams.get('game');
+    const gameToAdd = urlParams.get('add_game');
+
+    if (gameToAdd) {
+      if (!state.addedGames) state.addedGames = [];
+      if (!state.addedGames.includes(gameToAdd)) {
+        state.addedGames.push(gameToAdd);
+        saveAddedGames();
+      }
+      state.activeGame = gameToAdd;
+    } else if (gameId) {
+      state.activeGame = gameId;
+    }
+
     state.limitedMode = (gameId === 'limiteds');
     state.mm2Mode = (gameId === 'mm2' || gameId === 'murder-mystery-2');
 
