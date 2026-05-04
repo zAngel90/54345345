@@ -67,6 +67,17 @@ let tradeTargetProduct = null;
 // ===== INITIALIZATION =====
 async function initApp() {
   try {
+    // 0. Cargar mapeo de iconos de categorías primero
+    try {
+      console.log('📡 Cargando iconos de categorías...');
+      const iconsRes = await fetch(`${API_BASE_URL}/admin/category-icons-config`);
+      const iconsData = await iconsRes.json();
+      if (iconsData.success) {
+        state.categoryIcons = iconsData.data;
+        console.log('✅ Iconos cargados:', state.categoryIcons);
+      }
+    } catch (e) { console.warn('❌ Error cargando iconos:', e); }
+
     // 1. Iniciar todas las peticiones en paralelo para máxima velocidad
     const [gamesRes, prodsRes] = await Promise.all([
       fetch(`${API_BASE_URL}/admin/games-config`),
@@ -134,7 +145,7 @@ async function initApp() {
         document.getElementById('navGameName').textContent = 'Limiteds';
         document.getElementById('navGameCount').textContent = PRODUCTS.length + ' productos';
 
-        // Inyectar el icono de la corona
+        // Inyectar el icono de la corona estático
         document.getElementById('navGameThumb').innerHTML = `
           <div class="w-full h-full flex items-center justify-center bg-white/10 border border-white/20 rounded-lg">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/></svg>
@@ -171,7 +182,7 @@ async function initApp() {
         document.getElementById('navGameName').textContent = 'Murder Mystery 2';
         document.getElementById('navGameCount').textContent = PRODUCTS.length + ' productos';
 
-        // Inyectar el icono de la espada
+        // Inyectar el icono de la espada estático
         document.getElementById('navGameThumb').innerHTML = `
           <div class="w-full h-full flex items-center justify-center bg-white/10 border border-white/20 rounded-lg">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" x2="19" y1="19" y2="13"/><line x1="16" x2="20" y1="16" y2="20"/><line x1="19" x2="21" y1="21" y2="19"/></svg>
@@ -195,17 +206,6 @@ async function initApp() {
       GAMES.forEach(g => {
         g.count = PRODUCTS.filter(p => p.game === g.id).length;
       });
-
-      // Cargar mapeo de iconos de categorías
-      try {
-        console.log('📡 Cargando iconos de categorías...');
-        const iconsRes = await fetch(`${API_BASE_URL}/admin/category-icons-config`);
-        const iconsData = await iconsRes.json();
-        if (iconsData.success) {
-          state.categoryIcons = iconsData.data;
-          console.log('✅ Iconos cargados:', state.categoryIcons);
-        }
-      } catch (e) { console.warn('❌ Error cargando iconos:', e); }
 
       renderSidebar();
       // Selección de juego estricta por ID o Slug
@@ -715,8 +715,14 @@ function renderTabs() {
 
   const tabs = GAME_CATEGORIES[state.activeGame] || ['Más Vendidos', 'Productos'];
   el.innerHTML = tabs.map(t => {
-    return `<button class="category-tab ${t === activeTab ? 'active' : ''}" onclick="selectTab('${t}')">${t}</button>`;
+    return `
+      <button class="category-tab ${t === activeTab ? 'active' : ''}" onclick="selectTab('${t}')">
+        <span>${t}</span>
+      </button>
+    `;
   }).join('');
+
+  if (window.lucide) lucide.createIcons();
 }
 
 
@@ -759,20 +765,6 @@ function getGameIcon(id, type = null) {
   return `<i data-lucide="${iconName}" style="width: 20px; height: 20px;"></i>`;
 }
 
-const TAB_ICONS = {
-  'Más Vendidos': 'sparkles',
-  'Frutas': 'sword',
-  'Gamepasses': 'zap',
-  'Ancient': 'star',
-  'Knives': 'knife',
-  'Cuchillos': 'knife',
-  'Guns': 'target',
-  'Pistolas': 'target',
-  'Skins': 'palette',
-  'Limiteds': 'crown',
-  'Items': 'package',
-  'Tradables': 'refresh-cw'
-};
 
 function renderCatalog() {
   const cat = document.getElementById('catalogContent');
