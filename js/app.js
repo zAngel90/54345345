@@ -891,16 +891,16 @@ function renderCatalog() {
 function renderSidebar() {
   const list = document.getElementById('gameItemsContainer');
   const q = state.gameSearch.toLowerCase();
-  
+
   // Si hay búsqueda, mostrar todos los que coincidan (incluyendo ocultos)
   // Si no hay búsqueda, solo mostrar los NO ocultos
-  const games = q 
-    ? GAMES.filter(g => g.label.toLowerCase().includes(q)) 
-    : GAMES.filter(g => !g.hidden);
+  const games = q
+    ? GAMES.filter(g => g.label.toLowerCase().includes(q))
+    : GAMES.filter(g => g.hidden !== true);
 
-  if (!games.length) { 
-    list.innerHTML = `<p class="text-white/40 text-xs text-center py-4">${q ? 'No se encontraron juegos' : 'No hay juegos listados'}</p>`; 
-    return; 
+  if (!games.length) {
+    list.innerHTML = `<p class="text-white/40 text-xs text-center py-4">${q ? 'No se encontraron juegos' : 'No hay juegos listados'}</p>`;
+    return;
   }
 
   list.innerHTML = games.map((g, idx) => {
@@ -1203,7 +1203,7 @@ function renderUserUI() {
   const nameLabel = document.getElementById('dropdownUserName');
   const emailLabel = document.getElementById('dropdownUserEmail');
   const avatarImg = document.getElementById('dropdownUserAvatar');
-  
+
   if (!avatarBtn) return;
 
   if (state.user) {
@@ -1344,14 +1344,22 @@ window.clearSearch = function () { state.search = ''; document.getElementById('s
 // ===== GAME SEARCH =====
 document.getElementById('gameSearch').addEventListener('input', e => { state.gameSearch = e.target.value; renderSidebar(); });
 
-// Botón "Otro juego" - Enfocar búsqueda
+// Botón "Otro juego" - Búsqueda global (incluyendo ocultos)
 const otroJuegoBtn = document.querySelector('.otro-juego-card');
 if (otroJuegoBtn) {
   otroJuegoBtn.addEventListener('click', () => {
-    const searchInput = document.getElementById('gameSearch');
-    if (searchInput) {
-      searchInput.focus();
-      // Opcional: mostrar un tooltip o mensaje si no hay búsqueda
+    const term = prompt("¿Qué juego buscas en Roblox?");
+    if (term) {
+      state.gameSearch = term;
+      const searchInput = document.getElementById('gameSearch');
+      if (searchInput) searchInput.value = term;
+      renderSidebar();
+      
+      // Si solo hay un resultado, seleccionarlo
+      const filtered = GAMES.filter(g => g.label.toLowerCase().includes(term.toLowerCase()));
+      if (filtered.length === 1) {
+        selectGame(filtered[0].id);
+      }
     }
   });
 }
