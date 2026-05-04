@@ -1427,13 +1427,15 @@ if (otroJuegoInput) {
       return;
     }
 
-    otroJuegoResults.innerHTML = filtered.map(g => {
+    otroJuegoResults.innerHTML = filtered.map((g, idx) => {
       const gid = String(g.id).toLowerCase();
       const gameIcon = (gid === 'murder-mystery-2' || gid === 'mm2') ? 'sword' : (gid === 'limiteds' ? 'crown' : 'gamepad-2');
       const gameImg = g.image ? (g.image.startsWith('http') ? g.image : `${SERVER_URL}${g.image}`) : '';
 
       return `
-        <div class="flex items-center gap-3 p-3 hover:bg-white/5 cursor-pointer transition-all border-b border-white/[0.03] group" onclick="addGameToSidebar('${g.id}')">
+        <div class="flex items-center gap-3 p-3 hover:bg-white/5 cursor-pointer transition-all border-b border-white/[0.03] group jelly-item" 
+             style="animation-delay: ${idx * 0.05}s"
+             onclick="addGameToSidebar('${g.id}')">
           <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 overflow-hidden shrink-0">
             ${gameImg ? `<img src="${gameImg}" class="w-full h-full object-cover">` : `<div class="w-full h-full flex items-center justify-center text-white/20"><i data-lucide="${gameIcon}" style="width:16px;height:16px"></i></div>`}
           </div>
