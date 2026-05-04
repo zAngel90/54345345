@@ -557,7 +557,28 @@ function formatPrice(p) { return p >= 1000 ? p.toLocaleString('en-US', { minimum
 function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2500); }
 function badgeClass(badge, rarity) { if (badge === 'hot') return 'badge-hot'; if (badge === 'new') return 'badge-new'; if (badge === 'trending') return 'badge-trending'; if (rarity === 'Mythic') return 'badge-mythic'; if (rarity === 'Legendary') return 'badge-legendary'; if (rarity === 'Epic') return 'badge-epic'; return 'badge-rare'; }
 function badgeLabel(badge, rarity) { if (badge === 'hot') return 'HOT'; if (badge === 'new') return 'NEW'; if (badge === 'trending') return 'TOP'; return (rarity || 'ITEM').toUpperCase(); }
-function sortProds(arr) { const s = [...arr]; if (state.sort === 'popular') return s.sort((a, b) => b.purchases - a.purchases); if (state.sort === 'priceAsc') return s.sort((a, b) => a.price - b.price); if (state.sort === 'priceDesc') return s.sort((a, b) => b.price - a.price); if (state.sort === 'nameAsc') return s.sort((a, b) => a.name.localeCompare(b.name)); if (state.sort === 'nameDesc') return s.sort((a, b) => a.name.localeCompare(b.name)); return s; }
+function sortProds(arr) {
+  if (!arr || !arr.length) return [];
+  const s = [...arr];
+  const sortBy = state.sort || 'popular';
+
+  if (sortBy === 'popular') {
+    return s.sort((a, b) => Number(b.purchases || 0) - Number(a.purchases || 0));
+  }
+  if (sortBy === 'priceAsc') {
+    return s.sort((a, b) => Number(a.price || 0) - Number(b.price || 0));
+  }
+  if (sortBy === 'priceDesc') {
+    return s.sort((a, b) => Number(b.price || 0) - Number(a.price || 0));
+  }
+  if (sortBy === 'nameAsc') {
+    return s.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+  }
+  if (sortBy === 'nameDesc') {
+    return s.sort((a, b) => (b.name || '').localeCompare(a.name || ''));
+  }
+  return s;
+}
 
 // ===== RENDER CARD =====
 function getRarityColor(rarity) {
@@ -780,6 +801,8 @@ function renderCatalog() {
     return gOk && sOk && tOk;
   });
 
+  // 1.5. Aplicar ordenamiento GLOBAL antes de agrupar
+  filtered = sortProds(filtered);
 
   if (!filtered.length) {
     cat.innerHTML = '';
@@ -804,7 +827,7 @@ function renderCatalog() {
   // Si estamos en vista general (sin juego activo), usamos los nombres de los juegos como títulos
   if (!state.activeGame) {
     GAMES.forEach(g => {
-      const items = sortProds(grouped[g.id] || []);
+      const items = grouped[g.id] || [];
       if (!items.length) return;
       html += `
         <div class="space-y-6 mb-12">
@@ -822,7 +845,7 @@ function renderCatalog() {
     });
   } else {
     Object.keys(grouped).forEach(section => {
-      const items = sortProds(grouped[section]);
+      const items = grouped[section];
 
       // Mapeo inteligente de iconos según el nombre de la categoría
       const s = section.toLowerCase();
@@ -1000,6 +1023,12 @@ function addToCart(id, e) {
 
   const card = document.querySelector(`.product-card[data-id="${id}"]`);
   if (card) {
+    // Animación de rebote
+    card.classList.remove('animate-bounce-pop'); // Por si ya la tenía de antes
+    void card.offsetWidth; // Force reflow
+    card.classList.add('animate-bounce-pop');
+    setTimeout(() => card.classList.remove('animate-bounce-pop'), 300);
+
     card.classList.add('is-added');
     setTimeout(() => card.classList.remove('is-added'), 2000);
   }
@@ -1247,17 +1276,26 @@ function renderNotifications() {
 
   container.innerHTML = filtered.map(n => `
     <div class="notif-item group">
-      <div class="notif-dot ${n.type === 'orders' ? 'bg-emerald-400' : (n.type === 'chats' ? 'bg-blue-400' : 'bg-white/20')}"></div>
+      <div class="notif-dot ${n.type === 'orders' || n.type === 'order' ? 'bg-emerald-400' : (n.type === 'chats' || n.type === 'chat' ? 'bg-blue-400' : 'bg-white/20')}"></div>
       <div class="flex-1 min-w-0">
         <div class="flex justify-between items-start gap-2">
           <h4 class="notif-title group-hover:text-blue-400 transition-colors">${n.title}</h4>
-          <span class="notif-time">${n.time}</span>
+          <span class="notif-time text-[9px] opacity-30 font-bold uppercase tracking-tight">${n.time}</span>
         </div>
-        <p class="notif-desc">${n.desc}</p>
+        <p class="notif-desc text-white/40 group-hover:text-white/60 transition-colors">${n.desc}</p>
       </div>
     </div>
   `).join('');
 }
+
+// Logic to clear all notifications
+document.getElementById('clearNotifsBtn').addEventListener('click', (e) => {
+  e.stopPropagation();
+  state.notifications = [];
+  renderNotifications();
+  // Optional: Notify parent if needed
+  window.parent.postMessage({ action: 'clearNotifications' }, '*');
+});
 
 document.addEventListener('click', () => {
   document.getElementById('currencyDropdown').classList.add('hidden');
@@ -1265,13 +1303,20 @@ document.addEventListener('click', () => {
   document.getElementById('notifDropdown').classList.add('hidden');
   document.getElementById('userDropdown').classList.add('hidden');
 });
-document.querySelectorAll('.peek-dropdown-item[data-sort]').forEach(b => b.addEventListener('click', () => {
-  state.sort = b.dataset.sort;
-  document.getElementById('sortLabel').textContent = b.textContent.replace(/^..\s/, '');
+document.querySelectorAll('.peek-dropdown-item[data-sort]').forEach(b => b.addEventListener('click', (e) => {
+  const sortValue = b.getAttribute('data-sort');
+  if (!sortValue) return;
+
+  state.sort = sortValue;
+  document.getElementById('sortLabel').textContent = b.textContent;
+
   document.querySelectorAll('.peek-dropdown-item[data-sort]').forEach(x => x.classList.remove('active'));
   b.classList.add('active');
+
   document.getElementById('sortDropdown').classList.add('hidden');
-  renderCatalog();
+
+  // Forzar re-renderizado
+  setTimeout(() => renderCatalog(), 10);
 }));
 
 // Notification Tabs Logic

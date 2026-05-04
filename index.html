@@ -12,7 +12,7 @@
   <script src="https://unpkg.com/lucide@latest"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-    
+
     body {
       font-family: 'Inter', system-ui, sans-serif !important;
       font-weight: 400;
@@ -24,25 +24,40 @@
       -moz-user-select: none;
       -ms-user-select: none;
     }
+
     .dropdown-enter {
       animation: dropdownSlideBlur 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
       transform-origin: top;
     }
+
     @keyframes dropdownSlideBlur {
-      from { opacity: 0; transform: translateY(-4px) scale(0.98); filter: blur(8px); }
-      to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0px); }
+      from {
+        opacity: 0;
+        transform: translateY(-4px) scale(0.98);
+        filter: blur(8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0px);
+      }
     }
+
     .recent-list {
       max-height: 200px;
       overflow-y: auto;
     }
+
     .recent-list::-webkit-scrollbar {
       width: 4px;
     }
+
     .recent-list::-webkit-scrollbar-thumb {
-      background: rgba(255,255,255,0.1);
+      background: rgba(255, 255, 255, 0.1);
       border-radius: 10px;
     }
+
     .recent-user-item {
       display: flex;
       align-items: center;
@@ -52,14 +67,16 @@
       cursor: pointer;
       transition: all 0.2s;
     }
+
     .recent-user-item:hover {
-      background: rgba(255,255,255,0.05);
+      background: rgba(255, 255, 255, 0.05);
     }
+
     .recent-user-avatar {
       width: 24px;
       height: 24px;
       border-radius: 8px;
-      background: rgba(255,255,255,0.1);
+      background: rgba(255, 255, 255, 0.1);
       object-fit: cover;
     }
   </style>
@@ -285,7 +302,7 @@
               <!-- Sort -->
               <div class="relative" id="sortWrap">
                 <button id="sortBtn"
-                  class="inline-flex items-center gap-1.5 h-9 px-3 rounded-xl border border-white/[0.06] bg-white/[0.03] hover:bg-white/[0.06] transition-all text-xs font-medium text-white/50 hover:text-white/80">
+                  class="inline-flex items-center gap-1.5 h-9 px-3 rounded-xl border border-white/[0.06] bg-white/[0.03] hover:bg-white/[0.06] transition-all text-xs font-bold text-white/50 hover:text-white/80">
                   <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M10 5H3" />
@@ -306,11 +323,11 @@
                   </svg>
                 </button>
                 <div id="sortDropdown" class="peek-dropdown hidden">
-                  <button class="peek-dropdown-item active" data-sort="popular">🔥 Popularidad</button>
-                  <button class="peek-dropdown-item" data-sort="priceAsc">💸 Precio: Menor a Mayor</button>
-                  <button class="peek-dropdown-item" data-sort="priceDesc">💰 Precio: Mayor a Menor</button>
-                  <button class="peek-dropdown-item" data-sort="nameAsc">🔤 Nombre: A–Z</button>
-                  <button class="peek-dropdown-item" data-sort="nameDesc">🔤 Nombre: Z–A</button>
+                  <button class="peek-dropdown-item active" data-sort="popular">Popularidad</button>
+                  <button class="peek-dropdown-item" data-sort="priceAsc">Precio: Menor a Mayor</button>
+                  <button class="peek-dropdown-item" data-sort="priceDesc">Precio: Mayor a Menor</button>
+                  <button class="peek-dropdown-item" data-sort="nameAsc">Nombre: A–Z</button>
+                  <button class="peek-dropdown-item" data-sort="nameDesc">Nombre: Z–A</button>
                 </div>
               </div>
 
@@ -330,7 +347,8 @@
                 <div id="notifDropdown" class="peek-dropdown hidden">
                   <div class="flex items-center justify-between px-4 py-3 border-b border-white/[0.05] mb-2">
                     <span class="text-[12px] font-black tracking-tight text-white uppercase">Notificaciones</span>
-                    <button class="text-[10px] text-blue-400 font-bold hover:underline">Limpiar</button>
+                    <button id="clearNotifsBtn"
+                      class="text-[10px] text-blue-400 font-bold hover:underline">Limpiar</button>
                   </div>
 
                   <!-- Tabs de Notificaciones -->
@@ -660,11 +678,19 @@
             </svg>
             <input type="text" id="robloxUserInput" placeholder="Buscar usuario de Roblox..."
               class="w-full h-12 bg-white/5 border border-white/10 rounded-2xl pl-12 pr-4 text-white placeholder:text-white/20 focus:border-blue-500/50 focus:bg-white/[0.08] transition-all outline-none">
-            
+
             <!-- Recent Users Dropdown (Checkout) -->
-            <div id="checkout-recent-users" style="display:none; background-color: #0b0f1a !important; opacity: 1 !important;" class="absolute top-[calc(100%+8px)] left-0 right-0 z-[1000] border border-white/20 rounded-2xl p-2 shadow-[0_20px_50px_rgba(0,0,0,1)] dropdown-enter">
+            <div id="checkout-recent-users"
+              style="display:none; background-color: #0b0f1a !important; opacity: 1 !important;"
+              class="absolute top-[calc(100%+8px)] left-0 right-0 z-[1000] border border-white/20 rounded-2xl p-2 shadow-[0_20px_50px_rgba(0,0,0,1)] dropdown-enter">
               <div class="px-3 py-2 flex items-center gap-2 mb-1 border-b border-white/10">
-                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="text-blue-400"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="m12 7 0 5 3 3"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"
+                  class="text-blue-400">
+                  <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                  <path d="M3 3v5h5" />
+                  <path d="m12 7 0 5 3 3" />
+                </svg>
                 <span class="text-[10px] font-black text-white uppercase tracking-widest">Usuarios Recientes</span>
               </div>
               <div class="recent-list space-y-1"></div>
@@ -806,11 +832,19 @@
               </svg>
               <input type="text" id="tradeRobloxInput" placeholder="Usuario de Roblox..."
                 class="relative w-full h-14 bg-white/5 border border-white/10 rounded-2xl pl-12 pr-4 text-white placeholder:text-white/20 focus:border-blue-500/50 focus:bg-white/[0.08] transition-all outline-none">
-              
+
               <!-- Recent Users Dropdown (Trade) -->
-              <div id="trade-recent-users" style="display:none; background-color: #0b0f1a !important; opacity: 1 !important;" class="absolute top-[calc(100%+8px)] left-0 right-0 z-[1000] border border-white/20 rounded-2xl p-2 shadow-[0_20px_50px_rgba(0,0,0,1)] dropdown-enter">
+              <div id="trade-recent-users"
+                style="display:none; background-color: #0b0f1a !important; opacity: 1 !important;"
+                class="absolute top-[calc(100%+8px)] left-0 right-0 z-[1000] border border-white/20 rounded-2xl p-2 shadow-[0_20px_50px_rgba(0,0,0,1)] dropdown-enter">
                 <div class="px-3 py-2 flex items-center gap-2 mb-1 border-b border-white/10">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="text-blue-400"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="m12 7 0 5 3 3"/></svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"
+                    class="text-blue-400">
+                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                    <path d="M3 3v5h5" />
+                    <path d="m12 7 0 5 3 3" />
+                  </svg>
                   <span class="text-[10px] font-black text-white uppercase tracking-widest">Usuarios Recientes</span>
                 </div>
                 <div class="recent-list space-y-1"></div>
@@ -923,7 +957,8 @@
   </div>
 
   <div id="toast" class="peek-toast"></div>
-  <!-- Menú de Debug Temporal -->
+
+  <!-- Menú de Debug Temporal (Comentado para producción)
   <div id="debug-menu" style="position: fixed; bottom: 80px; right: 20px; z-index: 9999; background: rgba(13, 17, 23, 0.9); border: 1px solid rgba(255,255,255,0.1); padding: 15px; border-radius: 20px; backdrop-filter: blur(10px); display: flex; flex-direction: column; gap: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
     <p style="color: white; font-size: 10px; font-weight: 900; text-transform: uppercase; margin-bottom: 5px; opacity: 0.5;">Cambiar Modo Tienda</p>
     <button onclick="switchMode('mm2')" style="background: #eab308; color: black; border: none; padding: 8px 15px; border-radius: 10px; font-weight: 900; font-size: 11px; cursor: pointer;">VER MM2 (GODLY)</button>
@@ -943,6 +978,7 @@
       window.location.href = url.toString();
     }
   </script>
+  -->
 
   <script src="js/app.js"></script>
 </body>

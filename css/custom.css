@@ -7,6 +7,7 @@ body {
   padding: 0;
   height: 100%;
   overflow: hidden;
+  font-family: 'Inter', sans-serif !important;
 }
 
 /* ===== ELASTIC JELLY ENTRY ANIMATIONS ===== */
@@ -37,6 +38,16 @@ body {
     transform: scale(1);
     opacity: 1;
   }
+}
+
+@keyframes cardBounce {
+  0% { scale: 1; }
+  50% { scale: 1.02; }
+  100% { scale: 1; }
+}
+
+.animate-bounce-pop {
+  animation: cardBounce 0.3s ease-out;
 }
 
 @keyframes jellyInLeft {
@@ -174,14 +185,15 @@ body {
   top: calc(100% + 12px);
   z-index: 99999;
   width: 260px;
-  padding: 8px;
-  background: linear-gradient(135deg, rgba(13, 17, 23, 0.9), rgba(13, 17, 23, 0.7)) !important;
-  backdrop-filter: blur(24px) saturate(160%) !important;
-  -webkit-backdrop-filter: blur(24px) saturate(160%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 6px;
+  background: rgba(13, 17, 23, 0.95) !important;
+  backdrop-filter: blur(20px) saturate(120%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(120%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 20px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
   transform-origin: top center;
+  font-family: 'Inter', sans-serif !important;
 }
 
 #notifDropdown {
@@ -234,21 +246,25 @@ body {
 .peek-dropdown-item {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   width: 100%;
-  padding: 10px 14px;
+  padding: 8px 12px;
   border-radius: 14px;
-  transition: background .2s, border-color .2s, color .2s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   text-align: left;
   background: transparent;
   border: 1px solid transparent;
   cursor: pointer;
-  font-family: inherit;
-  color: #fff;
+  font-family: 'Inter', sans-serif !important;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 13px;
+  font-weight: 700;
 }
 
 .peek-dropdown-item:hover {
   background: rgba(255, 255, 255, 0.04);
+  color: #fff;
+  transform: translateX(4px);
 }
 
 .peek-dropdown-item.active {
@@ -273,7 +289,7 @@ body {
 
 .dropdown-name {
   font-size: 11px;
-  font-weight: 500;
+  font-weight: 600;
   color: rgba(255, 255, 255, 0.3);
   margin-top: 2px;
 }
@@ -325,9 +341,10 @@ body {
 
 .notif-title {
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 800;
   color: #fff;
   line-height: 1.2;
+  letter-spacing: -0.01em;
 }
 
 .notif-desc {
