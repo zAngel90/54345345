@@ -1294,10 +1294,11 @@ document.getElementById('clearNotifsBtn').addEventListener('click', (e) => {
 });
 
 document.addEventListener('click', () => {
-  document.getElementById('currencyDropdown').classList.add('hidden');
-  document.getElementById('sortDropdown').classList.add('hidden');
-  document.getElementById('notifDropdown').classList.add('hidden');
-  document.getElementById('userDropdown').classList.add('hidden');
+  const drops = ['currencyDropdown', 'sortDropdown', 'notifDropdown', 'userDropdown'];
+  drops.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.add('hidden');
+  });
 });
 document.querySelectorAll('.peek-dropdown-item[data-sort]').forEach(b => b.addEventListener('click', (e) => {
   const sortValue = b.getAttribute('data-sort');
