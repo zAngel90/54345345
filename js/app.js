@@ -1,6 +1,6 @@
 // Version: 1.2.0 - Final Trade Redesign
-const API_BASE_URL = 'https://lotus-sells-type-pursuit.trycloudflare.com/api';
-const SERVER_URL = 'https://lotus-sells-type-pursuit.trycloudflare.com';
+const API_BASE_URL = 'https://ate-lil-commissioners-thursday.trycloudflare.com/api';
+const SERVER_URL = 'https://ate-lil-commissioners-thursday.trycloudflare.com';
 
 let CURRENCY_RATES = {
   'USD': { symbol: '$', rate: 1, flag: 'us' },
