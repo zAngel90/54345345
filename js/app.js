@@ -1,6 +1,6 @@
 // Version: 1.2.0 - Final Trade Redesign
-const API_BASE_URL = 'https://ate-lil-commissioners-thursday.trycloudflare.com/api';
-const SERVER_URL = 'https://ate-lil-commissioners-thursday.trycloudflare.com';
+const API_BASE_URL = 'https://api.vitria.cc/api';
+const SERVER_URL = 'https://api.vitria.cc';
 
 let CURRENCY_RATES = {
   'USD': { symbol: '$', rate: 1, flag: 'us' },
