@@ -18,7 +18,7 @@ async function fetchCurrencies() {
       CURRENCY_RATES = {};
       activeCurrencies.forEach(c => {
         CURRENCY_RATES[c.code] = {
-          symbol: c.symbol,
+          symbol: c.code === 'PEN' ? 'S/' : (c.symbol || '$'),
           rate: c.rate,
           flag: c.flag
         };
@@ -564,8 +564,8 @@ function renderSeoInfo() {
 }
 
 // ===== HELPERS =====
-function fmt(p) { const c = CURRENCY_RATES[state.currency]; const v = p * c.rate; return c.symbol + (v >= 1000 ? v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : v.toFixed(2)) + ' ' + state.currency; }
-function fmtByCurr(p, curr) { const c = CURRENCY_RATES[curr] || CURRENCY_RATES['USD']; const v = p * c.rate; return c.symbol + (v >= 1000 ? v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : v.toFixed(2)) + ' ' + curr; }
+function fmt(p) { const c = CURRENCY_RATES[state.currency]; const v = p * c.rate; return c.symbol + (v >= 1000 ? v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : v.toFixed(2)); }
+function fmtByCurr(p, curr) { const c = CURRENCY_RATES[curr] || CURRENCY_RATES['USD']; const v = p * c.rate; return c.symbol + (v >= 1000 ? v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : v.toFixed(2)); }
 function formatPrice(p) { return p >= 1000 ? p.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : p.toFixed(2); }
 function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2500); }
 function badgeClass(badge, rarity) { if (badge === 'hot') return 'badge-hot'; if (badge === 'new') return 'badge-new'; if (badge === 'trending') return 'badge-trending'; if (rarity === 'Mythic') return 'badge-mythic'; if (rarity === 'Legendary') return 'badge-legendary'; if (rarity === 'Epic') return 'badge-epic'; return 'badge-rare'; }
@@ -595,22 +595,26 @@ function sortProds(arr) {
 
 // ===== RENDER CARD =====
 function getRarityColor(rarity) {
+  if (!rarity) return '#ffffff';
+  const r = rarity.toLowerCase();
   const colors = {
-    'Mythic': '#f59e0b',
-    'Legendary': '#8b5cf6',
-    'Epic': '#d946ef',
-    'Rare': '#3b82f6',
-    'Uncommon': '#10b981',
-    'Common': '#9ca3af'
+    'godly': '#8b5cf6',
+    'ancient': '#ef4444',
+    'unique': '#db2777',
+    'legendary': '#8b5cf6',
+    'epic': '#d946ef',
+    'rare': '#3b82f6',
+    'uncommon': '#10b981',
+    'common': '#9ca3af'
   };
-  return colors[rarity] || '#ffffff';
+  return colors[r] || '#ffffff';
 }
 
 function renderCard(p) {
-  const pd = {
-    main: (p.price * CURRENCY_RATES[state.currency].rate).toLocaleString('en-US', { minimumFractionDigits: 2 }),
-    curr: state.currency
-  };
+  const c = CURRENCY_RATES[state.currency];
+  const priceVal = (p.price * c.rate);
+  const formattedPrice = priceVal >= 1000 ? priceVal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : priceVal.toFixed(2);
+  const symbol = c.symbol;
 
   const badgeHtml = p.badge ? `<span class="card-badge-el ${badgeClass(p.badge, p.rarity)}">${badgeLabel(p.badge, p.rarity)}</span>` : '';
   let themeColor = p.color || getRarityColor(p.rarity);
@@ -657,61 +661,93 @@ function renderCard(p) {
 
   // Themes based on rarity
   let themeClass = '';
-  // Solo aplicamos el tema inmersivo (fondo rosa/púrpura) a los LIMITEDS
-  const isLimitedGodlyOrUnique = (r === 'UNIQUE' || r === 'GODLY') && p.game === 'limiteds';
+  // Separamos Limiteds (Unique/Godly/Legendary) de los Juegos in-game
+  const isPremiumLimited = (r === 'UNIQUE' || r === 'GODLY' || r === 'LEGENDARY') && p.game === 'limiteds';
+  const isInGameItem = p.game && p.game !== 'limiteds';
+  const isPremiumTheme = isPremiumLimited || isInGameItem;
 
-  if (isLimitedGodlyOrUnique) {
+  // Lógica de colores separada
+  // Lógica de colores separada - NADA de fucsia para items in-game
+  // Lógica de colores separada - NADA de fucsia para items in-game
+  if (isPremiumLimited) {
+    if (r === 'UNIQUE') themeColor = '#db2777'; // Fuchsia
+    else if (r === 'GODLY') themeColor = '#eab308'; // Oro/Godly
+    else if (r === 'LEGENDARY') themeColor = '#eab308'; // Oro para Legendary Limiteds
+    
     themeClass = r === 'UNIQUE' ? 'theme-unique' : 'theme-godly';
-    themeColor = '#db2777'; // Forzar rosa para Limiteds Premium
-  } else if (r === 'GODLY' || r === 'UNIQUE') {
-    // Si es MM2 o normal, NO usamos el tema inmersivo, solo la clase para el notch
-    themeClass = r === 'UNIQUE' ? 'theme-unique' : 'theme-godly';
+  } else if (isInGameItem) {
+    // Si el admin no puso color, usamos el de la rareza, pero NUNCA forzamos el fucsia de Limiteds
     themeColor = p.color || getRarityColor(p.rarity);
+    // Si por alguna razón sigue siendo el fucsia de Limiteds, lo cambiamos a un azul premium por defecto
+    if (themeColor.toLowerCase() === '#db2777') themeColor = '#3b82f6';
+    themeClass = 'theme-ingame-premium';
+  } else {
+    themeColor = getRarityColor(p.rarity);
+    themeClass = (r === 'GODLY' || r === 'UNIQUE') ? (r === 'UNIQUE' ? 'theme-unique' : 'theme-godly') : '';
   }
 
-  const isPremiumTheme = isLimitedGodlyOrUnique;
-
-  // High-end Glassmorphism Style
-  const cardStyle = `
+  // High-end Glassmorphism Style - Separado para no afectar Limiteds
+  const cardStyle = isPremiumLimited ? `
     --theme-color: ${themeColor};
-    background: linear-gradient(165deg, ${isPremiumTheme ? '#11060c' : '#0d1117'} 60%, ${themeColor}15) !important;
+    /* UNIQUE usa fondo vino (#11060c), Legendary/Godly usan fondo dorado profundo (#161004) */
+    background: linear-gradient(165deg, ${r === 'UNIQUE' ? '#11060c' : '#161004'} 60%, ${themeColor}15 100%) !important;
     backdrop-filter: blur(16px) saturate(180%) !important;
     -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
-    border: 1px solid ${isPremiumTheme ? 'transparent' : `${themeColor}30`} !important;
-    box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.45), inset 0 0 0 1px ${themeColor}10 !important;
+    border: 1px solid ${themeColor}33 !important;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45), 0 0 35px ${themeColor}15 !important;
+    padding-bottom: 0 !important;
+    margin-bottom: 0 !important;
+  ` : `
+    --theme-color: ${themeColor};
+    background: linear-gradient(165deg, #0a0d14 40%, ${themeColor}35 100%) !important;
+    backdrop-filter: blur(20px) saturate(200%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(200%) !important;
+    border: 1px solid ${themeColor}50 !important;
+    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.5), 0 0 35px ${themeColor}20 !important;
     padding-bottom: 0 !important;
     margin-bottom: 0 !important;
   `;
 
   return `<div class="product-card ${themeClass}" data-id="${p.id}" onclick="addToCart('${p.id}',event)" style="${cardStyle}">
     ${topBadgeHtml}
-    <div class="added-overlay">
-      <div class="check-circle">
+    <div class="added-overlay" style="background: rgba(20, 32, 20, 0.4)">
+      <div class="check-circle" style="background: #22c55e; box-shadow: 0 0 30px rgba(34, 197, 94, 0.3)">
         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
       </div>
     </div>
-    <div class="card-img-wrap" style="background: radial-gradient(circle at center, ${themeColor}25 0%, transparent 80%)">
+    <div class="card-img-wrap" style="background: ${isPremiumLimited ? 
+      `radial-gradient(circle at center, ${themeColor}35 0%, transparent 85%)` : 
+      `radial-gradient(circle at center, ${themeColor}75 0%, ${themeColor}10 70%, transparent 100%)`}">
       ${isOutOfStock ? `<div class="out-of-stock-overlay"><div class="out-of-stock-label">SIN STOCK</div></div>` : ''}
       ${badgeHtml}
       <img src="${p.img}" alt="${p.name}" loading="lazy">
     </div>
-    <div class="card-info" style="background: linear-gradient(to bottom, transparent, ${themeColor}05, rgba(0,0,0,0.5))">
+    <div class="card-info" style="background: transparent">
       <div class="flex items-center mb-1">
         ${rarityLabelHtml}
         <span class="card-year ml-auto">${p.year || '2026'}</span>
       </div>
       <h3 class="card-title">${p.name}</h3>
       ${subtitleHtml}
-      <div class="card-price-row">
+      <div class="card-price-row" style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px; margin-top: auto;">
         <div class="price-box">
-          <span class="card-price">${pd.main}</span>
-          <span class="card-currency">${pd.curr}</span>
+          <div class="flex items-baseline gap-1">
+            <span class="text-[13px] font-black text-white uppercase">${symbol}</span>
+            <span class="card-price">${formattedPrice}</span>
+          </div>
         </div>
-        <button class="card-cart-btn ${isOutOfStock ? 'out-of-stock' : ''}" onclick="addToCart('${p.id}',event)">
-          ${isOutOfStock ?
-      `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>` :
-      `<svg class="cart-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg><span class="plus-icon">+</span>`
+        <button class="soft-btn ${isOutOfStock ? 'out-of-stock' : ''}" onclick="addToCart('${p.id}',event)">
+          <span class="soft-btn__wrapper">
+            <span class="soft-btn__content">
+              ${isOutOfStock ?
+      `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>` :
+      `<div class="flex items-center justify-center relative text-white">
+                  <svg class="cart-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+                  <span style="position: absolute; top: -7px; right: -7px; font-size: 13px; font-weight: 500; color: #fff;">+</span>
+                </div>`
     }
+            </span>
+          </span>
         </button>
       </div>
     </div>
@@ -849,6 +885,7 @@ function renderCatalog() {
         </div>`;
     });
   } else {
+    let sectionIdx = 0;
     Object.keys(grouped).forEach(section => {
       const items = grouped[section];
 
@@ -869,11 +906,17 @@ function renderCatalog() {
         iconName = state.categoryIcons[section];
       }
 
+      // Estilo para el icono de sección: El primero es ámbar/naranja, el resto gris
+      const isFirstSection = sectionIdx === 0;
+      const headerIconStyle = isFirstSection 
+        ? 'background: rgba(249, 115, 22, 0.15); border-color: rgba(249, 115, 22, 0.3); color: #fb923c; box-shadow: 0 0 15px rgba(249, 115, 22, 0.1);'
+        : 'background: rgba(255, 255, 255, 0.05); border-color: rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.4);';
+
       html += `
         <div class="space-y-6 mb-12">
           <div class="section-header">
-            <div class="section-icon-wrap" style="background: rgba(59, 130, 246, 0.05); border-color: rgba(59, 130, 246, 0.1);">
-              <i data-lucide="${iconName}" style="width: 18px; height: 18px; color: #3b82f6;"></i>
+            <div class="section-icon-wrap" style="${headerIconStyle}">
+              <i data-lucide="${iconName}" style="width: 18px; height: 18px;"></i>
             </div>
             <div class="section-info">
               <h2 class="section-title-text">${section}</h2>
@@ -882,6 +925,8 @@ function renderCatalog() {
           </div>
           <div class="product-grid">${items.map(renderCard).join('')}</div>
         </div>`;
+      
+      sectionIdx++;
     });
 
     // Ejecutar Lucide para transformar los iconos nuevos
@@ -1629,7 +1674,7 @@ window.selectRobloxUser = function (id, name, displayName) {
 
   const resultsDiv = document.getElementById('userSearchResults');
   const avatarUrl = `${SERVER_URL}/api/users/avatar/${id}`;
-  
+
   resultsDiv.innerHTML = `
     <div class="user-result-item selected">
       <img src="${avatarUrl}" class="user-result-avatar" alt="" onerror="this.src='https://ui-avatars.com/api/?name=${name}&background=random'">

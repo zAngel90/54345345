@@ -41,9 +41,17 @@ body {
 }
 
 @keyframes cardBounce {
-  0% { scale: 1; }
-  50% { scale: 1.02; }
-  100% { scale: 1; }
+  0% {
+    scale: 1;
+  }
+
+  50% {
+    scale: 1.02;
+  }
+
+  100% {
+    scale: 1;
+  }
 }
 
 .animate-bounce-pop {
@@ -652,7 +660,7 @@ body {
 .product-card:hover {
   transform: translateY(-8px);
   border-color: var(--theme-color) !important;
-  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.6), 0 0 20px var(--theme-color)33 !important;
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.6), 0 0 20px var(--theme-color) !important;
 }
 
 /* Efecto Brillo Cristal */
@@ -679,8 +687,8 @@ body {
 
 /* Efecto Añadido al Carrito */
 .product-card.is-added {
-  background: var(--theme-color)33 !important;
-  /* Theme color with 20% opacity */
+  background: var(--theme-color) !important;
+  opacity: 0.8;
   border-color: var(--theme-color) !important;
 }
 
@@ -823,10 +831,9 @@ body {
 }
 
 .label-unique {
-  background: #be185d;
-  /* rose-700 */
+  background: var(--theme-color, #be185d);
   color: #fff;
-  box-shadow: 0 0 10px rgba(190, 24, 93, 0.3);
+  box-shadow: 0 0 10px var(--theme-color, rgba(190, 24, 93, 0.3));
 }
 
 .label-legendary {
@@ -836,19 +843,29 @@ body {
 }
 
 .label-godly {
-  background: #854d0e;
-  /* yellow-800 */
+  background: var(--theme-color, #854d0e);
   color: #fef08a;
-  box-shadow: 0 0 12px rgba(234, 179, 8, 0.2);
+  box-shadow: 0 0 12px var(--theme-color, rgba(234, 179, 8, 0.2));
 }
 
 /* Themes por Rareza para la Card Completa */
-.product-card.theme-unique,
-.product-card.theme-godly {
-  background: linear-gradient(165deg, #11060c 60%, rgba(219, 39, 119, 0.15)) !important;
-  border: 1px solid rgba(219, 39, 119, 0.2) !important;
+.product-card.theme-unique {
+  background: linear-gradient(165deg, #11060c 60%, var(--theme-color)15) !important;
+  border: 1px solid var(--theme-color)33 !important;
   position: relative;
-  box-shadow: 0 10px 30px rgba(219, 39, 119, 0.05) !important;
+  box-shadow: 0 10px 30px var(--theme-color)0D !important;
+}
+
+.product-card.theme-godly {
+  background: linear-gradient(165deg, #11060c 60%, rgba(234, 179, 8, 0.1)) !important;
+  border: 1px solid rgba(234, 179, 8, 0.2) !important;
+  position: relative;
+  box-shadow: 0 10px 30px rgba(234, 179, 8, 0.05) !important;
+}
+
+.product-card.theme-ingame-premium {
+  /* Fondo y borde se manejan por JS para la transparencia, pero mantenemos la estructura */
+  position: relative;
 }
 
 .product-card {
@@ -897,20 +914,37 @@ body {
 
 .product-card.theme-godly::before {
   background: linear-gradient(90deg, transparent, #eab308 30%, #eab308 70%, transparent);
-  box-shadow: 0 0 15px rgba(234, 179, 8, 0.6);
+  box-shadow: 0 0 15px rgba(234, 179, 8, 0.8);
 }
 
-.product-card.theme-unique::before {
-  background: linear-gradient(90deg, transparent, #db2777 30%, #db2777 70%, transparent);
-  box-shadow: 0 0 15px rgba(219, 39, 119, 0.6);
+.product-card.theme-unique::before,
+.product-card.theme-ingame-premium::before {
+  background: linear-gradient(90deg, transparent, var(--theme-color) 30%, var(--theme-color) 70%, transparent);
+  box-shadow: 0 0 20px var(--theme-color);
+}
+
+/* El Notch para los In-Game con color dinámico */
+.product-card.theme-ingame-premium::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  /* Bajado un poco para que se vea bien */
+  left: 20px;
+  right: 20px;
+  height: 3px;
+  border-radius: 10px;
+  z-index: 10;
+  background: linear-gradient(90deg, transparent, var(--theme-color) 30%, var(--theme-color) 70%, transparent);
+  box-shadow: 0 0 15px var(--theme-color);
 }
 
 .product-card.theme-godly {
   box-shadow: 0 0 35px rgba(234, 179, 8, 0.05) !important;
 }
 
-.product-card.theme-unique {
-  box-shadow: 0 0 35px rgba(219, 39, 119, 0.05) !important;
+.product-card.theme-unique,
+.product-card.theme-ingame-premium {
+  box-shadow: 0 0 35px var(--theme-color) !important;
 }
 
 .card-subtitle {
@@ -1318,17 +1352,19 @@ color: rgba(255, 255, 255, 0.7);
 
 /* ===== ANIMATIONS ===== */
 @keyframes jelly-in {
-  0% { 
-    opacity: 0; 
-    transform: translateY(-15px) scale(0.9); 
+  0% {
+    opacity: 0;
+    transform: translateY(-15px) scale(0.9);
   }
-  60% { 
-    opacity: 1; 
-    transform: translateY(2px) scale(1.05); 
+
+  60% {
+    opacity: 1;
+    transform: translateY(2px) scale(1.05);
   }
-  100% { 
-    opacity: 1; 
-    transform: translateY(0) scale(1); 
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
 }
 
@@ -2096,4 +2132,94 @@ color: rgba(255, 255, 255, 0.7);
   color: rgba(255, 255, 255, 0.3) !important;
   cursor: not-allowed;
   border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* ===== TILT BUTTON (SOFT-BTN) - FROM ACCOUNT.TSX ===== */
+.soft-btn {
+  --button-raise-level: 6px;
+  --press-inset: 4px;
+  --transform-speed: 160ms;
+  --radius: 12px;
+  --surface-color: rgba(255, 255, 255, 0.08);
+  --side-color: rgba(255, 255, 255, 0.04);
+  --text-color: #ffffff;
+  --border-color: rgba(255, 255, 255, 0.1);
+  --border-width: 1px;
+  --glare-rgb: 255, 255, 255;
+  --glare-alpha: 0.1;
+  position: relative;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  user-select: none;
+  width: auto;
+  min-width: 44px;
+  height: 44px;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  display: inline-block;
+}
+.soft-btn:focus { outline: none; }
+.soft-btn__wrapper {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+}
+.soft-btn__wrapper::before {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: calc(100% - var(--button-raise-level));
+  background: var(--side-color);
+  border-radius: var(--radius);
+  z-index: 1;
+}
+.soft-btn__content {
+  position: relative;
+  width: 100%;
+  padding: 0 24px;
+  height: calc(100% - var(--button-raise-level));
+  background: var(--surface-color);
+  color: var(--text-color);
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateY(0);
+  transition: transform var(--transform-speed) cubic-bezier(0.2, 1, 0.2, 1);
+  will-change: transform;
+  z-index: 2;
+  box-shadow: inset 0 0 0 var(--border-width) var(--border-color);
+  overflow: hidden;
+}
+
+/* Glare Layer */
+.soft-btn__content::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(var(--glare-rgb), var(--glare-alpha)) 0%, transparent 50%, rgba(var(--glare-rgb), calc(var(--glare-alpha) * 0.5)) 100%);
+  z-index: 3;
+  opacity: 0.5;
+  transition: opacity 0.3s;
+}
+
+.soft-btn:hover .soft-btn__content {
+  transform: translateY(1px);
+}
+
+.soft-btn:active .soft-btn__content {
+  transform: translateY(var(--press-inset));
+  transition-duration: 80ms;
+}
+
+.soft-btn:active .soft-btn__content::after {
+  opacity: 1;
+}
+.soft-btn--success {
+  --surface-color: #10b981;
+  --side-color: #059669;
 }
