@@ -1600,10 +1600,11 @@ document.getElementById('robloxUserInput').addEventListener('input', (e) => {
 
       if (data.success && data.data && data.data.length > 0) {
         resultsDiv.innerHTML = data.data.map(user => {
-          const avatar = user.avatarUrl.startsWith('http') ? user.avatarUrl : `${SERVER_URL}${user.avatarUrl}`;
+          // Usar el proxy de avatar del servidor para evitar fallos si no viene avatarUrl
+          const avatar = `${SERVER_URL}/api/users/avatar/${user.id}`;
           return `
             <div class="user-result-item" onclick="selectRobloxUser('${user.id}', '${user.name}', '${user.displayName}')">
-              <img src="${avatar}" class="user-result-avatar" alt="">
+              <img src="${avatar}" class="user-result-avatar" alt="" onerror="this.src='https://ui-avatars.com/api/?name=${user.name}&background=random'">
               <div>
                 <p class="text-sm font-bold text-white">${user.displayName}</p>
                 <p class="text-[10px] text-white/30">@${user.name}</p>
@@ -1627,9 +1628,11 @@ window.selectRobloxUser = function (id, name, displayName) {
   selectedUser = { id, name, displayName };
 
   const resultsDiv = document.getElementById('userSearchResults');
+  const avatarUrl = `${SERVER_URL}/api/users/avatar/${id}`;
+  
   resultsDiv.innerHTML = `
     <div class="user-result-item selected">
-      <img src="${SERVER_URL}/api/users/avatar/${id}" class="user-result-avatar" alt="">
+      <img src="${avatarUrl}" class="user-result-avatar" alt="" onerror="this.src='https://ui-avatars.com/api/?name=${name}&background=random'">
       <div>
         <p class="text-sm font-bold text-white">${displayName}</p>
         <p class="text-[10px] text-white/30">@${name}</p>
@@ -1647,7 +1650,7 @@ window.selectRobloxUser = function (id, name, displayName) {
   saveRecentUser({
     name,
     id,
-    avatar: `${SERVER_URL}/api/users/avatar/${id}`
+    avatar: avatarUrl
   });
 };
 
@@ -1883,16 +1886,19 @@ document.getElementById('tradeRobloxInput').addEventListener('input', (e) => {
       const res = await fetch(`${SERVER_URL}/api/users/search?username=${q}`);
       const data = await res.json();
       if (data.success && data.data && data.data.length > 0) {
-        resultsDiv.innerHTML = data.data.map(user => `
+        resultsDiv.innerHTML = data.data.map(user => {
+          const avatar = `${SERVER_URL}/api/users/avatar/${user.id}`;
+          return `
             <div class="user-result-item" onclick="selectTradeUser('${user.id}', '${user.name}', '${user.displayName}')">
-              <img src="${user.avatarUrl.startsWith('http') ? user.avatarUrl : `${SERVER_URL}${user.avatarUrl}`}" class="user-result-avatar" alt="">
+              <img src="${avatar}" class="user-result-avatar" alt="" onerror="this.src='https://ui-avatars.com/api/?name=${user.name}&background=random'">
               <div class="flex-1">
                 <p class="text-sm font-bold text-white">${user.displayName}</p>
                 <p class="text-[10px] text-white/30">@${user.name}</p>
               </div>
               <svg class="text-white/10" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m9 18 6-6-6-6"/></svg>
             </div>
-          `).join('');
+          `;
+        }).join('');
         if (status) status.textContent = 'Selecciona tu perfil';
       } else {
         resultsDiv.innerHTML = '';
