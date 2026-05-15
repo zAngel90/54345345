@@ -94,6 +94,7 @@ async function initApp() {
         label: g.name,
         image: g.image ? (g.image.startsWith('http') ? g.image : `${SERVER_URL}${g.image}`) : '',
         hidden: !!g.hidden,
+        categories: g.categories || null,
         count: 0
       }));
     }
@@ -568,8 +569,17 @@ function fmt(p) { const c = CURRENCY_RATES[state.currency]; const v = p * c.rate
 function fmtByCurr(p, curr) { const c = CURRENCY_RATES[curr] || CURRENCY_RATES['USD']; const v = p * c.rate; return c.symbol + (v >= 1000 ? v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : v.toFixed(2)); }
 function formatPrice(p) { return p >= 1000 ? p.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : p.toFixed(2); }
 function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2500); }
-function badgeClass(badge, rarity) { if (badge === 'hot') return 'badge-hot'; if (badge === 'new') return 'badge-new'; if (badge === 'trending') return 'badge-trending'; if (rarity === 'Mythic') return 'badge-mythic'; if (rarity === 'Legendary') return 'badge-legendary'; if (rarity === 'Epic') return 'badge-epic'; return 'badge-rare'; }
-function badgeLabel(badge, rarity) { if (badge === 'hot') return 'HOT'; if (badge === 'new') return 'NEW'; if (badge === 'trending') return 'TOP'; return (rarity || 'ITEM').toUpperCase(); }
+function badgeClass(badge, rarity) { 
+  const b = (badge || '').toLowerCase();
+  if (b === 'hot' || b === 'fuego') return 'badge-hot'; 
+  if (b === 'new' || b === 'nuevo') return 'badge-new'; 
+  if (b === 'trending' || b === 'top') return 'badge-trending'; 
+  if (rarity === 'Mythic') return 'badge-mythic'; 
+  if (rarity === 'Legendary') return 'badge-legendary'; 
+  if (rarity === 'Epic') return 'badge-epic'; 
+  return 'badge-rare'; 
+}
+function badgeLabel(badge, rarity) { return (badge || rarity || 'ITEM').toUpperCase(); }
 function sortProds(arr) {
   if (!arr || !arr.length) return [];
   const s = [...arr];
@@ -601,6 +611,7 @@ function getRarityColor(rarity) {
     'godly': '#8b5cf6',
     'ancient': '#ef4444',
     'unique': '#db2777',
+    'vintage': '#78350f',
     'legendary': '#8b5cf6',
     'epic': '#d946ef',
     'rare': '#3b82f6',
@@ -614,9 +625,28 @@ function renderCard(p) {
   const c = CURRENCY_RATES[state.currency];
   const priceVal = (p.price * c.rate);
   const formattedPrice = priceVal >= 1000 ? priceVal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : priceVal.toFixed(2);
-  const symbol = c.symbol;
+  let symbol = c.symbol;
+  if (symbol === 's/') symbol = 'S/';
 
-  const badgeHtml = p.badge ? `<span class="card-badge-el ${badgeClass(p.badge, p.rarity)}">${badgeLabel(p.badge, p.rarity)}</span>` : '';
+  const getBadgeIconHtml = (icon) => {
+    if (!icon) return '';
+    const icons = {
+      'trending-up': '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>',
+      'flame': '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.292 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>',
+      'sparkles': '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/></svg>',
+      'star': '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
+      'zap': '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>',
+      'crown': '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7Z"/></svg>'
+    };
+    return icons[icon] || '';
+  };
+
+  const badgeHtml = (p.badge && String(p.badge).trim() !== '') 
+    ? `<span class="card-badge-el ${badgeClass(p.badge, p.rarity)}">${getBadgeIconHtml(p.badgeIcon)} <span>${p.badge}</span></span>` 
+    : '';
+
+  if (p.badge) console.log('Badge detected for:', p.name, p.badge, p.badgeIcon);
+
   let themeColor = p.color || getRarityColor(p.rarity);
 
   // New Badges Logic
@@ -627,9 +657,8 @@ function renderCard(p) {
     topBadgeHtml = `<div class="card-top-badge badge-out-stock">Sin stock</div>`;
   } else if (p.onRequest) {
     topBadgeHtml = `<div class="card-top-badge badge-on-request">Bajo pedido</div>`;
-  } else if (p.stock > 0) {
-    topBadgeHtml = `<div class="card-top-badge badge-stock">${p.stock} uds</div>`;
   }
+  // Se elimina el badge de "X uds" por petición del usuario, ya que basta con el indicador bajo el título.
 
   // Rarity Detection Ultra-Aggressive
   let rarityLabelHtml = '';
@@ -640,13 +669,84 @@ function renderCard(p) {
     r = 'GODLY'; // En MM2 la mayoría son Godly
   }
 
+  // Lógica de temas y colores (Movida aquí arriba para que el badge use el color correcto)
+  const isPremiumLimited = (r === 'UNIQUE' || r === 'GODLY' || r === 'LEGENDARY') && p.game === 'limiteds';
+  const isInGameItem = p.game && p.game !== 'limiteds';
+  let themeClass = '';
+
+  if (isPremiumLimited) {
+    if (r === 'UNIQUE') themeColor = '#db2777'; // Fuchsia
+    else if (r === 'GODLY') themeColor = '#eab308'; // Oro/Godly
+    else if (r === 'LEGENDARY') themeColor = '#eab308'; // Oro para Legendary Limiteds
+    themeClass = r === 'UNIQUE' ? 'theme-unique' : 'theme-godly';
+  } else if (isInGameItem) {
+    themeColor = p.color || getRarityColor(p.rarity);
+    if (themeColor.toLowerCase() === '#db2777') themeColor = '#3b82f6';
+    themeClass = 'theme-ingame-premium';
+  } else {
+    themeColor = getRarityColor(p.rarity);
+    themeClass = (r === 'GODLY' || r === 'UNIQUE') ? (r === 'UNIQUE' ? 'theme-unique' : 'theme-godly') : '';
+  }
+
+  // Helper to darken color for the 3D side
+  const darkenColor = (hex, amount) => {
+    try {
+      let h = hex.replace('#', '');
+      if (h.length === 3) h = h.split('').map(c => c + c).join('');
+      let rValue = parseInt(h.slice(0, 2), 16);
+      let gValue = parseInt(h.slice(2, 4), 16);
+      let bValue = parseInt(h.slice(4, 6), 16);
+      rValue = Math.max(0, Math.floor(rValue * (1 - amount)));
+      gValue = Math.max(0, Math.floor(gValue * (1 - amount)));
+      bValue = Math.max(0, Math.floor(bValue * (1 - amount)));
+      return `#${rValue.toString(16).padStart(2, '0')}${gValue.toString(16).padStart(2, '0')}${bValue.toString(16).padStart(2, '0')}`;
+    } catch (e) { return 'rgba(0,0,0,0.5)'; }
+  };
+
+  const badgeFaceColor = p.badgeColor || themeColor;
+  const badgeSideColor = darkenColor(badgeFaceColor, 0.4);
+
+  // Intelligent text color detection
+  const getContrastColor = (hex, defaultLight = '#ffffff') => {
+    if (p.badgeTextColor) return p.badgeTextColor; // Prioridad total al color manual
+    try {
+      let h = hex.replace('#', '');
+      if (h.length === 3) h = h.split('').map(c => c + c).join('');
+      let rValue = parseInt(h.slice(0, 2), 16);
+      let gValue = parseInt(h.slice(2, 4), 16);
+      let bValue = parseInt(h.slice(4, 6), 16);
+      const brightness = (rValue * 299 + gValue * 587 + bValue * 114) / 1000;
+      return brightness > 140 ? '#000000' : defaultLight;
+    } catch (e) { return defaultLight; }
+  };
+
+  // MM2 & General Rarities (3D Premium Style)
+  const create3DBadge = (label, preferredText = '#fff') => {
+    const finalText = getContrastColor(badgeFaceColor, preferredText);
+    return `<div class="rarity-3d" style="--face-bg: ${badgeFaceColor}; --side-bg: ${badgeSideColor}; --text-color: ${finalText};">
+      <div class="rarity-3d-side"></div>
+      <div class="rarity-3d-face">${label}</div>
+    </div>`;
+  };
+
   if (r === 'UNIQUE') {
-    rarityLabelHtml = `<span class="rarity-label label-unique">UNIQUE</span>`;
-  } else if (r === 'LEGENDARY') {
-    rarityLabelHtml = `<span class="rarity-label label-legendary">LEGENDARY</span>`;
+    rarityLabelHtml = create3DBadge('UNIQUE');
+  } else if (r === 'ANCIENT') {
+    rarityLabelHtml = create3DBadge('ANCIENT', '#ffffff');
+  } else if (r === 'VINTAGE') {
+    rarityLabelHtml = create3DBadge('VINTAGE', '#fde68a');
   } else if (r === 'GODLY' || r.includes('GODLY')) {
-    r = 'GODLY'; // Normalizar
-    rarityLabelHtml = `<span class="rarity-label label-godly">GODLY</span>`;
+    rarityLabelHtml = create3DBadge('GODLY', '#fef08a');
+  } else if (r === 'LEGENDARY') {
+    rarityLabelHtml = create3DBadge('LEGENDARY');
+  } else if (r === 'EPIC') {
+    rarityLabelHtml = create3DBadge('EPIC');
+  } else if (r === 'RARE') {
+    rarityLabelHtml = create3DBadge('RARE');
+  } else if (r === 'UNCOMMON') {
+    rarityLabelHtml = create3DBadge('UNCOMMON');
+  } else if (r === 'COMMON') {
+    rarityLabelHtml = create3DBadge('COMMON');
   }
 
   // Subtitle Logic
@@ -657,33 +757,6 @@ function renderCard(p) {
     subtitleHtml = `<p class="card-subtitle">Bajo pedido · Lo conseguimos tras tu compra</p>`;
   } else if (p.stock > 0) {
     subtitleHtml = `<p class="card-subtitle">${p.stock} en stock</p>`;
-  }
-
-  // Themes based on rarity
-  let themeClass = '';
-  // Separamos Limiteds (Unique/Godly/Legendary) de los Juegos in-game
-  const isPremiumLimited = (r === 'UNIQUE' || r === 'GODLY' || r === 'LEGENDARY') && p.game === 'limiteds';
-  const isInGameItem = p.game && p.game !== 'limiteds';
-  const isPremiumTheme = isPremiumLimited || isInGameItem;
-
-  // Lógica de colores separada
-  // Lógica de colores separada - NADA de fucsia para items in-game
-  // Lógica de colores separada - NADA de fucsia para items in-game
-  if (isPremiumLimited) {
-    if (r === 'UNIQUE') themeColor = '#db2777'; // Fuchsia
-    else if (r === 'GODLY') themeColor = '#eab308'; // Oro/Godly
-    else if (r === 'LEGENDARY') themeColor = '#eab308'; // Oro para Legendary Limiteds
-    
-    themeClass = r === 'UNIQUE' ? 'theme-unique' : 'theme-godly';
-  } else if (isInGameItem) {
-    // Si el admin no puso color, usamos el de la rareza, pero NUNCA forzamos el fucsia de Limiteds
-    themeColor = p.color || getRarityColor(p.rarity);
-    // Si por alguna razón sigue siendo el fucsia de Limiteds, lo cambiamos a un azul premium por defecto
-    if (themeColor.toLowerCase() === '#db2777') themeColor = '#3b82f6';
-    themeClass = 'theme-ingame-premium';
-  } else {
-    themeColor = getRarityColor(p.rarity);
-    themeClass = (r === 'GODLY' || r === 'UNIQUE') ? (r === 'UNIQUE' ? 'theme-unique' : 'theme-godly') : '';
   }
 
   // High-end Glassmorphism Style - Separado para no afectar Limiteds
@@ -725,14 +798,14 @@ function renderCard(p) {
     <div class="card-info" style="background: transparent">
       <div class="flex items-center mb-1">
         ${rarityLabelHtml}
-        <span class="card-year ml-auto">${p.year || '2026'}</span>
+        ${(p.game === 'limiteds' || p.game === 'murder-mystery-2') ? `<span class="card-year ml-auto">${p.year || '2026'}</span>` : ''}
       </div>
       <h3 class="card-title">${p.name}</h3>
       ${subtitleHtml}
       <div class="card-price-row" style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px; margin-top: auto;">
         <div class="price-box">
           <div class="flex items-baseline gap-1">
-            <span class="text-[13px] font-black text-white uppercase">${symbol}</span>
+            <span class="text-[22px] font-bold text-white uppercase">${symbol}</span>
             <span class="card-price">${formattedPrice}</span>
           </div>
         </div>
@@ -755,7 +828,21 @@ function renderTabs() {
   if (!el) return;
   if (!state.activeGame) { el.innerHTML = ''; return; }
 
-  const tabs = GAME_CATEGORIES[state.activeGame] || ['Más Vendidos', 'Productos'];
+  // 1. Buscar si el juego tiene categorías personalizadas en la data del servidor
+  const currentGameObj = GAMES.find(g => g.id === state.activeGame);
+  let tabs = [];
+  
+  if (currentGameObj && currentGameObj.categories && currentGameObj.categories.length > 0) {
+    tabs = currentGameObj.categories;
+    // Si no incluye un "Ver Todo", lo añadimos al principio para que no se oculte nada por defecto
+    if (!tabs.some(t => t.toLowerCase() === 'ver todo' || t.toLowerCase() === 'más vendidos')) {
+      tabs = ['Ver Todo', ...tabs];
+    }
+  } else {
+    // 2. Fallback al mapeo estático
+    tabs = GAME_CATEGORIES[state.activeGame] || ['Ver Todo', 'Productos'];
+  }
+
   el.innerHTML = tabs.map(t => {
     return `
       <button class="category-tab ${t === activeTab ? 'active' : ''}" onclick="selectTab('${t}')">
@@ -820,7 +907,11 @@ function renderCatalog() {
     // Si estamos en un juego específico
     const gOk = state.activeGame ? p.game === state.activeGame : true;
     const sOk = state.search ? p.name.toLowerCase().includes(state.search.toLowerCase()) : true;
-    const tOk = activeTab === 'Más Vendidos' ? true : (p.category === activeTab);
+    // Filtrado por Pestaña/Categoría
+    // Si la pestaña es "Más Vendidos" o "Ver Todo" (ignorando mayúsculas), mostramos todo.
+    // De lo contrario, filtramos por la categoría exacta del producto.
+    const isShowAllTab = activeTab.toLowerCase() === 'más vendidos' || activeTab.toLowerCase() === 'ver todo';
+    const tOk = isShowAllTab ? true : (p.category === activeTab);
 
     // Excluir items que pertenecen explícitamente a MM2 o Limiteds de la vista normal
     const r = (p.rarity || p.badge || p.type || p.itemType || '').toUpperCase();
@@ -878,9 +969,23 @@ function renderCatalog() {
         </div>`;
     });
   } else {
-    let sectionIdx = 0;
-    Object.keys(grouped).forEach(section => {
+    // Vista de JUEGO (Categorías del admin o Type)
+    const currentGame = GAMES.find(g => g.id === state.activeGame);
+    const order = currentGame?.categories || [];
+    
+    // Ordenar las secciones según el orden del administrador
+    const sortedSections = Object.keys(grouped).sort((a, b) => {
+      const indexA = order.indexOf(a);
+      const indexB = order.indexOf(b);
+      if (indexA === -1 && indexB === -1) return a.localeCompare(b);
+      if (indexA === -1) return 1;
+      if (indexB === -1) return -1;
+      return indexA - indexB;
+    });
+
+    sortedSections.forEach(section => {
       const items = grouped[section];
+      const sectionIdx = sortedSections.indexOf(section);
 
       // Mapeo inteligente de iconos según el nombre de la categoría
       const s = section.toLowerCase();
@@ -894,19 +999,29 @@ function renderCatalog() {
       else if (s.includes('item') || s.includes('objeto') || s.includes('box')) iconName = 'package';
       else if (s.includes('limited')) iconName = 'crown';
 
-      // Si el cliente definió uno específico en la configuración, lo usamos
+      let sectionColor = null;
       if (state.categoryIcons && state.categoryIcons[section]) {
-        iconName = state.categoryIcons[section];
+        const mapping = state.categoryIcons[section];
+        if (typeof mapping === 'string') {
+          iconName = mapping;
+        } else {
+          iconName = mapping.icon || iconName;
+          sectionColor = mapping.color;
+        }
       }
 
-      // Estilo para el icono de sección: El primero es ámbar/naranja, el resto gris
-      const isFirstSection = sectionIdx === 0;
-      const headerIconStyle = isFirstSection 
-        ? 'background: rgba(249, 115, 22, 0.15); border-color: rgba(249, 115, 22, 0.3); color: #fb923c; box-shadow: 0 0 15px rgba(249, 115, 22, 0.1);'
-        : 'background: rgba(255, 255, 255, 0.05); border-color: rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.4);';
+      let headerIconStyle = '';
+      if (sectionColor && sectionColor !== '') {
+        headerIconStyle = `background: ${sectionColor}15; border-color: ${sectionColor}40; color: ${sectionColor}; box-shadow: 0 0 15px ${sectionColor}15;`;
+      } else {
+        const isFirstSection = sectionIdx === 0;
+        headerIconStyle = isFirstSection 
+          ? 'background: rgba(249, 115, 22, 0.15); border-color: rgba(249, 115, 22, 0.3); color: #fb923c; box-shadow: 0 0 15px rgba(249, 115, 22, 0.1);'
+          : 'background: rgba(255, 255, 255, 0.05); border-color: rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.4);';
+      }
 
       html += `
-        <div class="space-y-6 mb-12">
+        <div id="section-${section.replace(/\s+/g, '-').toLowerCase()}" class="space-y-6 mb-12">
           <div class="section-header">
             <div class="section-icon-wrap" style="${headerIconStyle}">
               <i data-lucide="${iconName}" style="width: 18px; height: 18px;"></i>
@@ -918,15 +1033,13 @@ function renderCatalog() {
           </div>
           <div class="product-grid">${items.map(renderCard).join('')}</div>
         </div>`;
-      
-      sectionIdx++;
     });
+  }
 
     // Ejecutar Lucide para transformar los iconos nuevos
     setTimeout(() => { if (window.lucide) lucide.createIcons(); }, 10);
     setTimeout(() => { if (window.lucide) lucide.createIcons(); }, 100);
     setTimeout(() => { if (window.lucide) lucide.createIcons(); }, 500);
-  }
 
   cat.innerHTML = html;
   renderSeoInfo();
@@ -1032,7 +1145,14 @@ function selectGame(id) {
 
     chip.style.display = 'flex';
     tabsWrap.style.display = 'block';
-    activeTab = 'Más Vendidos';
+    
+    // Obtenemos las pestañas y aseguramos que "Ver Todo" sea la primera si hay categorías
+    const customTabs = g.categories && g.categories.length > 0 ? g.categories : (GAME_CATEGORIES[id] || []);
+    const finalTabs = customTabs.includes('Ver Todo') || customTabs.includes('Más Vendidos') 
+      ? customTabs 
+      : ['Ver Todo', ...customTabs];
+    
+    activeTab = finalTabs[0];
 
     if (window.lucide) setTimeout(() => lucide.createIcons(), 50);
   } else {

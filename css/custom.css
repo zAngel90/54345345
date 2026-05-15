@@ -778,8 +778,8 @@ body {
 }
 
 .card-title {
-  font-size: 13px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 600;
   color: #fff;
   line-height: 1.3;
 }
@@ -819,33 +819,48 @@ body {
   box-shadow: 0 0 15px rgba(74, 222, 128, 0.2);
 }
 
-.rarity-label {
+.rarity-3d {
+  position: relative;
   display: inline-flex;
-  padding: 2px 8px;
-  border-radius: 8px;
-  font-size: 9px;
+  padding-bottom: 2.5px;
+  background: transparent;
+  border: none;
+}
+
+.rarity-3d-face {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 7px;
+  border-radius: 5px;
+  font-size: 10px;
   font-weight: 900;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
-  line-height: 1;
+  letter-spacing: 0.05em;
+  color: var(--text-color, #fff);
+  background: var(--face-bg);
+  z-index: 2;
+  transform: translateY(-2px);
+  text-shadow: 0 1px 3px rgba(0,0,0,0.6), 0 0 1px rgba(0,0,0,0.4);
+  box-shadow: 
+    inset 0 1px 1px rgba(255,255,255,0.3),
+    0 1px 3px rgba(0,0,0,0.3);
+  width: auto;
 }
 
-.label-unique {
-  background: var(--theme-color, #be185d);
-  color: #fff;
-  box-shadow: 0 0 10px var(--theme-color, rgba(190, 24, 93, 0.3));
+.rarity-3d-side {
+  position: absolute;
+  inset: 0;
+  border-radius: 5px;
+  background: var(--side-bg);
+  z-index: 1;
 }
 
-.label-legendary {
-  background: #d97706;
-  /* amber-600 */
-  color: #fff;
-}
-
-.label-godly {
-  background: var(--theme-color, #854d0e);
-  color: #fef08a;
-  box-shadow: 0 0 12px var(--theme-color, rgba(234, 179, 8, 0.2));
+/* Hover Effect subtle para el Badge */
+.product-card:hover .rarity-3d-face {
+  transform: translateY(-1px);
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 /* Themes por Rareza para la Card Completa */
@@ -978,11 +993,73 @@ body {
 }
 
 .card-price {
-  font-size: 18px;
-  font-weight: 800;
+  font-size: 22px;
+  font-weight: 700;
   color: #fff;
   line-height: 1;
 }
+
+/* Status Badge Styles (Top Left) */
+.card-badge-el {
+  position: absolute !important;
+  top: 12px !important;
+  left: 12px !important;
+  display: flex !important;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  background: rgba(15, 23, 42, 0.8) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 900;
+  color: #fff;
+  z-index: 99 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+  transition: all 0.3s ease;
+}
+
+.card-badge-el span {
+  line-height: 1;
+}
+
+.card-badge-el svg {
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 5px currentColor);
+}
+
+.badge-hot { 
+  color: #ff4b4b !important; 
+  border-color: rgba(255, 75, 75, 0.4) !important; 
+  background: rgba(255, 75, 75, 0.2) !important; 
+}
+.badge-new { 
+  color: #10b981 !important; 
+  border-color: rgba(16, 185, 129, 0.4) !important; 
+  background: rgba(16, 185, 129, 0.2) !important; 
+}
+.badge-trending { 
+  color: #fbbf24 !important; 
+  border-color: rgba(251, 191, 36, 0.4) !important; 
+  background: rgba(251, 191, 36, 0.2) !important; 
+}
+.badge-rare {
+  color: #60a5fa !important;
+  border-color: rgba(96, 165, 250, 0.4) !important;
+}
+
+.product-card:hover .card-badge-el {
+  transform: translateY(-2px) scale(1.05);
+  background: rgba(15, 23, 42, 0.95) !important;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+
 
 .card-currency {
   font-size: 10px;
