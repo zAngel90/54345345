@@ -1692,25 +1692,56 @@ window.openCheckoutModal = function () {
     return;
   }
 
-  // Si hay Limiteds en el carrito, seguimos usando el modal de trade local para elegir el item a dar
-  const hasLimiteds = state.cart.some(item => String(item.game).toLowerCase().includes('limited'));
-  if (hasLimiteds) {
-    // Abrimos el modal de trade local (donde se elige el item que el usuario va a dar)
+  // Solo los Limiteds usan el modal de trade avanzado (donde se elige item a dar)
+  const isLimited = state.cart.some(item => {
+    const g = String(item.game || '').toLowerCase();
+    return g.includes('limited');
+  });
+  
+  if (isLimited) {
     openTradeModal(state.cart[0].id);
     return;
   }
 
-  // Para MM2 y productos normales, mandamos DIRECTO al nuevo checkout de React
-  const checkoutData = {
-    action: 'checkout',
-    user: selectedUser || { name: '', id: '' },
-    cart: state.cart,
-    total: state.cart.reduce((s, x) => s + (x.price * CURRENCY_RATES[state.currency].rate * x.qty), 0),
-    currency: state.currency
-  };
-
-  window.parent.postMessage(checkoutData, '*');
+  // Para MM2 y productos normales, abrimos el modal de selección de usuario antes de ir al checkout
+  document.getElementById('checkoutModal').classList.remove('hidden');
+  renderCheckoutSummary();
 };
+
+function renderCheckoutSummary() {
+  const container = document.getElementById('modalItemsList');
+  const amountEl = document.getElementById('modalTotalAmount');
+  const currencyEl = document.getElementById('modalTotalCurrency');
+  
+  if (!container || !amountEl || !currencyEl) return;
+  
+  const totalUSD = state.cart.reduce((s, x) => s + (x.price * x.qty), 0);
+  const config = CURRENCY_RATES[state.currency] || CURRENCY_RATES['PEN'];
+  const totalFinal = totalUSD * config.rate;
+  
+  // Actualizar lista de items
+  container.innerHTML = state.cart.map(item => {
+    const itemTotal = item.price * item.qty;
+    return `
+      <div class="flex items-center gap-3 p-3 bg-white/5 rounded-2xl border border-white/10">
+        <img src="${item.img}" class="w-10 h-10 object-contain rounded-lg">
+        <div class="flex-1 min-w-0">
+          <p class="text-[11px] font-bold text-white truncate">${item.name}</p>
+          <p class="text-[9px] text-white/30 uppercase tracking-tight">${item.game}</p>
+        </div>
+        <div class="text-right">
+          <p class="text-[11px] font-black text-white">${fmtByCurr(itemTotal, state.currency)}</p>
+          ${item.qty > 1 ? `<p class="text-[8px] text-white/20 font-bold">${item.qty} uds.</p>` : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  // Actualizar Total
+  amountEl.textContent = config.symbol + (totalFinal >= 1000 ? totalFinal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : totalFinal.toFixed(2));
+  currencyEl.textContent = state.currency;
+}
+
 
 window.closeCheckoutModal = function () {
   document.getElementById('checkoutModal').classList.add('hidden');
