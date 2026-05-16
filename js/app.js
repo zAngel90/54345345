@@ -972,71 +972,80 @@ function renderCatalog() {
         </div>`;
     });
   } else {
-    // Vista de JUEGO (Categorías del admin o Type)
-    const currentGame = GAMES.find(g => g.id === state.activeGame);
-    const order = currentGame?.categories || [];
-    
-    // Ordenar las secciones según el orden del administrador
-    const sortedSections = Object.keys(grouped).sort((a, b) => {
-      const indexA = order.indexOf(a);
-      const indexB = order.indexOf(b);
-      if (indexA === -1 && indexB === -1) return a.localeCompare(b);
-      if (indexA === -1) return 1;
-      if (indexB === -1) return -1;
-      return indexA - indexB;
-    });
-
-    sortedSections.forEach(section => {
-      const items = grouped[section];
-      const sectionIdx = sortedSections.indexOf(section);
-
-      // Mapeo inteligente de iconos según el nombre de la categoría
-      const s = section.toLowerCase();
-      let iconName = 'layout-grid'; // Default
-
-      if (s.includes('fruta')) iconName = 'apple';
-      else if (s.includes('arma') || s.includes('sword') || s.includes('cuchillo') || s.includes('skin')) iconName = 'sword';
-      else if (s.includes('pass') || s.includes('ticket')) iconName = 'ticket';
-      else if (s.includes('gema') || s.includes('moneda') || s.includes('gem') || s.includes('currency')) iconName = 'gem';
-      else if (s.includes('pet') || s.includes('mascota')) iconName = 'dog';
-      else if (s.includes('item') || s.includes('objeto') || s.includes('box')) iconName = 'package';
-      else if (s.includes('limited')) iconName = 'crown';
-
-      let sectionColor = null;
-      if (state.categoryIcons && state.categoryIcons[section]) {
-        const mapping = state.categoryIcons[section];
-        if (typeof mapping === 'string') {
-          iconName = mapping;
-        } else {
-          iconName = mapping.icon || iconName;
-          sectionColor = mapping.color;
-        }
-      }
-
-      let headerIconStyle = '';
-      if (sectionColor && sectionColor !== '') {
-        headerIconStyle = `background: ${sectionColor}15; border-color: ${sectionColor}40; color: ${sectionColor}; box-shadow: 0 0 15px ${sectionColor}15;`;
-      } else {
-        const isFirstSection = sectionIdx === 0;
-        headerIconStyle = isFirstSection 
-          ? 'background: rgba(249, 115, 22, 0.15); border-color: rgba(249, 115, 22, 0.3); color: #fb923c; box-shadow: 0 0 15px rgba(249, 115, 22, 0.1);'
-          : 'background: rgba(255, 255, 255, 0.05); border-color: rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.4);';
-      }
-
+    // Vista de JUEGO
+    // Para Limiteds y MM2, NO agrupar por categorías, mostrar todo en una sola grilla
+    if (state.limitedMode || state.mm2Mode) {
       html += `
-        <div id="section-${section.replace(/\s+/g, '-').toLowerCase()}" class="space-y-6 mb-12">
-          <div class="section-header">
-            <div class="section-icon-wrap" style="${headerIconStyle}">
-              <i data-lucide="${iconName}" style="width: 18px; height: 18px;"></i>
-            </div>
-            <div class="section-info">
-              <h2 class="section-title-text">${section}</h2>
-              <span class="section-count-badge">${items.length} productos</span>
-            </div>
-          </div>
-          <div class="product-grid">${items.map(renderCard).join('')}</div>
+        <div class="space-y-6 mb-12">
+          <div class="product-grid">${filtered.map(renderCard).join('')}</div>
         </div>`;
-    });
+    } else {
+      // Vista de JUEGO normal (Categorías del admin o Type)
+      const currentGame = GAMES.find(g => g.id === state.activeGame);
+      const order = currentGame?.categories || [];
+      
+      // Ordenar las secciones según el orden del administrador
+      const sortedSections = Object.keys(grouped).sort((a, b) => {
+        const indexA = order.indexOf(a);
+        const indexB = order.indexOf(b);
+        if (indexA === -1 && indexB === -1) return a.localeCompare(b);
+        if (indexA === -1) return 1;
+        if (indexB === -1) return -1;
+        return indexA - indexB;
+      });
+
+      sortedSections.forEach(section => {
+        const items = grouped[section];
+        const sectionIdx = sortedSections.indexOf(section);
+
+        // Mapeo inteligente de iconos según el nombre de la categoría
+        const s = section.toLowerCase();
+        let iconName = 'layout-grid'; // Default
+
+        if (s.includes('fruta')) iconName = 'apple';
+        else if (s.includes('arma') || s.includes('sword') || s.includes('cuchillo') || s.includes('skin')) iconName = 'sword';
+        else if (s.includes('pass') || s.includes('ticket')) iconName = 'ticket';
+        else if (s.includes('gema') || s.includes('moneda') || s.includes('gem') || s.includes('currency')) iconName = 'gem';
+        else if (s.includes('pet') || s.includes('mascota')) iconName = 'dog';
+        else if (s.includes('item') || s.includes('objeto') || s.includes('box')) iconName = 'package';
+        else if (s.includes('limited')) iconName = 'crown';
+
+        let sectionColor = null;
+        if (state.categoryIcons && state.categoryIcons[section]) {
+          const mapping = state.categoryIcons[section];
+          if (typeof mapping === 'string') {
+            iconName = mapping;
+          } else {
+            iconName = mapping.icon || iconName;
+            sectionColor = mapping.color;
+          }
+        }
+
+        let headerIconStyle = '';
+        if (sectionColor && sectionColor !== '') {
+          headerIconStyle = `background: ${sectionColor}15; border-color: ${sectionColor}40; color: ${sectionColor}; box-shadow: 0 0 15px ${sectionColor}15;`;
+        } else {
+          const isFirstSection = sectionIdx === 0;
+          headerIconStyle = isFirstSection 
+            ? 'background: rgba(249, 115, 22, 0.15); border-color: rgba(249, 115, 22, 0.3); color: #fb923c; box-shadow: 0 0 15px rgba(249, 115, 22, 0.1);'
+            : 'background: rgba(255, 255, 255, 0.05); border-color: rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.4);';
+        }
+
+        html += `
+          <div id="section-${section.replace(/\s+/g, '-').toLowerCase()}" class="space-y-6 mb-12">
+            <div class="section-header">
+              <div class="section-icon-wrap" style="${headerIconStyle}">
+                <i data-lucide="${iconName}" style="width: 18px; height: 18px;"></i>
+              </div>
+              <div class="section-info">
+                <h2 class="section-title-text">${section}</h2>
+                <span class="section-count-badge">${items.length} productos</span>
+              </div>
+            </div>
+            <div class="product-grid">${items.map(renderCard).join('')}</div>
+          </div>`;
+      });
+    }
   }
 
     // Ejecutar Lucide para transformar los iconos nuevos
@@ -1911,6 +1920,16 @@ function updateTradeStepUI() {
   const progress = ((currentTradeStep - 1) / 2) * 100;
   track.style.width = `${progress}%`;
 
+  // Dynamically adjust modal width for inventory step
+  const modalContent = document.querySelector('#tradeModal .modal-content');
+  if (modalContent) {
+    if (currentTradeStep === 2) {
+      modalContent.style.maxWidth = '650px';
+    } else {
+      modalContent.style.maxWidth = '460px';
+    }
+  }
+
   if (currentTradeStep === 1) {
     title.innerText = 'Verificación';
     desc.innerText = 'Busca tu usuario de Roblox para continuar';
@@ -2109,9 +2128,23 @@ async function fetchUserInventory() {
     const data = await res.json();
 
     if (data.data && data.data.length > 0) {
-      tradeInventoryItems = data.data;
-      countLabel.textContent = `${data.data.length} Items`;
-      grid.innerHTML = data.data.map(item => `
+      // Filtrar duplicados por assetId para evitar mostrar el mismo item varias veces
+      const uniqueItems = [];
+      const seenIds = new Set();
+      
+      data.data.forEach(item => {
+        if (!seenIds.has(item.assetId)) {
+          seenIds.add(item.assetId);
+          uniqueItems.push(item);
+        }
+      });
+
+      // Ordenar por RAP de menor a mayor
+      const sortedItems = uniqueItems.sort((a, b) => (a.recentAveragePrice || 0) - (b.recentAveragePrice || 0));
+
+      tradeInventoryItems = sortedItems;
+      countLabel.textContent = `${sortedItems.length} Items`;
+      grid.innerHTML = sortedItems.map(item => `
         <div class="inv-item-card" onclick="selectTradeItem('${item.assetId}')" data-asset-id="${item.assetId}">
           <div class="inv-item-img">
             <img src="${item.thumbnail}" alt="">

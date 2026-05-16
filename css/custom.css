@@ -643,6 +643,7 @@ body {
 .product-card {
   max-width: 240px;
   width: 100%;
+  min-height: 350px;
   background: transparent;
   border-radius: 20px;
   display: flex;
