@@ -1692,14 +1692,18 @@ window.openCheckoutModal = function () {
     return;
   }
 
-  // Detectamos si hay items especiales para decidir si mandamos al checkout de React
-  const hasMM2 = state.cart.some(item => String(item.game).toLowerCase().includes('mm2') || String(item.game).toLowerCase().includes('murder mystery'));
+  // Si hay Limiteds en el carrito, seguimos usando el modal de trade local para elegir el item a dar
   const hasLimiteds = state.cart.some(item => String(item.game).toLowerCase().includes('limited'));
+  if (hasLimiteds) {
+    // Abrimos el modal de trade local (donde se elige el item que el usuario va a dar)
+    openTradeModal(state.cart[0].id);
+    return;
+  }
 
-  // Siempre mandamos al checkout de React para usar el nuevo diseño
+  // Para MM2 y productos normales, mandamos DIRECTO al nuevo checkout de React
   const checkoutData = {
     action: 'checkout',
-    user: selectedUser || { name: '', id: '' }, // Enviamos el usuario si ya lo seleccionó en la tienda
+    user: selectedUser || { name: '', id: '' },
     cart: state.cart,
     total: state.cart.reduce((s, x) => s + (x.price * CURRENCY_RATES[state.currency].rate * x.qty), 0),
     currency: state.currency
