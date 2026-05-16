@@ -565,7 +565,13 @@ function renderSeoInfo() {
 }
 
 // ===== HELPERS =====
-function fmt(p) { const c = CURRENCY_RATES[state.currency]; const v = p * c.rate; return c.symbol + (v >= 1000 ? v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : v.toFixed(2)); }
+function fmt(p) { 
+  const c = CURRENCY_RATES[state.currency]; 
+  const v = p * c.rate; 
+  const val = v >= 1000 ? v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : v.toFixed(2);
+  const sym = c.symbol.toLowerCase();
+  return `<span class="price-symbol">${sym}</span><span class="price-val">${val}</span>`;
+}
 function fmtByCurr(p, curr) { const c = CURRENCY_RATES[curr] || CURRENCY_RATES['USD']; const v = p * c.rate; return c.symbol + (v >= 1000 ? v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : v.toFixed(2)); }
 function formatPrice(p) { return p >= 1000 ? p.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : p.toFixed(2); }
 function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2500); }
@@ -803,12 +809,9 @@ function renderCard(p) {
       <h3 class="card-title">${p.name}</h3>
       ${subtitleHtml}
       <div class="card-price-row" style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px; margin-top: auto;">
-        <div class="price-box">
-          <div class="flex items-baseline gap-1">
-            <span class="text-[22px] font-bold text-white uppercase">${symbol}</span>
-            <span class="card-price">${formattedPrice}</span>
+          <div class="card-price-box">
+            ${fmt(p.price)}
           </div>
-        </div>
         <button class="card-cart-btn ${isOutOfStock ? 'out-of-stock' : ''}" onclick="addToCart('${p.id}',event)">
           ${isOutOfStock ?
       `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>` :
@@ -1300,8 +1303,8 @@ function updateCart() {
   if (cartList) cartList.classList.remove('hidden');
   if (footer) footer.classList.remove('hidden');
 
-  if (cartSubtotal) cartSubtotal.textContent = fmt(total);
-  if (cartTotal) cartTotal.textContent = fmt(total);
+  if (cartSubtotal) cartSubtotal.innerHTML = fmt(total);
+  if (cartTotal) cartTotal.innerHTML = fmt(total);
 
   let html = `
     <div class="space-y-3">
@@ -1689,41 +1692,20 @@ window.openCheckoutModal = function () {
     return;
   }
 
-  // Si hay limiteds en el carrito, abrimos el modal de trade en lugar del checkout normal
-  const hasLimiteds = state.cart.some(item => item.game === 'limiteds');
-  if (hasLimiteds) {
-    // Abrimos el modal de trade usando el primer item como referencia visual, 
-    // pero el trade será por todo el carrito
-    openTradeModal(state.cart[0].id);
-    return;
-  }
-  const modalList = document.getElementById('modalItemsList');
-  const modalTotal = document.getElementById('modalTotalAmount');
-  const modalCurrency = document.getElementById('modalTotalCurrency');
+  // Detectamos si hay items especiales para decidir si mandamos al checkout de React
+  const hasMM2 = state.cart.some(item => String(item.game).toLowerCase().includes('mm2') || String(item.game).toLowerCase().includes('murder mystery'));
+  const hasLimiteds = state.cart.some(item => String(item.game).toLowerCase().includes('limited'));
 
-  modalList.innerHTML = state.cart.map(item => `
-    <div class="modal-summary-item">
-      <img src="${item.img}" class="modal-summary-img" alt="">
-      <div class="flex-1">
-        <p class="text-[13px] font-bold text-white">${item.name}</p>
-        <p class="text-[10px] text-white/30 uppercase tracking-tighter">${item.game}</p>
-      </div>
-      <div class="text-right">
-        <p class="text-[13px] font-black text-white">${fmt(item.price * item.qty)}</p>
-        <p class="text-[10px] text-white/20">Cant: ${item.qty}</p>
-      </div>
-    </div>
-  `).join('');
+  // Siempre mandamos al checkout de React para usar el nuevo diseño
+  const checkoutData = {
+    action: 'checkout',
+    user: selectedUser || { name: '', id: '' }, // Enviamos el usuario si ya lo seleccionó en la tienda
+    cart: state.cart,
+    total: state.cart.reduce((s, x) => s + (x.price * CURRENCY_RATES[state.currency].rate * x.qty), 0),
+    currency: state.currency
+  };
 
-  const total = state.cart.reduce((s, x) => s + (x.price * x.qty), 0);
-  modalTotal.textContent = fmt(total).split(' ')[0];
-  modalCurrency.textContent = state.currency;
-
-  const checkoutModal = document.getElementById('checkoutModal');
-  if (checkoutModal) {
-    checkoutModal.classList.remove('hidden');
-    document.getElementById('robloxUserInput').focus();
-  }
+  window.parent.postMessage(checkoutData, '*');
 };
 
 window.closeCheckoutModal = function () {
