@@ -2015,15 +2015,38 @@ function updateTradeStepUI() {
       const itemsList = document.getElementById('final-buy-items-list');
       itemsList.innerHTML = state.cart.map((item, idx) => {
         const itemPrice = item.price * item.qty;
-        const itemColor = item.color || '#ec4899'; // Default pink si no tiene color
+        // Determinar color basado en rareza (igual que en las tarjetas)
+        let itemColor = '#ec4899'; // Default rosa
+        const r = (item.itemType || item.rarity || item.type || item.badge || '').toUpperCase();
+        
+        if (r === 'UNIQUE') {
+          itemColor = '#FF4444'; // Rojo intenso
+        } else if (r === 'GODLY' || r.includes('GODLY')) {
+          itemColor = '#FFD700'; // Dorado brillante
+        } else if (r === 'LEGENDARY') {
+          itemColor = '#FFD700'; // Dorado brillante
+        } else if (r === 'ANCIENT') {
+          itemColor = '#8B5CF6'; // Morado oscuro
+        } else if (r === 'VINTAGE') {
+          itemColor = '#F59E0B'; // Ámbar
+        } else if (r === 'EPIC') {
+          itemColor = '#9333EA'; // Morado
+        } else if (r === 'RARE') {
+          itemColor = '#3B82F6'; // Azul
+        } else if (r === 'UNCOMMON') {
+          itemColor = '#10B981'; // Verde
+        } else if (r === 'COMMON') {
+          itemColor = '#6B7280'; // Gris
+        }
+        
         return `
-          <div class="rounded-2xl p-4 flex items-center gap-4 border" style="background-color: ${itemColor}20; border-color: ${itemColor}80;">
-            <div class="size-12 rounded-xl bg-black/20 p-1.5 shrink-0">
+          <div class="rounded-2xl p-4 flex items-center gap-4" style="background: linear-gradient(135deg, ${itemColor}40, ${itemColor}20); border: 2px solid ${itemColor}; box-shadow: 0 4px 12px ${itemColor}30;">
+            <div class="size-12 rounded-xl p-1.5 shrink-0" style="background-color: ${itemColor}60;">
               <img src="${item.img}" alt="" class="w-full h-full object-contain">
             </div>
             <div class="flex-1">
               <p class="text-sm font-bold text-white">${item.name}</p>
-              <p class="text-[11px] font-bold uppercase tracking-tight" style="color: ${itemColor}; opacity: 0.8;">Roblox Limiteds</p>
+              <p class="text-[11px] font-bold uppercase tracking-tight text-white" style="opacity: 0.6;">Roblox Limiteds</p>
             </div>
             <p class="text-sm font-black text-white">${fmtByCurr(itemPrice, tradeCurrency)}</p>
           </div>
