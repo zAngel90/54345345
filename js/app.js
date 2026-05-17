@@ -1731,12 +1731,13 @@ function renderCheckoutSummary() {
   // Actualizar lista de items
   container.innerHTML = state.cart.map(item => {
     const itemTotal = item.price * item.qty;
+    const itemColor = item.color || '#ec4899'; // Default pink si no tiene color
     return `
-      <div class="flex items-center gap-3 p-3 bg-white/5 rounded-2xl border border-white/10">
+      <div class="flex items-center gap-3 p-3 rounded-2xl border" style="background-color: ${itemColor}20; border-color: ${itemColor}80;">
         <img src="${item.img}" class="w-10 h-10 object-contain rounded-lg">
         <div class="flex-1 min-w-0">
           <p class="text-[11px] font-bold text-white truncate">${item.name}</p>
-          <p class="text-[9px] text-white/30 uppercase tracking-tight">${item.game}</p>
+          <p class="text-[9px] uppercase tracking-tight" style="color: ${itemColor};">${item.game}</p>
         </div>
         <div class="text-right">
           <p class="text-[11px] font-black text-white">${fmtByCurr(itemTotal, state.currency)}</p>
@@ -2014,14 +2015,15 @@ function updateTradeStepUI() {
       const itemsList = document.getElementById('final-buy-items-list');
       itemsList.innerHTML = state.cart.map((item, idx) => {
         const itemPrice = item.price * item.qty;
+        const itemColor = item.color || '#ec4899'; // Default pink si no tiene color
         return `
-          <div class="bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center gap-4">
+          <div class="rounded-2xl p-4 flex items-center gap-4 border" style="background-color: ${itemColor}20; border-color: ${itemColor}80;">
             <div class="size-12 rounded-xl bg-black/20 p-1.5 shrink-0">
               <img src="${item.img}" alt="" class="w-full h-full object-contain">
             </div>
             <div class="flex-1">
               <p class="text-sm font-bold text-white">${item.name}</p>
-              <p class="text-[10px] text-white/30 uppercase tracking-tighter">Roblox Limiteds</p>
+              <p class="text-[11px] font-bold uppercase tracking-tight" style="color: ${itemColor}; opacity: 0.8;">Roblox Limiteds</p>
             </div>
             <p class="text-sm font-black text-white">${fmtByCurr(itemPrice, tradeCurrency)}</p>
           </div>
@@ -2163,7 +2165,7 @@ async function fetchUserInventory() {
           </div>
           <p class="inv-item-name">${item.name}</p>
           <div class="inv-item-rap">
-            <span class="text-[9px] opacity-40">VALOR ESTIMADO</span>
+            <span class="text-[8px] opacity-40">RAP</span>
             <span class="ml-1">${item.recentAveragePrice?.toLocaleString() || 'N/A'}</span>
           </div>
         </div>

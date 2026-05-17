@@ -1973,8 +1973,8 @@ color: rgba(255, 255, 255, 0.7);
 .inv-item-card {
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 20px;
-  padding: 12px;
+  border-radius: 16px;
+  padding: 8px;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
@@ -2000,9 +2000,9 @@ color: rgba(255, 255, 255, 0.7);
   width: 100%;
   aspect-ratio: 1;
   background: rgba(0, 0, 0, 0.2);
-  border-radius: 14px;
-  padding: 10px;
-  margin-bottom: 10px;
+  border-radius: 12px;
+  padding: 6px;
+  margin-bottom: 6px;
 }
 
 .inv-item-img img {
@@ -2012,10 +2012,10 @@ color: rgba(255, 255, 255, 0.7);
 }
 
 .inv-item-name {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
   color: #fff;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
   display: -webkit-box;
   -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
@@ -2025,13 +2025,13 @@ color: rgba(255, 255, 255, 0.7);
 .inv-item-rap {
   display: flex;
   align-items: center;
-  gap: 4px;
-  font-size: 10px;
+  gap: 3px;
+  font-size: 9px;
   font-weight: 800;
   color: #d97706;
   /* Amber-600 */
   background: rgba(217, 119, 6, 0.1);
-  padding: 2px 8px;
+  padding: 2px 6px;
   border-radius: 6px;
 }
 
@@ -2303,4 +2303,9 @@ color: rgba(255, 255, 255, 0.7);
 .soft-btn--success {
   --surface-color: #10b981;
   --side-color: #059669;
+}
+
+/* Trade Modal - Ancho personalizado */
+#tradeModal .modal-content {
+  max-width: 640px !important;
 }
