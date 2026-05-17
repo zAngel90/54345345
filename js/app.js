@@ -2010,10 +2010,23 @@ function updateTradeStepUI() {
     }
 
     if (state.cart.length > 0) {
-      const mainItem = state.cart[0];
-      document.getElementById('final-buy-name').innerText = state.cart.length > 1 ? `${mainItem.name} + ${state.cart.length - 1} más` : mainItem.name;
-      document.getElementById('final-buy-img').innerHTML = `<img src="${mainItem.img}" alt="">`;
-      document.getElementById('final-buy-price').innerText = fmtByCurr(totalUSD, tradeCurrency);
+      // Renderizar TODOS los items expandidos
+      const itemsList = document.getElementById('final-buy-items-list');
+      itemsList.innerHTML = state.cart.map((item, idx) => {
+        const itemPrice = item.price * item.qty;
+        return `
+          <div class="bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center gap-4">
+            <div class="size-12 rounded-xl bg-black/20 p-1.5 shrink-0">
+              <img src="${item.img}" alt="" class="w-full h-full object-contain">
+            </div>
+            <div class="flex-1">
+              <p class="text-sm font-bold text-white">${item.name}</p>
+              <p class="text-[10px] text-white/30 uppercase tracking-tighter">Roblox Limiteds</p>
+            </div>
+            <p class="text-sm font-black text-white">${fmtByCurr(itemPrice, tradeCurrency)}</p>
+          </div>
+        `;
+      }).join('');
 
       document.getElementById('final-subtotal').innerText = fmtByCurr(totalUSD, tradeCurrency);
       document.getElementById('final-total').innerText = formatPrice(totalUSD * (CURRENCY_RATES[tradeCurrency]?.rate || 1));
@@ -2034,7 +2047,6 @@ window.tradeNextStep = function () {
     fetchUserInventory();
   } else if (currentTradeStep === 2 && tradeSelectedInventoryItem) {
     currentTradeStep = 3;
-    prepareTradeConfirmation();
   } else if (currentTradeStep === 3) {
     confirmTrade();
   }
@@ -2175,20 +2187,6 @@ window.selectTradeItem = function (assetId) {
 };
 
 // Step 3: Confirmation
-function prepareTradeConfirmation() {
-  document.getElementById('final-buy-img').innerHTML = `<img src="${tradeTargetProduct.img}" class="size-full object-contain">`;
-  document.getElementById('final-buy-name').textContent = tradeTargetProduct.name;
-
-  document.getElementById('final-trade-img').innerHTML = `<img src="${tradeSelectedInventoryItem.thumbnail}" class="size-full object-contain">`;
-  document.getElementById('final-trade-name').textContent = tradeSelectedInventoryItem.name;
-
-  // Limpiamos cualquier rastro de robux en el rap de confirmación
-  const rapEl = document.getElementById('final-trade-rap');
-  if (rapEl) {
-    rapEl.innerText = `RAP: ${tradeSelectedInventoryItem.recentAveragePrice?.toLocaleString() || 'N/A'}`;
-  }
-}
-
 function confirmTrade() {
   const tradeCurrency = CURRENCY_RATES['PEN'] ? 'PEN' : state.currency;
   const rate = CURRENCY_RATES[tradeCurrency]?.rate || 1;
