@@ -310,14 +310,22 @@ function renderRecentList(inputId, dropdownId) {
     return;
   }
 
+  // Forzar reinicio de animación
+  box.classList.remove('dropdown-animated');
+  void box.offsetWidth; // Trigger reflow
+  box.classList.add('dropdown-animated');
+  
   box.style.display = 'block';
   list.innerHTML = recents.map(u => `
     <div class="recent-user-item" onclick="selectRecentUser('${inputId}', '${dropdownId}', '${u.name}', '${u.id}')">
       <img src="${u.avatar || `https://ui-avatars.com/api/?name=${u.name}&background=random`}" class="recent-user-avatar" />
-      <div class="flex-1 min-w-0">
-        <p class="text-[13px] font-bold text-white truncate">${u.name}</p>
-        <p class="text-[10px] text-white/30 truncate">ID: ${u.id}</p>
+      <div class="flex-1 min-w-0 user-text">
+        <p class="text-[14px] font-semibold text-white truncate transition-colors user-name">${u.name}</p>
+        <p class="text-xs text-white/40 truncate transition-colors user-id">ID: ${u.id}</p>
       </div>
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white/10 flex-shrink-0">
+        <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
+      </svg>
     </div>
   `).join('');
 }
@@ -973,12 +981,72 @@ function renderCatalog() {
     });
   } else {
     // Vista de JUEGO
-    // Para Limiteds y MM2, NO agrupar por categorías, mostrar todo en una sola grilla
-    if (state.limitedMode || state.mm2Mode) {
+    // Para Limiteds, NO agrupar por categorías, mostrar todo en una sola grilla
+    if (state.limitedMode) {
       html += `
         <div class="space-y-6 mb-12">
           <div class="product-grid">${filtered.map(renderCard).join('')}</div>
         </div>`;
+    } else if (state.mm2Mode) {
+      // MM2: Agrupar por categorías con iconos personalizados del admin
+      const mm2Grouped = {};
+      filtered.forEach(p => {
+        const cat = p.category || 'Otros';
+        if (!mm2Grouped[cat]) mm2Grouped[cat] = [];
+        mm2Grouped[cat].push(p);
+      });
+
+      const mm2Sections = Object.keys(mm2Grouped).sort((a, b) => {
+        const order = ['Más Vendidos', 'Knives', 'Guns', 'Pets', 'Ancient', 'Godlies', 'Skins'];
+        const indexA = order.indexOf(a);
+        const indexB = order.indexOf(b);
+        if (indexA === -1 && indexB === -1) return a.localeCompare(b);
+        if (indexA === -1) return 1;
+        if (indexB === -1) return -1;
+        return indexA - indexB;
+      });
+
+      mm2Sections.forEach((section, sectionIdx) => {
+        const items = mm2Grouped[section];
+        
+        // Usar iconos del admin (state.categoryIcons)
+        let iconName = 'layout-grid';
+        let sectionColor = null;
+        
+        if (state.categoryIcons && state.categoryIcons[section]) {
+          const mapping = state.categoryIcons[section];
+          if (typeof mapping === 'string') {
+            iconName = mapping;
+          } else {
+            iconName = mapping.icon || iconName;
+            sectionColor = mapping.color;
+          }
+        }
+
+        let headerIconStyle = '';
+        if (sectionColor && sectionColor !== '') {
+          headerIconStyle = `background: ${sectionColor}15; border-color: ${sectionColor}40; color: ${sectionColor}; box-shadow: 0 0 15px ${sectionColor}15;`;
+        } else {
+          const isFirstSection = sectionIdx === 0;
+          headerIconStyle = isFirstSection 
+            ? 'background: rgba(249, 115, 22, 0.15); border-color: rgba(249, 115, 22, 0.3); color: #fb923c; box-shadow: 0 0 15px rgba(249, 115, 22, 0.1);'
+            : 'background: rgba(255, 255, 255, 0.05); border-color: rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.4);';
+        }
+
+        html += `
+          <div id="section-${section.replace(/\s+/g, '-').toLowerCase()}" class="space-y-6 mb-12">
+            <div class="section-header">
+              <div class="section-icon-wrap" style="${headerIconStyle}">
+                <i data-lucide="${iconName}" style="width: 18px; height: 18px;"></i>
+              </div>
+              <div class="section-info">
+                <h2 class="section-title-text">${section}</h2>
+                <span class="section-count-badge">${items.length} productos</span>
+              </div>
+            </div>
+            <div class="product-grid">${items.map(renderCard).join('')}</div>
+          </div>`;
+      });
     } else {
       // Vista de JUEGO normal (Categorías del admin o Type)
       const currentGame = GAMES.find(g => g.id === state.activeGame);

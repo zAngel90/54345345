@@ -824,6 +824,7 @@ body {
   position: relative;
   display: inline-flex;
   background: transparent;
+  transform-style: preserve-3d;
 }
 
 .rarity-3d-face {
@@ -833,16 +834,26 @@ body {
   justify-content: center;
   height: 18px;
   padding: 0 10px;
-  border-radius: 5px;
+  border-radius: 6px;
   font-size: 10px;
-  font-weight: 800;
+  font-weight: 900;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.05em;
   color: var(--text-color, #fff);
   background: var(--face-bg);
   z-index: 2;
   border: none;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  box-shadow: 
+    0 3px 0 var(--side-bg, rgba(0,0,0,0.3)),
+    0 4px 8px rgba(0,0,0,0.25),
+    0 6px 12px rgba(0,0,0,0.15),
+    inset 0 1px 0 rgba(255,255,255,0.15);
+  text-shadow: 
+    0 1px 2px rgba(0,0,0,0.8),
+    0 2px 4px rgba(0,0,0,0.6),
+    0 0 8px rgba(0,0,0,0.5);
+  transform: translateZ(0);
+  transition: all 0.2s ease;
 }
 
 .rarity-3d-side {
@@ -851,9 +862,13 @@ body {
 
 /* Hover Effect subtle para el Badge */
 .product-card:hover .rarity-3d-face {
-  transform: translateY(-1px);
-  filter: brightness(1.1);
-  transition: all 0.2s ease;
+  transform: translateY(-2px) translateZ(0);
+  box-shadow: 
+    0 4px 0 var(--side-bg, rgba(0,0,0,0.3)),
+    0 6px 12px rgba(0,0,0,0.3),
+    0 8px 16px rgba(0,0,0,0.2),
+    inset 0 1px 0 rgba(255,255,255,0.2);
+  filter: brightness(1.15);
 }
 
 /* Themes por Rareza para la Card Completa */
@@ -2178,9 +2193,9 @@ color: rgba(255, 255, 255, 0.7);
 
 /* ===== OUT OF STOCK STYLES ===== */
 .badge-out-stock {
-  background: rgba(180, 83, 9, 0.2) !important;
-  color: #f97316 !important;
-  border: 1px solid rgba(249, 115, 22, 0.2);
+  background: rgba(239, 68, 68, 0.2) !important;
+  color: #ef4444 !important;
+  border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
 .out-of-stock-overlay {
@@ -2198,14 +2213,16 @@ color: rgba(255, 255, 255, 0.7);
 }
 
 .out-of-stock-label {
-  background: #eab308;
+  background: #ef4444;
   color: white;
   padding: 8px 20px;
-  border-radius: 12px;
+  border-radius: 8px;
+  font-size: 11px;
   font-weight: 900;
-  font-size: 14px;
-  box-shadow: 0 4px 15px rgba(234, 179, 8, 0.4);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
 }
 
 .card-cart-btn.out-of-stock {
