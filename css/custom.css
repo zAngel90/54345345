@@ -574,6 +574,17 @@ body {
   border-radius: 2px;
 }
 
+body.is-mobile .category-tabs {
+  padding: 6px 8px;
+  gap: 4px;
+}
+body.is-mobile .category-tab {
+  height: 26px;
+  padding: 0 10px;
+  font-size: 11px;
+  border-radius: 8px;
+}
+
 /* ===== CART PANEL ===== */
 .peek-cart-panel {
   position: fixed;
@@ -2325,4 +2336,206 @@ color: rgba(255, 255, 255, 0.7);
 /* Trade Modal - Ancho personalizado */
 #tradeModal .modal-content {
   max-width: 640px !important;
+}
+
+/* Sidebar scrollbar hidden */
+#sidebar::-webkit-scrollbar { display: none; }
+
+/* ===== MOBILE GRID RESPONSIVE ===== */
+
+/* Regular product grid — override media queries que no funcionen en iframe */
+body.is-mobile .product-grid {
+  grid-template-columns: repeat(2, 1fr) !important;
+  gap: 10px !important;
+}
+
+/* Normal in-game cards compact on mobile */
+body.is-mobile .product-card {
+  min-height: unset !important;
+  max-width: 100% !important;
+}
+
+body.is-mobile .card-img-wrap {
+  height: 120px !important;
+}
+
+body.is-mobile .card-title {
+  font-size: 11px !important;
+  line-height: 1.2 !important;
+}
+
+body.is-mobile .card-price {
+  font-size: 14px !important;
+}
+
+body.is-mobile .card-cart-btn {
+  height: 32px !important;
+  font-size: 11px !important;
+}
+
+/* Limited / MM2 grid — reduce de minmax(280px) a 2 columnas */
+body.is-mobile .limited-grid .product-grid {
+  grid-template-columns: repeat(2, 1fr) !important;
+  gap: 10px !important;
+}
+
+body.is-mobile .limited-grid .product-card {
+  max-width: 100% !important;
+  min-height: unset !important;
+}
+
+body.is-mobile .limited-grid .card-title {
+  font-size: 12px !important;
+  line-height: 1.2 !important;
+}
+
+body.is-mobile .limited-grid .card-price {
+  font-size: 15px !important;
+}
+
+body.is-mobile .limited-grid .card-img-wrap {
+  height: 130px !important;
+}
+
+body.is-mobile .limited-grid .card-img-wrap img {
+  width: 75% !important;
+  height: 75% !important;
+}
+
+/* ===== MOBILE MODAL RESPONSIVE ===== */
+body.is-mobile .modal-overlay {
+  padding: 12px;
+  align-items: flex-end;
+}
+
+body.is-mobile .modal-content {
+  padding: 20px;
+  border-radius: 24px;
+  max-height: 92dvh;
+  overflow-y: auto;
+}
+
+body.is-mobile .modal-header {
+  margin-bottom: 16px;
+}
+
+body.is-mobile .modal-header h3 {
+  font-size: 16px !important;
+}
+
+body.is-mobile .modal-body {
+  padding: 0 !important;
+}
+
+body.is-mobile .modal-footer {
+  padding: 16px 0 0 !important;
+  margin-top: 12px !important;
+}
+
+body.is-mobile .modal-footer button,
+body.is-mobile #confirmCheckoutBtn {
+  height: 44px !important;
+  font-size: 12px !important;
+}
+
+/* Checkout modal compacto */
+body.is-mobile #checkoutModal .modal-content {
+  padding: 18px;
+}
+
+body.is-mobile #modalItemsList {
+  max-height: 120px !important;
+}
+
+body.is-mobile #modalTotalAmount {
+  font-size: 20px !important;
+}
+
+/* Trade modal compacto */
+body.is-mobile #tradeModal .modal-content {
+  padding: 0 !important;
+  border-radius: 24px !important;
+  max-width: 100% !important;
+}
+
+body.is-mobile #tradeModal .bg-\[#161B22\]\/50 {
+  padding: 16px 16px 12px !important;
+}
+
+body.is-mobile #trade-modal-title {
+  font-size: 16px !important;
+  margin-bottom: 0 !important;
+}
+
+body.is-mobile #trade-modal-desc {
+  font-size: 10px !important;
+}
+
+body.is-mobile .modal-body.p-8 {
+  padding: 14px !important;
+}
+
+body.is-mobile #tradeModal .p-8 {
+  padding: 14px !important;
+}
+
+body.is-mobile #tradeModal .p-8.pt-0 {
+  padding-top: 0 !important;
+}
+
+body.is-mobile #tradeModal .h-14 {
+  height: 44px !important;
+  font-size: 11px !important;
+}
+
+body.is-mobile .step-icon {
+  width: 28px !important;
+  height: 28px !important;
+}
+
+body.is-mobile #tradeModal .text-center.mb-8 {
+  margin-bottom: 12px !important;
+}
+
+body.is-mobile #tradeInventoryGrid {
+  grid-template-columns: repeat(3, 1fr) !important;
+  max-height: 200px !important;
+}
+
+body.is-mobile #final-total {
+  font-size: 22px !important;
+}
+
+body.is-mobile .user-result-item {
+  padding: 8px !important;
+  gap: 8px !important;
+}
+
+body.is-mobile .user-result-avatar {
+  width: 36px !important;
+  height: 36px !important;
+}
+
+body.is-mobile #tradeRobloxInput,
+body.is-mobile #robloxUserInput {
+  height: 44px !important;
+  font-size: 13px !important;
+}
+
+body.is-mobile #trade-step-1,
+body.is-mobile #trade-step-2,
+body.is-mobile #trade-step-3 {
+  gap: 12px !important;
+}
+
+body.is-mobile .space-y-6 > * + * {
+  margin-top: 12px !important;
+}
+
+body.is-mobile .space-y-5 > * + * {
+  margin-top: 10px !important;
+}
+
+body.is-mobile .space-y-4 > * + * {
+  margin-top: 8px !important;
 }

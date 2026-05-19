@@ -208,11 +208,11 @@
 
 <body class="__variable_f367f3 __variable_30e69e font-sans antialiased">
   <!-- ROOT: full screen flex row -->
-  <div style="height:100vh;background:#0B0F16;color:#fff;display:flex;overflow:hidden;padding:12px;gap:12px">
+  <div id="rootContainer" style="height:100vh;background:#0B0F16;color:#fff;display:flex;overflow:hidden;padding:12px;gap:12px">
 
     <!-- ===== SIDEBAR (izquierda, altura completa) ===== -->
     <aside id="sidebar"
-      style="width:300px;flex-shrink:0;display:flex;flex-direction:column;padding:16px;background:rgba(255, 255, 255, 0.05);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.06);border-radius:24px;overflow-y:auto;height:100%">
+      style="width:300px;flex-shrink:0;display:flex;flex-direction:column;padding:16px;background:rgba(255, 255, 255, 0.05);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.06);border-radius:24px;overflow-y:auto;height:100%;scrollbar-width:none;-ms-overflow-style:none;">
 
       <!-- Header con contador real -->
       <div class="sidebar-header-row">
@@ -286,8 +286,49 @@
             style="background:linear-gradient(90deg,transparent,rgba(59,130,246,.5),rgba(139,92,246,.4),transparent)">
           </div>
 
-          <!-- Row 1: controls -->
-          <div class="flex items-center gap-2 px-4 h-14">
+          <!-- MOBILE NAVBAR ROW (JS toggles display) -->
+          <div id="navMobileRow" style="display:none;align-items:center;justify-content:space-between;padding:0 14px;height:52px;">
+            <!-- Back -->
+            <a href="#" onclick="window.parent.postMessage({action:'navigateTo',url:'/'},'*');return false;"
+              style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.6);flex-shrink:0;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg>
+            </a>
+            <!-- Logo centered -->
+            <a href="#" onclick="window.parent.postMessage({action:'navigateTo',url:'/'},'*');return false;" style="display:flex;align-items:center;">
+              <img src="https://i.postimg.cc/5tSsMDgK/logo-4x.png" alt="Pixel Store" style="height:28px;width:auto;object-fit:contain;">
+            </a>
+            <!-- Search icon -->
+            <button id="mobileSearchBtn" onclick="toggleMobileSearch()" style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.6);">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            </button>
+          </div>
+          <!-- MOBILE SEARCH BAR (shows when search icon tapped) -->
+          <div id="navMobileSearch" style="display:none;padding:0 12px 10px;">
+            <div style="position:relative;">
+              <svg style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:rgba(255,255,255,0.3);pointer-events:none;" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+              <input id="searchInputMobile" type="text" placeholder="Buscar items..." oninput="document.getElementById('searchInput').value=this.value;document.getElementById('searchInput').dispatchEvent(new Event('input'));"
+                style="width:100%;height:40px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:0 14px 0 36px;color:#fff;font-size:13px;outline:none;">
+            </div>
+          </div>
+
+          <!-- MOBILE FILTERS ROW (sort + currency pills) -->
+          <div id="mobileFiltersBar" style="display:none;padding:0 12px 10px;gap:8px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;">
+            <!-- Sort pill -->
+            <button onclick="mobileToggleDrop('sort')" style="display:inline-flex;align-items:center;gap:5px;height:34px;padding:0 12px;border-radius:999px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.7);font-size:12px;font-weight:600;flex-shrink:0;white-space:nowrap;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10 5H3"/><path d="M12 19H3"/><path d="M21 12h-9"/><path d="M21 5h-7"/><path d="M21 19h-5"/><path d="M8 12H3"/><path d="M14 3v4"/><path d="M16 17v4"/><path d="M8 10v4"/></svg>
+              <span id="mobileSortLabel">Popularidad</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <!-- Currency pill -->
+            <button onclick="mobileToggleDrop('currency')" style="display:inline-flex;align-items:center;gap:5px;height:34px;padding:0 12px;border-radius:999px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.7);font-size:12px;font-weight:600;flex-shrink:0;white-space:nowrap;">
+              <img id="mobileCurrencyFlag" src="https://flagcdn.com/w80/pe.png" alt="" style="width:16px;height:11px;object-fit:cover;border-radius:2px;">
+              <span id="mobileCurrencyLabel">PEN</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+          </div>
+
+          <!-- Row 1: controls (DESKTOP) -->
+          <div id="navDesktopRow" class="flex items-center gap-2 px-4 h-14">
 
             <!-- Logo -->
             <a href="#" onclick="window.parent.postMessage({ action: 'navigateTo', url: '/' }, '*'); return false;"
@@ -627,6 +668,9 @@
         </div>
       </div>
 
+      <!-- MOBILE STORIES BAR (hidden on desktop) -->
+      <div id="mobileStoriesBar"></div>
+
       <!-- MAIN CONTENT -->
       <!-- MAIN CONTENT -->
       <main style="flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;padding:0px 10px 80px" class="scrollbar-hide">
@@ -808,6 +852,69 @@
     </div>
 
   </div><!-- end root -->
+
+  <!-- MOBILE CART BAR (content injected by JS) -->
+  <div id="mobileCartBar"></div>
+
+  <!-- MOBILE CART SHEET -->
+  <div id="mobileCartSheet">
+    <div class="mobile-sheet-overlay" onclick="closeMobileCart()"></div>
+    <div class="mobile-sheet-panel">
+      <div class="mobile-sheet-handle"></div>
+      <!-- Sheet Header -->
+      <div class="mobile-sheet-header">
+        <div class="mobile-sheet-title">
+          <div style="width:36px;height:36px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:10px;display:flex;align-items:center;justify-content:center;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+          </div>
+          <div>
+            <p style="font-size:15px;font-weight:700;color:#fff;">Tu Carrito</p>
+            <p id="mobileSheetSubtitle" style="font-size:11px;color:rgba(255,255,255,0.3);">0 productos</p>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <button onclick="clearCart()" style="font-size:11px;color:rgba(255,255,255,0.3);padding:4px 10px;border-radius:8px;background:transparent;border:none;cursor:pointer;font-weight:600;" onmouseenter="this.style.color='#ef4444'" onmouseleave="this.style.color='rgba(255,255,255,0.3)'">Vaciar</button>
+          <button class="mobile-sheet-close" onclick="closeMobileCart()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+          </button>
+        </div>
+      </div>
+      <!-- Sheet Body -->
+      <div class="mobile-sheet-body">
+        <!-- Empty state -->
+        <div id="mobileCartEmpty" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 0;text-align:center;">
+          <div style="width:64px;height:64px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);border-radius:20px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1.5"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+          </div>
+          <p style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.5);">Tu carrito está vacío</p>
+          <p style="font-size:11px;color:rgba(255,255,255,0.2);margin-top:4px;">Agrega productos para comenzar</p>
+        </div>
+        <!-- Items list (shares same data as desktop cart) -->
+        <div id="mobileCartItemsList" style="display:none;"></div>
+      </div>
+      <!-- Sheet Footer -->
+      <div id="mobileSheetFooter" class="mobile-sheet-footer" style="display:none;">
+        <!-- Promo -->
+        <div style="margin-bottom:14px;">
+          <p style="font-size:9px;font-weight:800;letter-spacing:0.12em;color:rgba(255,255,255,0.2);text-transform:uppercase;margin-bottom:8px;">Código promocional</p>
+          <div style="display:flex;gap:8px;">
+            <input type="text" placeholder="CÓDIGO" style="flex:1;height:38px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:0 12px;color:#fff;font-size:12px;outline:none;">
+            <button style="height:38px;padding:0 16px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);border-radius:10px;color:rgba(255,255,255,0.5);font-size:12px;font-weight:700;cursor:pointer;">Aplicar</button>
+          </div>
+        </div>
+        <!-- Total -->
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+          <span style="font-size:14px;font-weight:700;color:#fff;">Total</span>
+          <span id="mobileCartTotalSheet" style="font-size:20px;font-weight:900;color:#fff;">$0.00</span>
+        </div>
+        <!-- Checkout btn -->
+        <button onclick="openCheckoutModal();closeMobileCart()" style="width:100%;height:50px;background:#3b82f6;color:#fff;font-size:15px;font-weight:800;border-radius:14px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 20px rgba(59,130,246,0.4);transition:all 0.2s;">
+          Continuar
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- Modal Importante (Juego Oculto) -->
   <div id="importantModal" class="modal-overlay hidden">

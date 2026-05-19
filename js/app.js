@@ -854,13 +854,18 @@ function renderTabs() {
     tabs = GAME_CATEGORIES[state.activeGame] || ['Ver Todo', 'Productos'];
   }
 
+  const mob = document.body.classList.contains('is-mobile');
+  const tabStyle = mob ? 'height:26px;padding:0 10px;font-size:11px;border-radius:8px;white-space:nowrap;cursor:pointer;font-family:inherit;background:none;border:none;color:rgba(255,255,255,0.4);display:inline-flex;align-items:center;flex-shrink:0;' : '';
+  const tabActiveStyle = mob ? 'background:#31363f;color:#fff;font-weight:600;border:1px solid rgba(255,255,255,0.1);' : '';
+
   el.innerHTML = tabs.map(t => {
-    return `
-      <button class="category-tab ${t === activeTab ? 'active' : ''}" onclick="selectTab('${t}')">
-        <span>${t}</span>
-      </button>
-    `;
+    const isAct = t === activeTab;
+    return `<button class="category-tab ${isAct ? 'active' : ''}" onclick="selectTab('${t}')" style="${tabStyle}${isAct ? tabActiveStyle : ''}"><span>${t}</span></button>`;
   }).join('');
+  if (mob) {
+    const wrap = document.getElementById('categoryTabs');
+    if (wrap) Object.assign(wrap.style, { padding: '6px 8px', gap: '4px' });
+  }
 
   if (window.lucide) lucide.createIcons();
 }
@@ -2302,5 +2307,412 @@ function confirmTrade() {
   showToast('✓ Solicitud de intercambio enviada');
 }
 
+// ===== MOBILE STORIES BAR =====
+function renderMobileStories() {
+  const bar = document.getElementById('mobileStoriesBar');
+  if (!bar) return;
+
+  // Only show on mobile
+  if (!document.body.classList.contains('is-mobile')) {
+    bar.style.display = 'none';
+    return;
+  }
+  // Force correct inline styles on the container
+  Object.assign(bar.style, {
+    display: 'flex', flexWrap: 'nowrap', overflowX: 'auto',
+    gap: '0px', padding: '10px 8px 14px', flexShrink: '0',
+    alignItems: 'flex-start', scrollbarWidth: 'none'
+  });
+
+  const games = GAMES.filter(g => g.hidden !== true || (state.addedGames && state.addedGames.includes(g.id)));
+
+  const CIRCLE = 'width:56px;height:56px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:border-color 0.2s,box-shadow 0.2s;';
+  const ITEM   = 'display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;flex-shrink:0;padding:0 8px;-webkit-tap-highlight-color:transparent;touch-action:manipulation;';
+  const LABEL  = 'font-size:10px;font-weight:600;max-width:64px;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.2;';
+
+  // "Otro" add-game circle
+  const otroHTML = `
+    <div style="${ITEM}" onclick="document.getElementById('otroJuegoBtn').click();">
+      <div style="${CIRCLE}border:2px dashed rgba(255,255,255,0.15);background:rgba(255,255,255,0.03);">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2.5"><line x1="12" x2="12" y1="5" y2="19"/><line x1="5" x2="19" y1="12" y2="12"/></svg>
+      </div>
+      <span style="${LABEL}color:rgba(255,255,255,0.3);">Otro</span>
+    </div>`;
+
+  const storiesHTML = games.map(g => {
+    const isActive = state.activeGame === g.id;
+    const border   = isActive ? 'border:2px solid #3b82f6;box-shadow:0 0 0 2px rgba(59,130,246,0.25);' : 'border:2px solid rgba(255,255,255,0.1);';
+    const color    = isActive ? '#60a5fa' : 'rgba(255,255,255,0.4)';
+    const gid      = String(g.id).toLowerCase();
+
+    const fallbackSvg = gid.includes('mm2') || gid.includes('murder')
+      ? `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2.5"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" x2="19" y1="19" y2="13"/><line x1="16" x2="20" y1="16" y2="20"/><line x1="19" x2="21" y1="21" y2="19"/></svg>`
+      : gid.includes('limited')
+      ? `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2.5"><path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/></svg>`
+      : `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2.5"><line x1="6" x2="10" y1="11" y2="11"/><line x1="8" x2="8" y1="9" y2="13"/><circle cx="14" cy="14" r="5"/></svg>`;
+
+    const inner = g.image
+      ? `<img src="${g.image}" alt="${g.label}" style="width:100%;height:100%;object-fit:cover;">`
+      : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.05);">${fallbackSvg}</div>`;
+
+    return `
+      <div style="${ITEM}" onclick="selectGame('${g.id}');renderMobileStories();">
+        <div style="${CIRCLE}${border}background:rgba(255,255,255,0.05);">${inner}</div>
+        <span style="${LABEL}color:${color};">${g.label}</span>
+      </div>`;
+  }).join('');
+
+  bar.innerHTML = otroHTML + storiesHTML;
+}
+
+// ===== MOBILE CART OPEN/CLOSE =====
+function openMobileCart() {
+  const sheet = document.getElementById('mobileCartSheet');
+  const panel = sheet ? sheet.querySelector('.mobile-sheet-panel') : null;
+  if (sheet) {
+    Object.assign(sheet.style, { pointerEvents: 'all', opacity: '1' });
+  }
+  if (panel) {
+    Object.assign(panel.style, {
+      position: 'absolute', bottom: '0', left: '0', right: '0',
+      background: '#0D1117', borderRadius: '24px 24px 0 0',
+      border: '1px solid rgba(255,255,255,0.07)', borderBottom: 'none',
+      maxHeight: '92dvh', display: 'flex', flexDirection: 'column',
+      transform: 'translateY(0)', transition: 'transform 0.4s cubic-bezier(0.32,0.72,0,1)'
+    });
+  }
+  document.body.style.overflow = 'hidden';
+  updateMobileCart();
+}
+
+function closeMobileCart() {
+  const sheet = document.getElementById('mobileCartSheet');
+  const panel = sheet ? sheet.querySelector('.mobile-sheet-panel') : null;
+  if (panel) panel.style.transform = 'translateY(100%)';
+  setTimeout(() => {
+    if (sheet) Object.assign(sheet.style, { pointerEvents: 'none', opacity: '0' });
+  }, 380);
+  document.body.style.overflow = '';
+}
+
+function updateMobileCart() {
+  const total = state.cart.reduce((s, x) => s + x.price * x.qty, 0);
+  const count = state.cart.reduce((s, x) => s + x.qty, 0);
+
+  // fmt() returns HTML with <span> tags — strip for plain-text contexts, use innerHTML for rich contexts
+  const plainTotal = fmt(total).replace(/<[^>]+>/g, '');
+
+  // Update cart bar (plain text, white bg)
+  const totalEl = document.getElementById('mobileCartTotal');
+  const countEl = document.getElementById('mobileCartCount');
+  const currencyEl = document.getElementById('mobileCartCurrency');
+  if (totalEl) totalEl.textContent = plainTotal;
+  if (countEl) countEl.textContent = count;
+  if (currencyEl) currencyEl.textContent = currentCurrency;
+
+  // Update sheet subtitle
+  const subtitle = document.getElementById('mobileSheetSubtitle');
+  if (subtitle) subtitle.textContent = `${count} ${count === 1 ? 'producto' : 'productos'}`;
+
+  // Update sheet total (use innerHTML for formatted price)
+  const sheetTotal = document.getElementById('mobileCartTotalSheet');
+  if (sheetTotal) sheetTotal.innerHTML = fmt(total);
+
+  // Show/hide empty vs items
+  const emptyEl  = document.getElementById('mobileCartEmpty');
+  const listEl   = document.getElementById('mobileCartItemsList');
+  const footerEl = document.getElementById('mobileSheetFooter');
+
+  if (!state.cart.length) {
+    if (emptyEl)  emptyEl.style.setProperty('display', 'flex',  'important');
+    if (listEl)   listEl.style.setProperty('display',  'none',  'important');
+    if (footerEl) footerEl.style.setProperty('display', 'none', 'important');
+    return;
+  }
+
+  if (emptyEl)  emptyEl.style.setProperty('display',  'none',  'important');
+  if (listEl)   listEl.style.setProperty('display',   'block', 'important');
+  if (footerEl) footerEl.style.setProperty('display', 'block', 'important');
+
+  if (listEl) {
+    listEl.innerHTML = state.cart.map(item => `
+      <div style="display:flex;align-items:center;gap:12px;padding:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);border-radius:14px;margin-bottom:10px;">
+        <div style="width:50px;height:50px;border-radius:10px;overflow:hidden;background:rgba(255,255,255,0.05);flex-shrink:0;">
+          <img src="${item.img}" alt="${item.name}" style="width:100%;height:100%;object-fit:contain;padding:4px;">
+        </div>
+        <div style="flex:1;min-width:0;">
+          <p style="font-size:13px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${item.name}</p>
+          <p style="font-size:11px;color:rgba(255,255,255,0.3);margin-top:2px;">${item.game}</p>
+          <p style="font-size:13px;font-weight:800;color:#60a5fa;margin-top:4px;">${fmt(item.price * item.qty)}</p>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+          <button onclick="removeFromCart('${item.id}',event)" style="color:rgba(239,68,68,0.6);padding:4px;border-radius:6px;cursor:pointer;background:rgba(239,68,68,0.08);border:none;display:flex;align-items:center;justify-content:center;width:28px;height:28px;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+          </button>
+          <button onclick="decreaseQty('${item.id}',event)" style="width:28px;height:28px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;">−</button>
+          <span style="font-size:13px;font-weight:700;color:#fff;min-width:18px;text-align:center;">${item.qty}</span>
+          <button onclick="addToCart('${item.id}',event)" style="width:28px;height:28px;background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.25);border-radius:8px;color:#60a5fa;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;">+</button>
+        </div>
+      </div>`).join('');
+  }
+}
+
+window.openMobileCart = openMobileCart;
+window.closeMobileCart = closeMobileCart;
+window.renderMobileStories = renderMobileStories;
+
+// ===== BUILD CART BAR DOM (no innerHTML/SVG parsing issues) =====
+function buildCartBarDOM(cartBar) {
+  cartBar.innerHTML = '';
+
+  const pill = document.createElement('div');
+  pill.onclick = openMobileCart;
+  pill.setAttribute('style',
+    'background:#fff;border-radius:999px;height:52px;display:flex;align-items:center;' +
+    'padding:6px 6px 6px 20px;gap:10px;box-shadow:0 8px 40px rgba(0,0,0,0.5);cursor:pointer;user-select:none;');
+
+  // Cart SVG via createElementNS (guaranteed correct SVG rendering)
+  const NS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(NS, 'svg');
+  svg.setAttribute('viewBox', '0 0 24 24'); svg.setAttribute('width', '20'); svg.setAttribute('height', '20');
+  svg.setAttribute('fill', 'none'); svg.setAttribute('stroke', '#0B0F16'); svg.setAttribute('stroke-width', '2.5');
+  svg.setAttribute('stroke-linecap', 'round'); svg.setAttribute('stroke-linejoin', 'round');
+  svg.style.flexShrink = '0';
+  const c1 = document.createElementNS(NS, 'circle'); c1.setAttribute('cx','8'); c1.setAttribute('cy','21'); c1.setAttribute('r','1');
+  const c2 = document.createElementNS(NS, 'circle'); c2.setAttribute('cx','19'); c2.setAttribute('cy','21'); c2.setAttribute('r','1');
+  const p  = document.createElementNS(NS, 'path');   p.setAttribute('d','M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12');
+  svg.appendChild(c1); svg.appendChild(c2); svg.appendChild(p);
+
+  const total = document.createElement('span');
+  total.id = 'mobileCartTotal';
+  total.setAttribute('style', 'font-size:15px;font-weight:800;color:#0B0F16;flex:1;letter-spacing:-0.3px;');
+  total.textContent = '$0.00';
+
+  const currency = document.createElement('span');
+  currency.id = 'mobileCartCurrency';
+  currency.setAttribute('style', 'font-size:11px;font-weight:600;color:rgba(11,15,22,0.35);margin-right:2px;');
+  currency.textContent = 'COP';
+
+  const count = document.createElement('div');
+  count.id = 'mobileCartCount';
+  count.setAttribute('style',
+    'background:#0B0F16;color:#fff;min-width:40px;height:40px;border-radius:999px;' +
+    'display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0;');
+  count.textContent = '0';
+
+  pill.appendChild(svg); pill.appendChild(total); pill.appendChild(currency); pill.appendChild(count);
+  cartBar.appendChild(pill);
+}
+
+// ===== MOBILE LAYOUT (JS-driven, works in iframes too) =====
+function applyMobileLayout() {
+  const isMobile = window.innerWidth < 1024;
+  document.body.classList.toggle('is-mobile', isMobile);
+
+  const sidebar       = document.getElementById('sidebar');
+  const cartPanel     = document.getElementById('cartPanel');
+  const rootEl        = document.getElementById('rootContainer');
+  const centerCol     = document.getElementById('centerCol');
+  const storiesBar    = document.getElementById('mobileStoriesBar');
+  const cartBar       = document.getElementById('mobileCartBar');
+  const navDesktop    = document.getElementById('navDesktopRow');
+  const navMobile     = document.getElementById('navMobileRow');
+  const mobileFilters = document.getElementById('mobileFiltersBar');
+  const categoryTabs  = document.getElementById('categoryTabsWrap');
+
+  if (isMobile) {
+    if (sidebar)    sidebar.style.display    = 'none';
+    if (cartPanel)  cartPanel.style.display  = 'none';
+    if (rootEl) {
+      rootEl.style.flexDirection = 'column';
+      rootEl.style.padding       = '0';
+      rootEl.style.gap           = '0';
+    }
+    if (centerCol) {
+      centerCol.style.borderRadius = '0';
+      centerCol.style.border       = 'none';
+    }
+    if (navDesktop)    navDesktop.style.display    = 'none';
+    if (navMobile)     navMobile.style.display     = 'flex';
+    if (mobileFilters) mobileFilters.style.display = 'flex';
+    if (storiesBar) storiesBar.style.display = 'flex';
+    // Cart bar: inject full HTML with inline styles (bypasses CSS cache)
+    if (cartBar) {
+      Object.assign(cartBar.style, {
+        display: 'block', position: 'fixed', bottom: '22px',
+        left: '50%', transform: 'translateX(-50%)', zIndex: '9999',
+        width: 'calc(100% - 32px)', maxWidth: '400px'
+      });
+      buildCartBarDOM(cartBar);
+      updateMobileCart();
+    }
+    // Cart sheet: force positioning inline
+    const sheet = document.getElementById('mobileCartSheet');
+    if (sheet) {
+      Object.assign(sheet.style, {
+        position: 'fixed', inset: '0', zIndex: '20000',
+        pointerEvents: 'none', opacity: '0', transition: 'opacity 0.3s'
+      });
+      const panel = sheet.querySelector('.mobile-sheet-panel');
+      if (panel) Object.assign(panel.style, {
+        position: 'absolute', bottom: '0', left: '0', right: '0',
+        background: '#0D1117', borderRadius: '24px 24px 0 0',
+        border: '1px solid rgba(255,255,255,0.07)', borderBottom: 'none',
+        maxHeight: '92dvh', display: 'flex', flexDirection: 'column',
+        transform: 'translateY(100%)', transition: 'transform 0.4s cubic-bezier(0.32,0.72,0,1)'
+      });
+      // Overlay
+      const overlay = sheet.querySelector('.mobile-sheet-overlay');
+      if (overlay) Object.assign(overlay.style, {
+        position: 'absolute', inset: '0',
+        background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(4px)'
+      });
+      // Handle
+      const handle = sheet.querySelector('.mobile-sheet-handle');
+      if (handle) Object.assign(handle.style, {
+        width: '36px', height: '4px', background: 'rgba(255,255,255,0.12)',
+        borderRadius: '999px', margin: '12px auto 6px', flexShrink: '0', display: 'block'
+      });
+      // Header
+      const header = sheet.querySelector('.mobile-sheet-header');
+      if (header) Object.assign(header.style, {
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '10px 16px 12px', borderBottom: '1px solid rgba(255,255,255,0.06)',
+        flexShrink: '0', gap: '8px'
+      });
+      // Title group
+      const titleGroup = sheet.querySelector('.mobile-sheet-title');
+      if (titleGroup) Object.assign(titleGroup.style, {
+        display: 'flex', alignItems: 'center', gap: '10px', flex: '1', minWidth: '0'
+      });
+      // Body
+      const sheetBody = sheet.querySelector('.mobile-sheet-body');
+      if (sheetBody) Object.assign(sheetBody.style, {
+        flex: '1', overflowY: 'auto', padding: '14px 16px', scrollbarWidth: 'none'
+      });
+      // Footer
+      const sheetFooter = sheet.querySelector('.mobile-sheet-footer');
+      if (sheetFooter) Object.assign(sheetFooter.style, {
+        padding: '12px 16px', borderTop: '1px solid rgba(255,255,255,0.06)',
+        flexShrink: '0', paddingBottom: 'calc(12px + env(safe-area-inset-bottom, 0px))'
+      });
+      // Close button
+      const closeBtn = sheet.querySelector('.mobile-sheet-close');
+      if (closeBtn) Object.assign(closeBtn.style, {
+        width: '30px', height: '30px', borderRadius: '50%',
+        background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        color: 'rgba(255,255,255,0.5)', cursor: 'pointer', flexShrink: '0'
+      });
+    }
+    // Fix dropdown positioning to fixed so they appear correctly on mobile
+    ['sortDropdown','currencyDropdown','notifDropdown','userDropdown'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) { el.style.position = 'fixed'; el.style.top = '110px'; el.style.left = '12px'; el.style.right = '12px'; el.style.zIndex = '9999'; }
+    });
+    syncMobileLabels();
+    // Move category tabs below stories bar if active
+    if (categoryTabs && categoryTabs.style.display !== 'none') {
+      categoryTabs.style.borderTop = '1px solid rgba(255,255,255,0.05)';
+    }
+  } else {
+    if (sidebar)    sidebar.style.display    = '';
+    if (cartPanel)  cartPanel.style.display  = '';
+    if (rootEl) {
+      rootEl.style.flexDirection = '';
+      rootEl.style.padding       = '';
+      rootEl.style.gap           = '';
+    }
+    if (centerCol) {
+      centerCol.style.borderRadius = '';
+      centerCol.style.border       = '';
+    }
+    if (navDesktop)    navDesktop.style.display    = '';
+    if (navMobile)     navMobile.style.display     = 'none';
+    if (mobileFilters) mobileFilters.style.display = 'none';
+    if (storiesBar) storiesBar.style.display = 'none';
+    if (cartBar)    cartBar.style.display    = 'none';
+    // Restore dropdown positioning for desktop
+    ['sortDropdown','currencyDropdown','notifDropdown','userDropdown'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) { el.style.position = ''; el.style.top = ''; el.style.left = ''; el.style.right = ''; el.style.zIndex = ''; }
+    });
+  }
+}
+
+function syncMobileLabels() {
+  const sortLabelEl = document.getElementById('sortLabel');
+  const mobileSortEl = document.getElementById('mobileSortLabel');
+  if (sortLabelEl && mobileSortEl) mobileSortEl.textContent = sortLabelEl.textContent || 'Popularidad';
+
+  const currencyLabelEl = document.getElementById('currencyLabel');
+  const mobileCurrencyEl = document.getElementById('mobileCurrencyLabel');
+  if (currencyLabelEl && mobileCurrencyEl) mobileCurrencyEl.textContent = currencyLabelEl.textContent;
+
+  const currencyFlagEl = document.getElementById('currencyFlagImg');
+  const mobileFlagEl = document.getElementById('mobileCurrencyFlag');
+  if (currencyFlagEl && mobileFlagEl) mobileFlagEl.src = currencyFlagEl.src;
+}
+
+function mobileToggleDrop(type) {
+  const map = { sort: 'sortDropdown', currency: 'currencyDropdown' };
+  const targetId = map[type];
+  const all = ['sortDropdown','currencyDropdown','notifDropdown','userDropdown'];
+  all.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && id !== targetId) el.classList.add('hidden');
+  });
+  const target = document.getElementById(targetId);
+  if (target) target.classList.toggle('hidden');
+}
+window.mobileToggleDrop = mobileToggleDrop;
+
+function toggleMobileSearch() {
+  const searchBar = document.getElementById('navMobileSearch');
+  if (!searchBar) return;
+  const isVisible = searchBar.style.display !== 'none';
+  searchBar.style.display = isVisible ? 'none' : 'block';
+  if (!isVisible) {
+    const inp = document.getElementById('searchInputMobile');
+    if (inp) setTimeout(() => inp.focus(), 50);
+  }
+}
+window.toggleMobileSearch = toggleMobileSearch;
+
+window.addEventListener('resize', applyMobileLayout);
+
 // ===== INIT =====
 initApp();
+
+setTimeout(() => {
+  applyMobileLayout();
+  renderMobileStories();
+  updateMobileCart();
+
+  // Re-render stories whenever sidebar game list updates (GAMES loaded from API)
+  const gameItems = document.getElementById('gameItemsContainer');
+  if (gameItems) {
+    new MutationObserver(() => {
+      if (document.body.classList.contains('is-mobile')) renderMobileStories();
+    }).observe(gameItems, { childList: true });
+  }
+
+  // Sync cart bar whenever cartBadge changes
+  const badge = document.getElementById('cartBadge');
+  if (badge) {
+    new MutationObserver(() => updateMobileCart())
+      .observe(badge, { childList: true, subtree: true, characterData: true });
+  }
+
+  // Sync mobile filter labels when currency/sort labels change
+  const currencyLabelEl = document.getElementById('currencyLabel');
+  const sortLabelEl = document.getElementById('sortLabel');
+  if (currencyLabelEl) {
+    new MutationObserver(() => { if (document.body.classList.contains('is-mobile')) syncMobileLabels(); })
+      .observe(currencyLabelEl, { childList: true, subtree: true, characterData: true });
+  }
+  if (sortLabelEl) {
+    new MutationObserver(() => { if (document.body.classList.contains('is-mobile')) syncMobileLabels(); })
+      .observe(sortLabelEl, { childList: true, subtree: true, characterData: true });
+  }
+}, 150);
