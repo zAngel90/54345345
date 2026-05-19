@@ -167,7 +167,8 @@ async function initApp() {
         `;
 
         document.getElementById('navGameChip').style.display = 'flex';
-        document.getElementById('categoryTabsWrap').style.display = 'block';
+        if (!document.body.classList.contains('is-mobile'))
+          document.getElementById('categoryTabsWrap').style.display = 'block';
 
         renderTabs();
       }
@@ -204,7 +205,8 @@ async function initApp() {
         `;
 
         document.getElementById('navGameChip').style.display = 'flex';
-        document.getElementById('categoryTabsWrap').style.display = 'block';
+        if (!document.body.classList.contains('is-mobile'))
+          document.getElementById('categoryTabsWrap').style.display = 'block';
         renderTabs();
 
         renderCatalog(); // Forzar renderizado inmediato tras cargar productos
@@ -862,9 +864,28 @@ function renderTabs() {
     const isAct = t === activeTab;
     return `<button class="category-tab ${isAct ? 'active' : ''}" onclick="selectTab('${t}')" style="${tabStyle}${isAct ? tabActiveStyle : ''}"><span>${t}</span></button>`;
   }).join('');
+
+  // On mobile: populate category dropdown + update pill label
   if (mob) {
-    const wrap = document.getElementById('categoryTabs');
-    if (wrap) Object.assign(wrap.style, { padding: '6px 8px', gap: '4px' });
+    const labelEl = document.getElementById('mobileCategoryLabel');
+    if (labelEl) labelEl.textContent = activeTab;
+    const drop = document.getElementById('mobileCategoryDropdown');
+    if (drop) {
+      drop.innerHTML = `
+        <div style="padding:8px 12px 6px;border-bottom:1px solid rgba(255,255,255,0.06);">
+          <span style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:0.08em;">Categoría</span>
+        </div>
+        <div style="padding:6px;max-height:260px;overflow-y:auto;">
+          ${tabs.map(t => {
+            const isAct = t === activeTab;
+            return `<button onclick="selectTab('${t}');mobileToggleDrop('category');" style="width:100%;text-align:left;padding:9px 12px;border-radius:10px;font-size:13px;font-weight:${isAct ? '700' : '500'};color:${isAct ? '#fff' : 'rgba(255,255,255,0.5)'};background:${isAct ? 'rgba(255,255,255,0.08)' : 'none'};border:none;cursor:pointer;display:flex;align-items:center;gap:8px;">
+              ${isAct ? '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg>' : '<span style="width:12px;"></span>'}
+              ${t}
+            </button>`;
+          }).join('')}
+        </div>
+      `;
+    }
   }
 
   if (window.lucide) lucide.createIcons();
@@ -1229,7 +1250,8 @@ function selectGame(id) {
     }
 
     chip.style.display = 'flex';
-    tabsWrap.style.display = 'block';
+    if (!document.body.classList.contains('is-mobile'))
+      tabsWrap.style.display = 'block';
     
     // Obtenemos las pestañas y aseguramos que "Ver Todo" sea la primera si hay categorías
     const customTabs = g.categories && g.categories.length > 0 ? g.categories : (GAME_CATEGORIES[id] || []);
@@ -1591,7 +1613,7 @@ document.getElementById('clearNotifsBtn').addEventListener('click', (e) => {
 });
 
 document.addEventListener('click', () => {
-  const drops = ['currencyDropdown', 'sortDropdown', 'notifDropdown', 'userDropdown'];
+  const drops = ['currencyDropdown', 'sortDropdown', 'notifDropdown', 'userDropdown', 'mobileCategoryDropdown'];
   drops.forEach(id => {
     const el = document.getElementById(id);
     if (el) el.classList.add('hidden');
@@ -2605,23 +2627,28 @@ function applyMobileLayout() {
         color: 'rgba(255,255,255,0.5)', cursor: 'pointer', flexShrink: '0'
       });
     }
-    // Fix dropdown positioning to fixed so they appear correctly on mobile
-    ['sortDropdown','currencyDropdown','notifDropdown','userDropdown'].forEach(id => {
+    // Move sort/currency dropdowns to body level — their parent (#navDesktopRow) is display:none
+    // which hides even position:fixed children. Moving to body fixes this.
+    ['sortDropdown','currencyDropdown'].forEach(id => {
       const el = document.getElementById(id);
-      if (el) { el.style.position = 'fixed'; el.style.top = '110px'; el.style.left = '12px'; el.style.right = '12px'; el.style.zIndex = '9999'; }
+      if (el && !el._mobileMoved) {
+        el._mobileOrigParent = el.parentNode;
+        el._mobileOrigNext   = el.nextSibling;
+        document.body.appendChild(el);
+        el._mobileMoved = true;
+      }
+      if (el) Object.assign(el.style, { position:'fixed', top:'110px', left:'12px', right:'12px', zIndex:'10001' });
     });
     syncMobileLabels();
-    // Move category tabs below stories bar if active
-    if (categoryTabs && categoryTabs.style.display !== 'none') {
-      categoryTabs.style.borderTop = '1px solid rgba(255,255,255,0.05)';
-    }
+    // Hide category tabs bar on mobile — replaced by dropdown pill
+    if (categoryTabs) categoryTabs.style.display = 'none';
   } else {
     if (sidebar)    sidebar.style.display    = '';
     if (cartPanel)  cartPanel.style.display  = '';
     if (rootEl) {
       rootEl.style.flexDirection = '';
-      rootEl.style.padding       = '';
-      rootEl.style.gap           = '';
+      rootEl.style.padding       = '16px';
+      rootEl.style.gap           = '16px';
     }
     if (centerCol) {
       centerCol.style.borderRadius = '';
@@ -2632,9 +2659,13 @@ function applyMobileLayout() {
     if (mobileFilters) mobileFilters.style.display = 'none';
     if (storiesBar) storiesBar.style.display = 'none';
     if (cartBar)    cartBar.style.display    = 'none';
-    // Restore dropdown positioning for desktop
-    ['sortDropdown','currencyDropdown','notifDropdown','userDropdown'].forEach(id => {
+    // Restore sort/currency dropdowns to their original DOM position
+    ['sortDropdown','currencyDropdown'].forEach(id => {
       const el = document.getElementById(id);
+      if (el && el._mobileMoved && el._mobileOrigParent) {
+        el._mobileOrigParent.insertBefore(el, el._mobileOrigNext || null);
+        el._mobileMoved = false;
+      }
       if (el) { el.style.position = ''; el.style.top = ''; el.style.left = ''; el.style.right = ''; el.style.zIndex = ''; }
     });
   }
@@ -2654,10 +2685,19 @@ function syncMobileLabels() {
   if (currencyFlagEl && mobileFlagEl) mobileFlagEl.src = currencyFlagEl.src;
 }
 
-function mobileToggleDrop(type) {
-  const map = { sort: 'sortDropdown', currency: 'currencyDropdown' };
-  const targetId = map[type];
-  const all = ['sortDropdown','currencyDropdown','notifDropdown','userDropdown'];
+function mobileToggleDrop(eOrType, type) {
+  // Supports both mobileToggleDrop('sort') and mobileToggleDrop(event,'sort')
+  let e = null, t = type;
+  if (typeof eOrType === 'string') {
+    t = eOrType;
+  } else {
+    e = eOrType;
+    if (e && e.stopPropagation) e.stopPropagation();
+    t = type;
+  }
+  const map = { sort: 'sortDropdown', currency: 'currencyDropdown', category: 'mobileCategoryDropdown' };
+  const targetId = map[t];
+  const all = ['sortDropdown','currencyDropdown','notifDropdown','userDropdown','mobileCategoryDropdown'];
   all.forEach(id => {
     const el = document.getElementById(id);
     if (el && id !== targetId) el.classList.add('hidden');

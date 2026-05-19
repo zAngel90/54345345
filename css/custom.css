@@ -2341,6 +2341,23 @@ color: rgba(255, 255, 255, 0.7);
 /* Sidebar scrollbar hidden */
 #sidebar::-webkit-scrollbar { display: none; }
 
+/* Mobile category dropdown slide-down animation */
+@keyframes slideDownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+#mobileCategoryDropdown:not(.hidden) {
+  animation: slideDownFade 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+  transform-origin: top center;
+}
+
 /* ===== MOBILE GRID RESPONSIVE ===== */
 
 /* Regular product grid — override media queries que no funcionen en iframe */
