@@ -1956,12 +1956,18 @@ function updateConfirmButton() {
 function confirmCheckout() {
   if (!selectedUser) return;
 
+  // Detect mode explicitly so Checkout.tsx doesn't have to guess from cart items
+  let gameType = 'ingame';
+  if (state.mm2Mode) gameType = 'mm2';
+
   const checkoutData = {
     action: 'checkout',
     user: selectedUser,
     cart: state.cart,
     total: state.cart.reduce((s, x) => s + (x.price * CURRENCY_RATES[state.currency].rate * x.qty), 0),
-    currency: state.currency
+    currency: state.currency,
+    gameType,
+    fromIngame: true
   };
 
   window.parent.postMessage(checkoutData, '*');
