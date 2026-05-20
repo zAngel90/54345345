@@ -83,7 +83,7 @@ async function initApp() {
     // 1. Iniciar todas las peticiones en paralelo para máxima velocidad
     const [gamesRes, prodsRes] = await Promise.all([
       fetch(`${API_BASE_URL}/admin/games-config`),
-      fetch(`${API_BASE_URL}/products`),
+      fetch(`${API_BASE_URL}/admin/products-config`),
       fetchCurrencies() // Esta corre de fondo
     ]);
 
@@ -100,7 +100,8 @@ async function initApp() {
     }
 
     const prodsData = await prodsRes.json();
-    ALL_PRODUCTS = prodsData.map(p => ({
+    const productsArray = prodsData.success ? prodsData.data : prodsData;
+    ALL_PRODUCTS = productsArray.map(p => ({
       ...p,
       purchases: Math.floor(Math.random() * 1000) + 100,
       img: p.image ? (p.image.startsWith('http') ? p.image : `${SERVER_URL}${p.image}`) : ''
