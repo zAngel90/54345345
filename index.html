@@ -766,10 +766,10 @@
 
     <!-- ===== CART PANEL (derecha, altura completa) ===== -->
     <div id="cartPanel"
-      style="width:320px;flex-shrink:0;display:flex;flex-direction:column;border:1px solid rgba(255,255,255,0.07);background:rgba(255, 255, 255, 0.05);backdrop-filter:blur(20px);border-radius:24px;height:100%">
+      style="width:320px;flex-shrink:0;display:flex;flex-direction:column;border:1px solid rgba(255,255,255,0.07);background:rgba(255, 255, 255, 0.05);backdrop-filter:blur(20px);border-radius:24px;height:100%;position:relative;">
 
       <!-- Cart Header -->
-      <div class="flex items-center justify-between p-5 border-b border-white/[0.05]">
+      <div class="flex items-center justify-between p-5 border-b border-white/[0.05]" style="flex-shrink:0;">
         <div class="flex items-center gap-3">
           <div
             class="w-10 h-10 flex items-center justify-center bg-white/[0.05] border border-white/[0.08] rounded-xl text-white/70 relative">
@@ -798,7 +798,7 @@
       </div>
 
       <!-- Cart Content -->
-      <div id="cartContent" class="flex-1 flex flex-col p-6 overflow-y-auto scrollbar-hide relative">
+      <div id="cartContent" class="flex-1 flex flex-col p-6 relative" style="min-height:0;padding-bottom:240px;">
         <!-- Empty State -->
         <div id="cartEmpty" class="flex flex-col items-center justify-center h-full text-center">
           <div
@@ -815,11 +815,11 @@
         </div>
 
         <!-- List of items (hidden by default) -->
-        <div id="cartItemsList" class="w-full space-y-3 hidden"></div>
+        <div id="cartItemsList" class="w-full space-y-3 hidden overflow-y-auto scrollbar-hide" style="max-height:calc(100vh - 500px);"></div>
       </div>
 
       <!-- Cart Footer -->
-      <div id="cartFooter" class="p-5 border-t border-white/[0.05] hidden">
+      <div id="cartFooter" class="p-5 border-t border-white/[0.05] hidden" style="position:absolute;bottom:0;left:0;right:0;z-index:10;">
         <!-- Promo Code Section -->
         <div class="promo-section mb-6">
           <label class="promo-label">
