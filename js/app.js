@@ -63,6 +63,9 @@ let tradeSelectedUser = null;
 let tradeInventoryItems = [];
 let tradeSelectedInventoryItem = null;
 let tradeTargetProduct = null;
+let lastCheckoutSearchResults = [];
+let lastTradeSearchResults = [];
+let lastTradeSearchQuery = '';
 
 async function initApp() {
   try {
@@ -284,7 +287,8 @@ function initRecentUsers() {
     // Hide dropdown when clicking outside
     document.addEventListener('click', (e) => {
       setTimeout(() => {
-        if (!input.contains(e.target) && !box.contains(e.target)) {
+        const isBackBtn = e.target.closest('#checkout-back-btn') || e.target.closest('#trade-back-btn') || e.target.closest('#trade-back-results-btn');
+        if (!input.contains(e.target) && !box.contains(e.target) && !isBackBtn) {
           box.style.display = 'none';
         }
       }, 100);
@@ -1853,11 +1857,13 @@ window.closeCheckoutModal = function () {
   document.getElementById('checkoutModal').classList.add('hidden');
   selectedUser = null;
   updateConfirmButton();
-  document.getElementById('userSearchResults').classList.add('hidden');
+  document.getElementById('userSearchResults').style.display = 'none';
   document.getElementById('userSearchResults').innerHTML = '';
   document.getElementById('robloxUserInput').value = '';
   document.getElementById('userSearchStatus').textContent = 'Busca y selecciona tu usuario para continuar';
+  document.getElementById('checkout-back-btn').style.display = 'none';
 };
+
 
 document.getElementById('robloxUserInput').addEventListener('input', (e) => {
   const q = e.target.value.trim();
@@ -1867,12 +1873,13 @@ document.getElementById('robloxUserInput').addEventListener('input', (e) => {
   clearTimeout(searchTimeout);
 
   if (q.length < 3) {
-    resultsDiv.classList.add('hidden');
+    resultsDiv.style.display = 'none';
     status.textContent = 'Escribe al menos 3 caracteres...';
     return;
   }
 
   status.textContent = 'Buscando usuario...';
+  document.getElementById('checkout-back-btn').style.display = 'none';
 
   searchTimeout = setTimeout(async () => {
     try {
@@ -1880,6 +1887,7 @@ document.getElementById('robloxUserInput').addEventListener('input', (e) => {
       const data = await res.json();
 
       if (data.success && data.data && data.data.length > 0) {
+        lastCheckoutSearchResults = data.data;
         resultsDiv.innerHTML = data.data.map(user => {
           // Usar el proxy de avatar del servidor para evitar fallos si no viene avatarUrl
           const avatar = `${SERVER_URL}/api/users/avatar/${user.id}`;
@@ -1893,17 +1901,66 @@ document.getElementById('robloxUserInput').addEventListener('input', (e) => {
             </div>
           `;
         }).join('');
-        resultsDiv.classList.remove('hidden');
+        resultsDiv.style.display = 'block';
         status.textContent = 'Selecciona tu usuario de la lista';
       } else {
-        resultsDiv.classList.add('hidden');
+        lastCheckoutSearchResults = [];
+        resultsDiv.style.display = 'none';
         status.textContent = 'No se encontró ningún usuario';
       }
     } catch (err) {
+      lastCheckoutSearchResults = [];
+      resultsDiv.style.display = 'none';
       status.textContent = 'Error al buscar usuario';
     }
   }, 500);
 });
+
+window.backToCheckoutResults = function() {
+  console.log('🔙 backToCheckoutResults called');
+  console.log('📦 lastCheckoutSearchResults:', lastCheckoutSearchResults);
+  
+  const resultsDiv = document.getElementById('userSearchResults');
+  const status = document.getElementById('userSearchStatus');
+  const backBtn = document.getElementById('checkout-back-btn');
+
+  // Deseleccionar usuario
+  selectedUser = null;
+  updateConfirmButton();
+  
+  // Limpiar resultados de búsqueda actuales
+  resultsDiv.innerHTML = '';
+  resultsDiv.style.display = 'none';
+  
+  // Si tenemos resultados guardados, los mostramos
+  if (lastCheckoutSearchResults && lastCheckoutSearchResults.length > 0) {
+    resultsDiv.innerHTML = lastCheckoutSearchResults.map(user => {
+      const avatar = `${SERVER_URL}/api/users/avatar/${user.id}`;
+      return `
+        <div class="user-result-item" onclick="window.selectRobloxUser('${user.id}', '${user.name}', '${user.displayName}')">
+          <img src="${avatar}" class="user-result-avatar" alt="" onerror="this.src='https://ui-avatars.com/api/?name=${user.name}&background=random'">
+          <div>
+            <p class="text-sm font-bold text-white">${user.displayName}</p>
+            <p class="text-[10px] text-white/30">@${user.name}</p>
+          </div>
+        </div>
+      `;
+    }).join('');
+    resultsDiv.style.display = 'block';
+    status.textContent = 'Selecciona otro usuario de la lista';
+  } else {
+    status.textContent = 'Escribe un nuevo usuario para buscar';
+  }
+  
+  // Ocultar botón back
+  backBtn.style.display = 'none';
+  
+  // Mostrar dropdown de usuarios recientes
+  renderRecentList('robloxUserInput', 'checkout-recent-users');
+  
+  // Hacer focus al input para mantener el dropdown abierto
+  document.getElementById('robloxUserInput').focus();
+};
 
 window.selectRobloxUser = function (id, name, displayName) {
   selectedUser = { id, name, displayName };
@@ -1925,6 +1982,7 @@ window.selectRobloxUser = function (id, name, displayName) {
   `;
 
   document.getElementById('userSearchStatus').textContent = '¡Usuario seleccionado correctamente!';
+  document.getElementById('checkout-back-btn').style.display = 'flex';
   updateConfirmButton();
 
   // Save to recent
@@ -2003,7 +2061,8 @@ function updateTradeStepUI() {
   const desc = document.getElementById('trade-modal-desc');
   const nextBtnText = document.getElementById('trade-btn-text');
   const nextBtn = document.getElementById('trade-next-btn');
-  const backBtn = document.getElementById('trade-back-btn');
+  const footerBackBtn = document.getElementById('trade-back-btn');
+  const resultsBackBtn = document.getElementById('trade-back-results-btn');
 
   // Hide all steps
   document.getElementById('trade-step-1').classList.add('hidden');
@@ -2247,10 +2306,58 @@ document.getElementById('tradeRobloxInput').addEventListener('input', (e) => {
 window.selectTradeUser = function (id, name, displayName) {
   const avatarUrl = `${SERVER_URL}/api/users/avatar/${id}`;
   tradeSelectedUser = { id, name, displayName, avatarUrl };
+  lastTradeSearchQuery = document.getElementById('tradeRobloxInput').value.trim();
   updateTradeStepUI();
 
   // Save to recent
   saveRecentUser({ name, id, avatar: avatarUrl });
+};
+
+window.backToTradeResults = function() {
+  const resultsDiv = document.getElementById('tradeSearchResults');
+  const status = document.getElementById('tradeSearchStatus');
+
+  tradeSelectedUser = null;
+
+  if (lastTradeSearchResults.length > 0) {
+    resultsDiv.innerHTML = lastTradeSearchResults.map(user => {
+      const avatar = `${SERVER_URL}/api/users/avatar/${user.id}`;
+      return `
+        <div class="user-result-item" onclick="window.selectTradeUser('${user.id}', '${user.name}', '${user.displayName}')">
+          <img src="${avatar}" class="user-result-avatar" alt="" onerror="this.src='https://ui-avatars.com/api/?name=${user.name}&background=random'">
+          <div class="flex-1">
+            <p class="text-sm font-bold text-white">${user.displayName}</p>
+            <p class="text-[10px] text-white/30">@${user.name}</p>
+          </div>
+          <svg class="text-white/10" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m9 18 6-6-6-6"/></svg>
+        </div>
+      `;
+    }).join('');
+    if (status) status.textContent = 'Selecciona otro usuario';
+  } else if (lastTradeSearchQuery) {
+    document.getElementById('tradeRobloxInput').value = lastTradeSearchQuery;
+    document.getElementById('tradeRobloxInput').dispatchEvent(new Event('input'));
+    if (status) status.textContent = 'Buscando de nuevo...';
+  }
+
+  // Mostrar dropdown de usuarios recientes
+  renderRecentList('tradeRobloxInput', 'trade-recent-users');
+  document.getElementById('tradeRobloxInput').focus();
+
+  updateTradeStepUI();
+};
+
+window.tradePrevStep = function tradePrevStep() {
+  if (currentTradeStep === 1) {
+    // Si estamos en el paso 1 y hay un usuario seleccionado, "Atrás" vuelve a la búsqueda
+    tradeSelectedUser = null;
+    updateTradeStepUI();
+    return;
+  }
+  if (currentTradeStep > 1) {
+    currentTradeStep--;
+    updateTradeStepUI();
+  }
 };
 
 // Step 2: Inventory
