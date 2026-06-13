@@ -1036,16 +1036,20 @@
             </div>
           </div>
 
-          <!-- Back to Results Button (Checkout) -->
-          <div id="checkout-back-btn" class="mb-2" style="display:none;">
-            <button onclick="event.stopPropagation(); window.backToCheckoutResults()" type="button" class="flex items-center gap-1.5 text-blue-400 hover:text-blue-300 transition-colors text-xs font-bold">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-              Cambiar usuario
-            </button>
+          <!-- Selected User Grid (Checkout) -->
+          <div id="checkout-selected-user" class="hidden space-y-2">
+            <div class="flex items-center justify-between">
+              <label class="text-[10px] font-black tracking-widest text-white/30 uppercase">Usuario seleccionado</label>
+              <button onclick="event.stopPropagation(); window.backToCheckoutResults()" type="button" class="flex items-center gap-1 text-blue-400 hover:text-blue-300 transition-colors text-xs font-bold">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                Cambiar usuario
+              </button>
+            </div>
+            <div id="checkout-selected-grid" class="grid grid-cols-1 gap-2"></div>
           </div>
 
           <!-- Search Results -->
-          <div id="userSearchResults" class="space-y-2" style="display:none;"></div>
+          <div id="userSearchResults" class="space-y-2"></div>
 
           <div id="userSearchStatus" class="text-[10px] text-white/20 font-medium">Busca y selecciona tu usuario para
             continuar</div>
@@ -1199,15 +1203,17 @@
             </div>
           </div>
 
-          <div id="trade-confirm-view" class="hidden space-y-4">
-            <!-- Back to Results Button (Trade) -->
-            <div id="trade-back-results-btn" class="flex items-center gap-2 mb-2">
-              <button onclick="backToTradeResults()" class="flex items-center gap-1.5 text-blue-400 hover:text-blue-300 transition-colors text-xs font-bold bg-transparent border-none cursor-pointer">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-                Cambiar usuario
-              </button>
+            <!-- Selected User Grid (Trade) -->
+            <div id="trade-selected-user-grid" class="hidden space-y-2">
+              <div class="flex items-center justify-between">
+                <label class="text-[10px] font-black tracking-widest text-white/30 uppercase">Usuario seleccionado</label>
+                <button onclick="event.stopPropagation(); window.backToTradeResults()" type="button" class="flex items-center gap-1 text-blue-400 hover:text-blue-300 transition-colors text-xs font-bold">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                  Cambiar usuario
+                </button>
+              </div>
+              <div id="trade-selected-grid-content" class="grid grid-cols-1 gap-2"></div>
             </div>
-            <div id="step1-user-card"></div>
             <div class="bg-blue-500/10 border border-blue-500/20 rounded-2xl p-5 flex gap-4 items-start">
               <div class="size-10 rounded-full bg-blue-500/20 flex items-center justify-center shrink-0">
                 <svg class="text-blue-400" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"

@@ -1861,7 +1861,7 @@ window.closeCheckoutModal = function () {
   document.getElementById('userSearchResults').innerHTML = '';
   document.getElementById('robloxUserInput').value = '';
   document.getElementById('userSearchStatus').textContent = 'Busca y selecciona tu usuario para continuar';
-  document.getElementById('checkout-back-btn').style.display = 'none';
+  document.getElementById('checkout-selected-user').classList.add('hidden');
 };
 
 
@@ -1869,8 +1869,12 @@ document.getElementById('robloxUserInput').addEventListener('input', (e) => {
   const q = e.target.value.trim();
   const resultsDiv = document.getElementById('userSearchResults');
   const status = document.getElementById('userSearchStatus');
+  const recentDropdown = document.getElementById('checkout-recent-users');
 
   clearTimeout(searchTimeout);
+
+  // Ocultar dropdown de recientes al escribir
+  if (recentDropdown) recentDropdown.style.display = 'none';
 
   if (q.length < 3) {
     resultsDiv.style.display = 'none';
@@ -1879,7 +1883,8 @@ document.getElementById('robloxUserInput').addEventListener('input', (e) => {
   }
 
   status.textContent = 'Buscando usuario...';
-  document.getElementById('checkout-back-btn').style.display = 'none';
+  document.getElementById('checkout-selected-user').classList.add('hidden');
+  document.getElementById('checkout-selected-user').classList.add('hidden');
 
   searchTimeout = setTimeout(async () => {
     try {
@@ -1889,7 +1894,6 @@ document.getElementById('robloxUserInput').addEventListener('input', (e) => {
       if (data.success && data.data && data.data.length > 0) {
         lastCheckoutSearchResults = data.data;
         resultsDiv.innerHTML = data.data.map(user => {
-          // Usar el proxy de avatar del servidor para evitar fallos si no viene avatarUrl
           const avatar = `${SERVER_URL}/api/users/avatar/${user.id}`;
           return `
             <div class="user-result-item" onclick="selectRobloxUser('${user.id}', '${user.name}', '${user.displayName}')">
@@ -1922,11 +1926,15 @@ window.backToCheckoutResults = function() {
   
   const resultsDiv = document.getElementById('userSearchResults');
   const status = document.getElementById('userSearchStatus');
-  const backBtn = document.getElementById('checkout-back-btn');
+  const selectedUserContainer = document.getElementById('checkout-selected-user');
 
   // Deseleccionar usuario
   selectedUser = null;
   updateConfirmButton();
+  
+  // Ocultar grid de seleccionado
+  selectedUserContainer.classList.add('hidden');
+  document.getElementById('checkout-selected-grid').innerHTML = '';
   
   // Limpiar resultados de búsqueda actuales
   resultsDiv.innerHTML = '';
@@ -1953,7 +1961,6 @@ window.backToCheckoutResults = function() {
   }
   
   // Ocultar botón back
-  backBtn.style.display = 'none';
   
   // Mostrar dropdown de usuarios recientes
   renderRecentList('robloxUserInput', 'checkout-recent-users');
@@ -1965,24 +1972,32 @@ window.backToCheckoutResults = function() {
 window.selectRobloxUser = function (id, name, displayName) {
   selectedUser = { id, name, displayName };
 
-  const resultsDiv = document.getElementById('userSearchResults');
   const avatarUrl = `${SERVER_URL}/api/users/avatar/${id}`;
+  const resultsDiv = document.getElementById('userSearchResults');
+  const selectedGrid = document.getElementById('checkout-selected-grid');
+  const selectedUserContainer = document.getElementById('checkout-selected-user');
 
-  resultsDiv.innerHTML = `
-    <div class="user-result-item selected">
-      <img src="${avatarUrl}" class="user-result-avatar" alt="" onerror="this.src='https://ui-avatars.com/api/?name=${name}&background=random'">
-      <div>
+  // Ocultar resultados de búsqueda y mostrar grid de seleccionado
+  resultsDiv.style.display = 'none';
+  
+  // Mostrar usuario seleccionado en grid
+  selectedGrid.innerHTML = `
+    <div class="user-result-item selected !bg-blue-500/10 !border-blue-500/30 !p-4">
+      <img src="${avatarUrl}" class="user-result-avatar !size-12" alt="" onerror="this.src='https://ui-avatars.com/api/?name=${name}&background=random'">
+      <div class="flex-1">
         <p class="text-sm font-bold text-white">${displayName}</p>
-        <p class="text-[10px] text-white/30">@${name}</p>
+        <p class="text-[10px] text-white/40">@${name}</p>
       </div>
       <div class="ml-auto text-blue-400">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
       </div>
     </div>
   `;
-
+  selectedUserContainer.classList.remove('hidden');
+  
+  // Mostrar botón de volver (ahora está dentro del grid, no se usa más el botón externo)
+  
   document.getElementById('userSearchStatus').textContent = '¡Usuario seleccionado correctamente!';
-  document.getElementById('checkout-back-btn').style.display = 'flex';
   updateConfirmButton();
 
   // Save to recent
@@ -2098,31 +2113,18 @@ function updateTradeStepUI() {
 
     const searchView = document.getElementById('trade-search-view');
     const confirmView = document.getElementById('trade-confirm-view');
+    const selectedGridContainer = document.getElementById('trade-selected-user-grid');
 
     if (tradeSelectedUser) {
       searchView.classList.add('hidden');
-      confirmView.classList.remove('hidden');
-      backBtn.classList.remove('hidden'); // Show back button to return to search
-
-      document.getElementById('step1-user-card').innerHTML = `
-        <div class="user-result-item !bg-white/5 !border-white/10 !p-5">
-          <img src="${tradeSelectedUser.avatarUrl}" class="user-result-avatar !size-14" alt="">
-          <div class="flex-1">
-            <p class="text-[10px] text-white/20 font-black uppercase tracking-widest">Cuenta Encontrada</p>
-            <p class="text-base font-bold text-white">${tradeSelectedUser.displayName || tradeSelectedUser.name}</p>
-            <p class="text-xs text-white/40">@${tradeSelectedUser.name}</p>
-          </div>
-          <div class="size-6 rounded-full bg-emerald-500 flex items-center justify-center text-white">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path d="M20 6 9 17l-5-5"/></svg>
-          </div>
-        </div>
-      `;
+      selectedGridContainer.classList.remove('hidden');
+      confirmView.classList.add('hidden');
       nextBtnText.innerText = 'Continuar';
       nextBtn.disabled = false;
     } else {
       searchView.classList.remove('hidden');
+      selectedGridContainer.classList.add('hidden');
       confirmView.classList.add('hidden');
-      backBtn.classList.add('hidden');
       nextBtnText.innerText = 'Selecciona un usuario';
       nextBtn.disabled = true;
     }
@@ -2257,8 +2259,13 @@ document.getElementById('tradeRobloxInput').addEventListener('input', (e) => {
   const q = e.target.value.trim();
   const resultsDiv = document.getElementById('tradeSearchResults');
   const status = document.getElementById('tradeSearchStatus');
+  const recentDropdown = document.getElementById('trade-recent-users');
 
   clearTimeout(searchTimeout);
+
+  // Ocultar dropdown de recientes al escribir
+  if (recentDropdown) recentDropdown.style.display = 'none';
+
   if (q.length < 3) {
     resultsDiv.innerHTML = '';
     status.textContent = 'Escribe al menos 3 caracteres...';
@@ -2307,6 +2314,28 @@ window.selectTradeUser = function (id, name, displayName) {
   const avatarUrl = `${SERVER_URL}/api/users/avatar/${id}`;
   tradeSelectedUser = { id, name, displayName, avatarUrl };
   lastTradeSearchQuery = document.getElementById('tradeRobloxInput').value.trim();
+
+  // Mostrar usuario seleccionado en grid
+  const selectedGridContent = document.getElementById('trade-selected-grid-content');
+  const selectedGridContainer = document.getElementById('trade-selected-user-grid');
+  
+  selectedGridContent.innerHTML = `
+    <div class="user-result-item selected !bg-blue-500/10 !border-blue-500/30 !p-4">
+      <img src="${avatarUrl}" class="user-result-avatar !size-12" alt="" onerror="this.src='https://ui-avatars.com/api/?name=${name}&background=random'">
+      <div class="flex-1">
+        <p class="text-sm font-bold text-white">${displayName}</p>
+        <p class="text-[10px] text-white/40">@${name}</p>
+      </div>
+      <div class="ml-auto text-blue-400">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      </div>
+    </div>
+  `;
+  selectedGridContainer.classList.remove('hidden');
+  
+  // Mostrar botón de volver
+  document.getElementById('trade-back-results-btn').classList.remove('hidden');
+  
   updateTradeStepUI();
 
   // Save to recent
@@ -2316,8 +2345,13 @@ window.selectTradeUser = function (id, name, displayName) {
 window.backToTradeResults = function() {
   const resultsDiv = document.getElementById('tradeSearchResults');
   const status = document.getElementById('tradeSearchStatus');
+  const selectedGridContainer = document.getElementById('trade-selected-user-grid');
 
   tradeSelectedUser = null;
+  
+  // Ocultar grid de seleccionado
+  selectedGridContainer.classList.add('hidden');
+  document.getElementById('trade-selected-grid-content').innerHTML = '';
 
   if (lastTradeSearchResults.length > 0) {
     resultsDiv.innerHTML = lastTradeSearchResults.map(user => {
