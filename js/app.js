@@ -1831,13 +1831,12 @@ function renderCheckoutSummary() {
   // Actualizar lista de items
   container.innerHTML = state.cart.map(item => {
     const itemTotal = item.price * item.qty;
-    const itemColor = item.color || '#ec4899'; // Default pink si no tiene color
     return `
-      <div class="flex items-center gap-3 p-3 rounded-2xl border" style="background-color: ${itemColor}20; border-color: ${itemColor}80;">
+      <div class="flex items-center gap-3 p-3 rounded-2xl border border-white/10" style="background-color: rgba(255, 255, 255, 0.05);">
         <img src="${item.img}" class="w-10 h-10 object-contain rounded-lg">
         <div class="flex-1 min-w-0">
           <p class="text-[11px] font-bold text-white truncate">${item.name}</p>
-          <p class="text-[9px] uppercase tracking-tight" style="color: ${itemColor};">${item.game}</p>
+          <p class="text-[9px] uppercase tracking-tight text-white/40">${item.game}</p>
         </div>
         <div class="text-right">
           <p class="text-[11px] font-black text-white">${fmtByCurr(itemTotal, state.currency)}</p>
@@ -2203,13 +2202,13 @@ function updateTradeStepUI() {
         }
         
         return `
-          <div class="rounded-2xl p-4 flex items-center gap-4" style="background: linear-gradient(135deg, ${itemColor}40, ${itemColor}20); border: 2px solid ${itemColor}; box-shadow: 0 4px 12px ${itemColor}30;">
-            <div class="size-12 rounded-xl p-1.5 shrink-0" style="background-color: ${itemColor}60;">
+          <div class="rounded-2xl p-4 flex items-center gap-4 border border-white/10" style="background-color: rgba(255, 255, 255, 0.05);">
+            <div class="size-12 rounded-xl p-1.5 shrink-0 bg-white/5">
               <img src="${item.img}" alt="" class="w-full h-full object-contain">
             </div>
             <div class="flex-1">
               <p class="text-sm font-bold text-white">${item.name}</p>
-              <p class="text-[11px] font-bold uppercase tracking-tight text-white" style="opacity: 0.6;">Roblox Limiteds</p>
+              <p class="text-[11px] font-bold uppercase tracking-tight text-white/40">Roblox Limiteds</p>
             </div>
             <p class="text-sm font-black text-white">${fmtByCurr(itemPrice, tradeCurrency)}</p>
           </div>
