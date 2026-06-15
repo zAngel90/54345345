@@ -679,6 +679,12 @@ function renderCard(p) {
   } else if (p.onRequest) {
     topBadgeHtml = `<div class="card-top-badge badge-on-request">Bajo pedido</div>`;
   }
+  
+  // Robux Price Badge (on image, top-left)
+  let robuxBadgeHtml = '';
+  if (p.robuxPrice) {
+    robuxBadgeHtml = `<div class="card-robux-badge">R$ ${p.robuxPrice}</div>`;
+  }
   // Se elimina el badge de "X uds" por petición del usuario, ya que basta con el indicador bajo el título.
 
   // Rarity Detection Ultra-Aggressive
@@ -804,6 +810,7 @@ function renderCard(p) {
 
   return `<div class="product-card ${themeClass}" data-id="${p.id}" onclick="addToCart('${p.id}',event)" style="${cardStyle}">
     ${topBadgeHtml}
+    ${robuxBadgeHtml}
     <div class="added-overlay" style="background: rgba(20, 32, 20, 0.4)">
       <div class="check-circle" style="background: #22c55e; box-shadow: 0 0 30px rgba(34, 197, 94, 0.3)">
         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
@@ -814,6 +821,7 @@ function renderCard(p) {
       `radial-gradient(circle at center, ${themeColor}75 0%, ${themeColor}10 70%, transparent 100%)`}">
       ${isOutOfStock ? `<div class="out-of-stock-overlay"><div class="out-of-stock-label">SIN STOCK</div></div>` : ''}
       ${badgeHtml}
+      ${robuxBadgeHtml}
       <img src="${p.img}" alt="${p.name}" loading="lazy">
     </div>
     <div class="card-info" style="background: transparent">
@@ -826,7 +834,6 @@ function renderCard(p) {
       <div class="card-price-row" style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px; margin-top: auto;">
           <div class="card-price-box">
             ${fmt(p.price)}
-            ${p.robuxPrice ? `<div class="card-robux-price"><svg class="robux-icon" xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v3h3v2h-3v3h-2v-3H8v-2h3V7z"/></svg>${p.robuxPrice} R$</div>` : ''}
           </div>
         <button class="card-cart-btn ${isOutOfStock ? 'out-of-stock' : ''}" onclick="addToCart('${p.id}',event)">
           ${isOutOfStock ?
