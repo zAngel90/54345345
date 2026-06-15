@@ -826,6 +826,7 @@ function renderCard(p) {
       <div class="card-price-row" style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px; margin-top: auto;">
           <div class="card-price-box">
             ${fmt(p.price)}
+            ${p.robuxPrice ? `<div class="card-robux-price"><svg class="robux-icon" xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v3h3v2h-3v3h-2v-3H8v-2h3V7z"/></svg>${p.robuxPrice} R$</div>` : ''}
           </div>
         <button class="card-cart-btn ${isOutOfStock ? 'out-of-stock' : ''}" onclick="addToCart('${p.id}',event)">
           ${isOutOfStock ?
