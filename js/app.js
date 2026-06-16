@@ -2045,8 +2045,18 @@ window.selectRobloxUser = function (id, name, displayName) {
 
 function updateConfirmButton() {
   const btn = document.getElementById('confirmCheckoutBtn');
+  if (!btn) return;
+  
+  // Forzar estilos básicos para asegurar visibilidad
+  btn.style.display = 'flex';
+  btn.style.opacity = '1';
+  btn.style.visibility = 'visible';
+  btn.style.cursor = 'pointer';
+
   if (selectedUser) {
     btn.disabled = false;
+    btn.style.backgroundColor = '#3b82f6';
+    btn.style.color = 'white';
     btn.innerHTML = `
       <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
       Confirmar y Pagar
@@ -2054,6 +2064,8 @@ function updateConfirmButton() {
     btn.onclick = confirmCheckout;
   } else {
     btn.disabled = true;
+    btn.style.backgroundColor = '';
+    btn.style.color = '';
     btn.innerHTML = `
       <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="m12 16 4-4-4-4"/></svg>
       Selecciona tu usuario
