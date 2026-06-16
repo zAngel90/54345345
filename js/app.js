@@ -53,7 +53,8 @@ let state = {
   user: null,
   notifications: [],
   activeNotifTab: 'all',
-  categoryIcons: {} // Mapeo de Categoría -> Icono Imagen
+  categoryIcons: {},
+  coupon: null
 };
 let lastAddedId = null;
 let selectedUser = null;
@@ -1421,7 +1422,18 @@ function updateCart() {
   if (footer) footer.classList.remove('hidden');
 
   if (cartSubtotal) cartSubtotal.innerHTML = fmt(total);
-  if (cartTotal) cartTotal.innerHTML = fmt(total);
+  
+  let finalTotal = total;
+  if (state.coupon) {
+    const discount = state.coupon.discountType === 'percentage' 
+      ? (total * state.coupon.discountValue / 100)
+      : Math.min(state.coupon.discountValue, total);
+    finalTotal = total - discount;
+    
+    if (cartSubtotal) cartSubtotal.innerHTML = `<span style="text-decoration:line-through; color:red; margin-right:5px;">${fmt(total)}</span><span>${fmt(finalTotal)}</span>`;
+  }
+  
+  if (cartTotal) cartTotal.innerHTML = fmt(finalTotal);
 
   let html = `
     <div class="space-y-3">
@@ -1833,11 +1845,23 @@ function renderCheckoutSummary() {
   if (!container || !amountEl || !currencyEl) return;
   
   const totalUSD = state.cart.reduce((s, x) => s + (x.price * x.qty), 0);
+
+  let finalTotal = totalUSD;
+  if (state.coupon) {
+    const discount = state.coupon.discountType === 'percentage' 
+      ? (totalUSD * state.coupon.discountValue / 100)
+      : Math.min(state.coupon.discountValue, totalUSD);
+    finalTotal = totalUSD - discount;
+  }
+
   const config = CURRENCY_RATES[state.currency] || CURRENCY_RATES['PEN'];
-  const totalFinal = totalUSD * config.rate;
-  
+  const totalFinal = finalTotal * config.rate;
+
   // Actualizar lista de items
   container.innerHTML = state.cart.map(item => {
+    // ...
+    // Aquí el precio por item debería mostrarse considerando el descuento si aplica,
+    // pero para simplificar, mostraremos el total al final.
     const itemTotal = item.price * item.qty;
     return `
       <div class="flex items-center gap-3 p-3 rounded-2xl border border-white/10" style="background-color: rgba(255, 255, 255, 0.05);">
@@ -1855,9 +1879,13 @@ function renderCheckoutSummary() {
   }).join('');
 
   // Actualizar Total
-  amountEl.textContent = config.symbol + (totalFinal >= 1000 ? totalFinal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : totalFinal.toFixed(2));
+  if (state.coupon) {
+    amountEl.innerHTML = `<span style="text-decoration:line-through; opacity:0.5; margin-right:5px;">${config.symbol}${(totalUSD * config.rate).toFixed(2)}</span>${config.symbol + (totalFinal >= 1000 ? totalFinal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : totalFinal.toFixed(2))}`;
+  } else {
+    amountEl.textContent = config.symbol + (totalFinal >= 1000 ? totalFinal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : totalFinal.toFixed(2));
+  }
   currencyEl.textContent = state.currency;
-}
+  }
 
 
 window.closeCheckoutModal = function () {
@@ -2041,14 +2069,24 @@ function confirmCheckout() {
   let gameType = 'ingame';
   if (state.mm2Mode) gameType = 'mm2';
 
+  const total = state.cart.reduce((s, x) => s + (x.price * CURRENCY_RATES[state.currency].rate * x.qty), 0);
+  let finalTotal = total;
+  if (state.coupon) {
+    const discount = state.coupon.discountType === 'percentage' 
+      ? (total * state.coupon.discountValue / 100)
+      : Math.min(state.coupon.discountValue, total);
+    finalTotal = total - discount;
+  }
+
   const checkoutData = {
     action: 'checkout',
     user: selectedUser,
     cart: state.cart,
-    total: state.cart.reduce((s, x) => s + (x.price * CURRENCY_RATES[state.currency].rate * x.qty), 0),
+    total: finalTotal,
     currency: state.currency,
     gameType,
-    fromIngame: true
+    fromIngame: true,
+    coupon: state.coupon
   };
 
   window.parent.postMessage(checkoutData, '*');
@@ -2163,8 +2201,15 @@ function updateTradeStepUI() {
     // Forzamos PEN para el trade si está disponible
     const tradeCurrency = CURRENCY_RATES['PEN'] ? 'PEN' : state.currency;
     const totalUSD = state.cart.reduce((s, i) => s + (i.price * i.qty), 0);
+    let finalTotal = totalUSD;
+    if (state.coupon) {
+      const discount = state.coupon.discountType === 'percentage' 
+        ? (totalUSD * state.coupon.discountValue / 100)
+        : Math.min(state.coupon.discountValue, totalUSD);
+      finalTotal = totalUSD - discount;
+    }
 
-    desc.innerText = `Total: ${fmtByCurr(totalUSD, tradeCurrency)}`;
+    desc.innerText = `Total: ${fmtByCurr(finalTotal, tradeCurrency)}`;
     nextBtnText.innerText = 'Confirmar y Pagar';
     nextBtn.disabled = false;
 
@@ -2223,8 +2268,17 @@ function updateTradeStepUI() {
         `;
       }).join('');
 
+      const totalUSD = state.cart.reduce((s, i) => s + (i.price * i.qty), 0);
+      let finalTotal = totalUSD;
+      if (state.coupon) {
+        const discount = state.coupon.discountType === 'percentage' 
+          ? (totalUSD * state.coupon.discountValue / 100)
+          : Math.min(state.coupon.discountValue, totalUSD);
+        finalTotal = totalUSD - discount;
+      }
+
       document.getElementById('final-subtotal').innerText = fmtByCurr(totalUSD, tradeCurrency);
-      document.getElementById('final-total').innerText = formatPrice(totalUSD * (CURRENCY_RATES[tradeCurrency]?.rate || 1));
+      document.getElementById('final-total').innerText = formatPrice(finalTotal * (CURRENCY_RATES[tradeCurrency]?.rate || 1));
       document.getElementById('final-currency').innerText = tradeCurrency;
     }
 
@@ -2484,7 +2538,44 @@ function confirmTrade() {
   showToast('✓ Solicitud de intercambio enviada');
 }
 
-// ===== MOBILE STORIES BAR =====
+window.applyCoupon = async function(code, isMobile = false) {
+  if (!code) return;
+
+  // Si ya hay un cupón, limpiar
+  if (state.coupon && state.coupon.code === code) {
+    state.coupon = null;
+    document.querySelector('.promo-input').value = '';
+    document.querySelector('.promo-btn').textContent = 'Aplicar';
+    updateCart();
+    return;
+  }
+
+  try {
+    const res = await fetch(`${SERVER_URL}/api/coupons/validate`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ 
+        code: code,
+        subtotal: state.cart.reduce((s, x) => s + (x.price * CURRENCY_RATES[state.currency].rate * x.qty), 0),
+        userId: state.user?.id || null
+      })
+    });
+    const data = await res.json();
+    if (data.success) {
+      state.coupon = { code, ...data.coupon };
+      updateCart();
+      document.querySelector('.promo-btn').textContent = 'X';
+      showToast('✓ Cupón aplicado: ' + code);
+    } else {
+      showToast('❌ ' + (data.message || 'Cupón inválido'));
+    }
+  } catch (err) {
+    console.error('Coupon validation error:', err);
+    showToast('❌ Error al validar cupón: ' + err.message);
+  }
+};
 function renderMobileStories() {
   const bar = document.getElementById('mobileStoriesBar');
   if (!bar) return;
@@ -2877,7 +2968,34 @@ window.toggleMobileSearch = toggleMobileSearch;
 window.addEventListener('resize', applyMobileLayout);
 
 // ===== INIT =====
+function initCoupons() {
+  const promoBtns = document.querySelectorAll('.promo-btn');
+  const promoInputs = document.querySelectorAll('.promo-input');
+
+  promoInputs.forEach((input, index) => {
+    input.addEventListener('input', () => {
+      const btn = promoBtns[index];
+      if (input.value.trim().length > 0) {
+        btn.classList.add('active'); // Asegúrate de tener estilos para .active
+        btn.style.backgroundColor = '#3b82f6'; // Estilo directo por ahora
+        btn.style.color = 'white';
+      } else {
+        btn.classList.remove('active');
+        btn.style.backgroundColor = '';
+        btn.style.color = '';
+      }
+    });
+  });
+
+  promoBtns.forEach((btn, index) => {
+    btn.onclick = () => {
+      const input = promoInputs[index];
+      if (input) window.applyCoupon(input.value);
+    };
+  });
+}
 initApp();
+initCoupons();
 
 setTimeout(() => {
   applyMobileLayout();
