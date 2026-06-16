@@ -2134,7 +2134,6 @@ function updateTradeStepUI() {
   const nextBtnText = document.getElementById('trade-btn-text');
   const nextBtn = document.getElementById('trade-next-btn');
   const footerBackBtn = document.getElementById('trade-back-btn');
-  const resultsBackBtn = document.getElementById('trade-back-results-btn');
 
   // Hide all steps
   document.getElementById('trade-step-1').classList.add('hidden');
@@ -2169,21 +2168,32 @@ function updateTradeStepUI() {
     desc.innerText = 'Busca tu usuario de Roblox para continuar';
 
     const searchView = document.getElementById('trade-search-view');
-    const confirmView = document.getElementById('trade-confirm-view');
     const selectedGridContainer = document.getElementById('trade-selected-user-grid');
 
     if (tradeSelectedUser) {
-      searchView.classList.add('hidden');
-      selectedGridContainer.classList.remove('hidden');
-      confirmView.classList.add('hidden');
+      if (searchView) searchView.classList.add('hidden');
+      if (selectedGridContainer) selectedGridContainer.classList.remove('hidden');
       nextBtnText.innerText = 'Continuar';
+      
+      // Habilitar y forzar estilos
       nextBtn.disabled = false;
+      nextBtn.classList.remove('opacity-30', 'cursor-not-allowed');
+      nextBtn.classList.add('bg-blue-600', 'hover:bg-blue-500');
+      nextBtn.style.opacity = '1';
+      nextBtn.style.pointerEvents = 'auto';
+      nextBtn.style.backgroundColor = '#2563eb';
     } else {
-      searchView.classList.remove('hidden');
-      selectedGridContainer.classList.add('hidden');
-      confirmView.classList.add('hidden');
+      if (searchView) searchView.classList.remove('hidden');
+      if (selectedGridContainer) selectedGridContainer.classList.add('hidden');
       nextBtnText.innerText = 'Selecciona un usuario';
+      
+      // Deshabilitar y atenuar
       nextBtn.disabled = true;
+      nextBtn.classList.add('opacity-30', 'cursor-not-allowed');
+      nextBtn.classList.remove('bg-blue-600', 'hover:bg-blue-500');
+      nextBtn.style.opacity = '0.3';
+      nextBtn.style.pointerEvents = 'none';
+      nextBtn.style.backgroundColor = '';
     }
   } else if (currentTradeStep === 2) {
     title.innerText = 'Seleccionar Item';
@@ -2406,8 +2416,9 @@ window.selectTradeUser = function (id, name, displayName) {
   `;
   selectedGridContainer.classList.remove('hidden');
   
-  // Mostrar botón de volver
-  document.getElementById('trade-back-results-btn').classList.remove('hidden');
+  // Mostrar botón de volver (si existe)
+  const backBtn = document.getElementById('trade-back-results-btn');
+  if (backBtn) backBtn.classList.remove('hidden');
   
   updateTradeStepUI();
 
