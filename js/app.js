@@ -1403,9 +1403,25 @@ function updateCart() {
   const cartTotal = document.getElementById('cartTotal');
   const cartSubtotal = document.getElementById('cartSubtotal');
   const cartBadge = document.getElementById('cartBadge');
+  const promoSection = document.querySelector('.promo-section');
 
   const total = state.cart.reduce((s, x) => s + x.price * x.qty, 0);
   const count = state.cart.reduce((s, x) => s + x.qty, 0);
+  
+  // Ocultar cupón si hay items mm2 o limited
+  const hasIneligibleItems = state.cart.some(item => 
+    item.game === 'mm2' || item.game === 'murder-mystery-2' || 
+    item.game?.toLowerCase().includes('mm2') || 
+    item.game === 'limiteds'
+  );
+  
+  if (promoSection) {
+    if (hasIneligibleItems) {
+      promoSection.classList.add('hidden');
+    } else {
+      promoSection.classList.remove('hidden');
+    }
+  }
 
   if (cartBadge) cartBadge.textContent = count;
   if (subtitle) subtitle.textContent = `${count} ${count === 1 ? 'producto' : 'productos'}`;
@@ -2563,6 +2579,18 @@ function confirmTrade() {
 
 window.applyCoupon = async function(code, isMobile = false) {
   if (!code) return;
+  
+  // Bloquear cupones si hay items mm2 o limited
+  const hasIneligibleItems = state.cart.some(item => 
+    item.game === 'mm2' || item.game === 'murder-mystery-2' || 
+    item.game?.toLowerCase().includes('mm2') || 
+    item.game === 'limiteds'
+  );
+  
+  if (hasIneligibleItems) {
+    showToast('❌ Cupones no disponibles para items MM2 o Limited');
+    return;
+  }
 
   // Si ya hay un cupón, limpiar
   if (state.coupon && state.coupon.code === code) {
