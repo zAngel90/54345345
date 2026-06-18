@@ -860,7 +860,7 @@ function renderTabs() {
   let tabs = [];
   
   if (currentGameObj && currentGameObj.categories && currentGameObj.categories.length > 0) {
-    tabs = currentGameObj.categories;
+    tabs = currentGameObj.categories.map(c => typeof c === 'string' ? c : (c.name || c.label || String(c)));
     // Si no incluye un "Ver Todo", lo añadimos al principio para que no se oculte nada por defecto
     if (!tabs.some(t => t.toLowerCase() === 'ver todo' || t.toLowerCase() === 'más vendidos')) {
       tabs = ['Ver Todo', ...tabs];
@@ -1268,7 +1268,8 @@ function selectGame(id) {
       tabsWrap.style.display = 'block';
     
     // Obtenemos las pestañas y aseguramos que "Ver Todo" sea la primera si hay categorías
-    const customTabs = g.categories && g.categories.length > 0 ? g.categories : (GAME_CATEGORIES[id] || []);
+    const rawTabs = g.categories && g.categories.length > 0 ? g.categories : (GAME_CATEGORIES[id] || []);
+    const customTabs = rawTabs.map(c => typeof c === 'string' ? c : (c.name || c.label || String(c)));
     const finalTabs = customTabs.includes('Ver Todo') || customTabs.includes('Más Vendidos') 
       ? customTabs 
       : ['Ver Todo', ...customTabs];
