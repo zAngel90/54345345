@@ -1090,7 +1090,8 @@ function renderCatalog() {
     } else {
       // Vista de JUEGO normal (Categorías del admin o Type)
       const currentGame = GAMES.find(g => g.id === state.activeGame);
-      const order = currentGame?.categories || [];
+      const rawCategories = currentGame?.categories || [];
+      const order = rawCategories.map(c => typeof c === 'string' ? c : (c.name || c.label || String(c)));
       
       // Ordenar las secciones según el orden del administrador
       const sortedSections = Object.keys(grouped).sort((a, b) => {
