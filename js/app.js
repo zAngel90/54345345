@@ -45,7 +45,7 @@ let PRODUCTS = [];
 let GAME_CATEGORIES = {};
 let state = {
   currency: 'PEN',
-  sort: 'popular',
+  sort: 'priceDesc',
   activeGame: null,
   search: '',
   cart: [],
