@@ -2101,18 +2101,21 @@ function confirmCheckout() {
 
   const total = state.cart.reduce((s, x) => s + (x.price * CURRENCY_RATES[state.currency].rate * x.qty), 0);
   let finalTotal = total;
+  let couponDiscountAmount = 0;
   if (state.coupon) {
-    const discount = state.coupon.discountType === 'percentage' 
+    couponDiscountAmount = state.coupon.discountType === 'percentage' 
       ? (total * state.coupon.discountValue / 100)
       : Math.min(state.coupon.discountValue, total);
-    finalTotal = total - discount;
+    finalTotal = total - couponDiscountAmount;
   }
 
   const checkoutData = {
     action: 'checkout',
     user: selectedUser,
     cart: state.cart,
-    total: finalTotal,
+    totalPrice: finalTotal,
+    originalPrice: total,
+    discountAmount: couponDiscountAmount,
     currency: state.currency,
     gameType,
     fromIngame: true,
