@@ -1476,12 +1476,7 @@ function updateCart() {
             </div>
             <div class="cart-item-footer mt-2">
               <span class="cart-item-price-total">${pStr}</span>
-              <div class="cart-item-controls">
-                <span class="text-[10px] text-white/20 mr-1 uppercase font-bold">Qty</span>
-                <button onclick="decreaseQty('${item.id}', event)" class="control-btn minus">-</button>
-                <span class="control-qty">${item.qty}</span>
-                <button onclick="addToCart('${item.id}', event)" class="control-btn plus">+</button>
-              </div>
+              <span class="text-[10px] ml-2 font-black text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded-md">x${item.qty}</span>
             </div>
           </div>
         </div>`;
@@ -2773,9 +2768,7 @@ function updateMobileCart() {
           <button onclick="removeFromCart('${item.id}',event)" style="color:rgba(239,68,68,0.6);padding:4px;border-radius:6px;cursor:pointer;background:rgba(239,68,68,0.08);border:none;display:flex;align-items:center;justify-content:center;width:28px;height:28px;">
             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
           </button>
-          <button onclick="decreaseQty('${item.id}',event)" style="width:28px;height:28px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;">−</button>
-          <span style="font-size:13px;font-weight:700;color:#fff;min-width:18px;text-align:center;">${item.qty}</span>
-          <button onclick="addToCart('${item.id}',event)" style="width:28px;height:28px;background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.25);border-radius:8px;color:#60a5fa;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;">+</button>
+          <span style="font-size:13px;font-weight:800;color:#60a5fa;background:rgba(59,130,246,0.1);padding:4px 8px;border-radius:6px;">x${item.qty}</span>
         </div>
       </div>`).join('');
   }
