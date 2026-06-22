@@ -145,22 +145,7 @@ body {
   }
 }
 
-/* Aplicar animaciones a los paneles */
-#sidebar {
-  animation: jellyInLeft 0.75s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-  animation-delay: 0.05s;
-}
-
-#cartPanel {
-  animation: jellyInRight 0.75s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-  animation-delay: 0.15s;
-}
-
-/* Centro (navbar + main) */
-#centerCol {
-  animation: jellyInDown 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-  animation-delay: 0.08s;
-}
+/* Panels inherit entrance animation from #rootContainer blur+fade */
 
 /* ===== LAYOUT BASE ===== */
 @media(min-width:1024px) {
@@ -972,6 +957,31 @@ body.is-mobile .category-tab {
   box-shadow: 0 0 15px var(--theme-color);
 }
 
+/* Entry animation keyframes — applied via JS on first render only */
+@keyframes cardFadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes blurFadeIn {
+  from { opacity: 0; filter: blur(6px); }
+  to { opacity: 1; filter: blur(0px); }
+}
+.animate-blur-in {
+  animation: blurFadeIn 0.8s ease-out forwards;
+}
+
+/* Applied via JS on first render only — removed after animation ends */
+.card-entry-anim {
+  animation: cardFadeSlideUp 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
 .product-card.theme-godly {
   box-shadow: 0 0 35px rgba(234, 179, 8, 0.05) !important;
 }
@@ -1550,7 +1560,6 @@ color: rgba(255, 255, 255, 0.7);
   height: 60px;
   border-radius: 12px;
   background: rgba(0, 0, 0, 0.2);
-  overflow: hidden;
   flex-shrink: 0;
 }
 
@@ -1558,6 +1567,7 @@ color: rgba(255, 255, 255, 0.7);
   width: 100%;
   height: 100%;
   object-fit: cover;
+  border-radius: 12px;
 }
 
 .cart-item-details {

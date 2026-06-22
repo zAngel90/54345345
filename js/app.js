@@ -681,11 +681,8 @@ function renderCard(p) {
     topBadgeHtml = `<div class="card-top-badge badge-on-request">Bajo pedido</div>`;
   }
   
-  // Robux Price Badge (on image, top-left)
+  // Robux Price Badge (hidden per request)
   let robuxBadgeHtml = '';
-  if (p.robuxPrice) {
-    robuxBadgeHtml = `<div class="card-robux-badge">R$ ${p.robuxPrice}</div>`;
-  }
   // Se elimina el badge de "X uds" por petición del usuario, ya que basta con el indicador bajo el título.
 
   // Rarity Detection Ultra-Aggressive
@@ -831,6 +828,7 @@ function renderCard(p) {
         ${(p.game === 'limiteds' || p.game === 'murder-mystery-2') ? `<span class="card-year ml-auto">${p.year || '2026'}</span>` : ''}
       </div>
       <h3 class="card-title">${p.name}</h3>
+      ${p.game && p.game !== 'limiteds' ? `<p class="card-category">${p.game}</p>` : ''}
       ${subtitleHtml}
       <div class="card-price-row" style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px; margin-top: auto;">
           <div class="card-price-box">
@@ -946,13 +944,11 @@ function getGameIcon(id, type = null) {
 }
 
 
+let _catalogFirstRender = true;
+
 function renderCatalog() {
   const cat = document.getElementById('catalogContent');
   const empty = document.getElementById('emptyState');
-
-  cat.classList.remove('animate-fade-in');
-  void cat.offsetWidth;
-  cat.classList.add('animate-fade-in');
 
   let filtered = PRODUCTS.filter(p => {
     // Si estamos en un juego específico
@@ -1157,12 +1153,31 @@ function renderCatalog() {
     }
   }
 
-    // Ejecutar Lucide para transformar los iconos nuevos
-    setTimeout(() => { if (window.lucide) lucide.createIcons(); }, 10);
-    setTimeout(() => { if (window.lucide) lucide.createIcons(); }, 100);
-    setTimeout(() => { if (window.lucide) lucide.createIcons(); }, 500);
-
   cat.innerHTML = html;
+
+  if (_catalogFirstRender) {
+    // Staggered card entrance — use CSS class and inline delay only
+    const cards = cat.querySelectorAll('.product-card');
+    cards.forEach((card, i) => {
+      const delay = Math.min(0.02 + (i * 0.02), 0.50);
+      card.classList.add('card-entry-anim');
+      card.style.animationDelay = `${delay}s`;
+    });
+    // Remove animation class from cards after all animations finish
+    setTimeout(() => {
+      cards.forEach(card => {
+        card.classList.remove('card-entry-anim');
+        card.style.animationDelay = '';
+      });
+    }, 1000);
+    _catalogFirstRender = false;
+  } else {
+    // Subsequent renders: simple opacity feedback
+    cat.classList.remove('animate-fade-in');
+    void cat.offsetWidth;
+    cat.classList.add('animate-fade-in');
+  }
+
   renderSeoInfo();
 
   // Convertir los placeholders de i data-lucide en SVGs reales
@@ -1461,8 +1476,9 @@ function updateCart() {
 
     return `
         <div class="cart-item-premium ${animClass}" data-id="${item.id}">
-          <div class="cart-item-img-wrap">
+          <div class="cart-item-img-wrap" style="position:relative;">
             <img src="${item.img}" alt="${item.name}">
+            ${item.qty > 1 ? `<span style="position:absolute;top:-4px;right:-4px;background:#2563eb;color:#fff;font-size:9px;font-weight:800;border-radius:6px;padding:1px 5px;border:1.5px solid #0f1520;line-height:1.4;z-index:2;">x${item.qty}</span>` : ''}
           </div>
           <div class="cart-item-details">
             <div class="flex justify-between items-start">
@@ -1476,7 +1492,11 @@ function updateCart() {
             </div>
             <div class="cart-item-footer mt-2">
               <span class="cart-item-price-total">${pStr}</span>
-              <span class="text-[10px] ml-2 font-black text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded-md">x${item.qty}</span>
+              <div class="cart-item-controls">
+                <button onclick="decreaseQty('${item.id}', event)" class="control-btn minus">−</button>
+                <span class="control-qty">${item.qty}</span>
+                <button onclick="addToCart('${item.id}', event)" class="control-btn plus">+</button>
+              </div>
             </div>
           </div>
         </div>`;
@@ -1878,14 +1898,16 @@ function renderCheckoutSummary() {
     const itemTotal = item.price * item.qty;
     return `
       <div class="flex items-center gap-3 p-3 rounded-2xl border border-white/10" style="background-color: rgba(255, 255, 255, 0.05);">
-        <img src="${item.img}" class="w-10 h-10 object-contain rounded-lg">
+        <div style="position:relative;width:40px;height:40px;flex-shrink:0;">
+          <img src="${item.img}" class="w-10 h-10 object-contain rounded-lg">
+          ${item.qty > 1 ? `<span style="position:absolute;top:-4px;right:-4px;background:#2563eb;color:#fff;font-size:8px;font-weight:800;border-radius:5px;padding:1px 4px;border:1.5px solid #0D1117;line-height:1.4;z-index:2;">x${item.qty}</span>` : ''}
+        </div>
         <div class="flex-1 min-w-0">
           <p class="text-[11px] font-bold text-white truncate">${item.name}</p>
           <p class="text-[9px] uppercase tracking-tight text-white/40">${item.game}</p>
         </div>
         <div class="text-right">
           <p class="text-[11px] font-black text-white">${fmtByCurr(itemTotal, state.currency)}</p>
-          ${item.qty > 1 ? `<p class="text-[8px] text-white/20 font-bold">${item.qty} uds.</p>` : ''}
         </div>
       </div>
     `;
@@ -2756,8 +2778,9 @@ function updateMobileCart() {
   if (listEl) {
     listEl.innerHTML = state.cart.map(item => `
       <div style="display:flex;align-items:center;gap:12px;padding:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);border-radius:14px;margin-bottom:10px;">
-        <div style="width:50px;height:50px;border-radius:10px;overflow:hidden;background:rgba(255,255,255,0.05);flex-shrink:0;">
-          <img src="${item.img}" alt="${item.name}" style="width:100%;height:100%;object-fit:contain;padding:4px;">
+        <div style="width:50px;height:50px;border-radius:10px;background:rgba(255,255,255,0.05);flex-shrink:0;position:relative;">
+          <img src="${item.img}" alt="${item.name}" style="width:100%;height:100%;object-fit:contain;padding:4px;border-radius:10px;">
+          ${item.qty > 1 ? `<span style="position:absolute;top:-4px;right:-4px;background:#2563eb;color:#fff;font-size:9px;font-weight:800;border-radius:6px;padding:1px 5px;border:1.5px solid #0D1117;line-height:1.4;z-index:2;">x${item.qty}</span>` : ''}
         </div>
         <div style="flex:1;min-width:0;">
           <p style="font-size:13px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${item.name}</p>
@@ -2768,7 +2791,6 @@ function updateMobileCart() {
           <button onclick="removeFromCart('${item.id}',event)" style="color:rgba(239,68,68,0.6);padding:4px;border-radius:6px;cursor:pointer;background:rgba(239,68,68,0.08);border:none;display:flex;align-items:center;justify-content:center;width:28px;height:28px;">
             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
           </button>
-          <span style="font-size:13px;font-weight:800;color:#60a5fa;background:rgba(59,130,246,0.1);padding:4px 8px;border-radius:6px;">x${item.qty}</span>
         </div>
       </div>`).join('');
   }
