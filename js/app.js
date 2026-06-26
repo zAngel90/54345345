@@ -269,30 +269,32 @@ async function initApp() {
 
 // ===== RECENT USERS LOGIC =====
 function initRecentUsers() {
-  const inputs = [
-    { id: 'robloxUserInput', dropdown: 'checkout-recent-users' },
-    { id: 'tradeRobloxInput', dropdown: 'trade-recent-users' }
+  const entries = [
+    { id: 'robloxUserInput', dropdown: 'checkout-recent-users', modalId: 'checkoutModal' },
+    { id: 'tradeRobloxInput', dropdown: 'trade-recent-users', modalId: 'tradeModal' }
   ];
 
-  inputs.forEach(({ id, dropdown }) => {
+  entries.forEach(({ id, dropdown, modalId }) => {
     const input = document.getElementById(id);
     const box = document.getElementById(dropdown);
-    if (!input || !box) return;
+    const modal = document.getElementById(modalId);
+    if (!input || !box || !modal) return;
 
-    input.addEventListener('focus', () => renderRecentList(id, dropdown));
-    input.addEventListener('click', (e) => {
-      e.stopPropagation();
-      renderRecentList(id, dropdown);
+    input.addEventListener('focus', () => {
+      if (!input.value.trim()) renderRecentList(id, dropdown);
     });
 
-    // Hide dropdown when clicking outside
-    document.addEventListener('click', (e) => {
+    input.addEventListener('blur', () => {
       setTimeout(() => {
-        const isBackBtn = e.target.closest('#checkout-back-btn') || e.target.closest('#trade-back-btn') || e.target.closest('#trade-back-results-btn');
-        if (!input.contains(e.target) && !box.contains(e.target) && !isBackBtn) {
-          box.style.display = 'none';
+        if (!box.contains(document.activeElement)) {
+          box.classList.add('hidden');
         }
-      }, 100);
+      }, 200);
+    });
+
+    input.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (!input.value.trim()) renderRecentList(id, dropdown);
     });
   });
 }
@@ -300,58 +302,100 @@ function initRecentUsers() {
 function saveRecentUser(user) {
   if (!user || !user.name || !user.id) return;
   let recents = JSON.parse(localStorage.getItem('recent_roblox_users') || '[]');
-  // Remove if exists to re-add at top
   recents = recents.filter(u => u.name.toLowerCase() !== user.name.toLowerCase());
-  recents.unshift({ name: user.name, id: user.id, avatar: user.avatar });
-  // Keep last 5
+  recents.unshift({ name: user.name, id: user.id, displayName: user.displayName || user.name, avatar: user.avatar });
   if (recents.length > 5) recents.pop();
   localStorage.setItem('recent_roblox_users', JSON.stringify(recents));
 }
 
 function renderRecentList(inputId, dropdownId) {
+  if (inputId === 'robloxUserInput') {
+    renderCheckoutRecentGrid(dropdownId);
+  } else {
+    renderTradeRecentGrid(dropdownId);
+  }
+}
+
+function renderTradeRecentGrid(dropdownId) {
   const box = document.getElementById(dropdownId);
-  const list = box.querySelector('.recent-list');
   const recents = JSON.parse(localStorage.getItem('recent_roblox_users') || '[]');
 
-  if (recents.length === 0) {
-    box.style.display = 'none';
+  if (recents.length === 0 || document.getElementById('tradeRobloxInput').value.trim()) {
+    box.classList.add('hidden');
     return;
   }
 
-  // Forzar reinicio de animación
-  box.classList.remove('dropdown-animated');
-  void box.offsetWidth; // Trigger reflow
-  box.classList.add('dropdown-animated');
-  
-  box.style.display = 'block';
-  list.innerHTML = recents.map(u => `
-    <div class="recent-user-item" onclick="selectRecentUser('${inputId}', '${dropdownId}', '${u.name}', '${u.id}')">
-      <img src="${u.avatar || `https://ui-avatars.com/api/?name=${u.name}&background=random`}" class="recent-user-avatar" />
-      <div class="flex-1 min-w-0 user-text">
-        <p class="text-[14px] font-semibold text-white truncate transition-colors user-name">${u.name}</p>
-        <p class="text-xs text-white/40 truncate transition-colors user-id">ID: ${u.id}</p>
-      </div>
-      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white/10 flex-shrink-0">
-        <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
-      </svg>
+  box.classList.remove('hidden');
+  box.innerHTML = `
+    <p class="text-[10px] font-black tracking-widest text-white/30 uppercase mb-3">RECIENTES</p>
+    <div class="grid grid-cols-4 gap-2">
+      ${recents.slice(0, 4).map(u => `
+        <button onclick="selectRecentUser('${u.name}', '${u.id}')" class="flex flex-col items-center gap-2 p-3 bg-white/[0.02] border border-white/[0.06] rounded-2xl hover:bg-blue-500/10 hover:border-blue-500/30 transition-all group">
+          <div class="w-12 h-12 rounded-full overflow-hidden bg-blue-500/10 border-2 border-white/10 group-hover:border-blue-500/40 transition-all">
+            <img src="${u.avatar || `https://ui-avatars.com/api/?name=${u.name}&background=random`}" class="w-full h-full object-cover" onerror="this.src='https://ui-avatars.com/api/?name=${u.name}&background=random'">
+          </div>
+          <div class="text-center min-w-0 w-full">
+            <p class="text-[10px] font-bold text-white/70 truncate group-hover:text-white transition-colors">${u.displayName || u.name}</p>
+            <p class="text-[7px] text-white/30 truncate">@${u.name}</p>
+          </div>
+        </button>
+      `).join('')}
     </div>
-  `).join('');
+  `;
 }
 
-function selectRecentUser(inputId, dropdownId, name, id) {
-  const input = document.getElementById(inputId);
-  const dropdown = document.getElementById(dropdownId);
-  input.value = name;
-  dropdown.style.display = 'none';
+function renderCheckoutRecentGrid(dropdownId) {
+  const box = document.getElementById(dropdownId);
+  const recents = JSON.parse(localStorage.getItem('recent_roblox_users') || '[]');
 
-  // Directly select the user since we already have the data
-  if (inputId === 'robloxUserInput') {
+  if (recents.length === 0 || document.getElementById('robloxUserInput').value.trim()) {
+    box.classList.add('hidden');
+    return;
+  }
+
+  box.classList.remove('hidden');
+  box.innerHTML = `
+    <p class="text-[10px] font-black tracking-widest text-white/30 uppercase mb-3">RECIENTES</p>
+    <div class="grid grid-cols-4 gap-2">
+      ${recents.slice(0, 4).map(u => `
+        <button onclick="selectRecentUser('${u.name}', '${u.id}')" class="flex flex-col items-center gap-2 p-3 bg-white/[0.02] border border-white/[0.06] rounded-2xl hover:bg-blue-500/10 hover:border-blue-500/30 transition-all group">
+          <div class="w-12 h-12 rounded-full overflow-hidden bg-blue-500/10 border-2 border-white/10 group-hover:border-blue-500/40 transition-all">
+            <img src="${u.avatar || `https://ui-avatars.com/api/?name=${u.name}&background=random`}" class="w-full h-full object-cover" onerror="this.src='https://ui-avatars.com/api/?name=${u.name}&background=random'">
+          </div>
+          <div class="text-center min-w-0 w-full">
+            <p class="text-[10px] font-bold text-white/70 truncate group-hover:text-white transition-colors">${u.displayName || u.name}</p>
+            <p class="text-[7px] text-white/30 truncate">@${u.name}</p>
+          </div>
+        </button>
+      `).join('')}
+    </div>
+  `;
+}
+
+function selectRecentUser(name, id) {
+  const input = document.getElementById('robloxUserInput');
+  const tradeInput = document.getElementById('tradeRobloxInput');
+  const dropdown = document.getElementById('checkout-recent-users');
+  const tradeDropdown = document.getElementById('trade-recent-users');
+  const recents = JSON.parse(localStorage.getItem('recent_roblox_users') || '[]');
+  const user = recents.find(u => u.name === name || u.id === id);
+
+  // Try checkout first
+  if (input && document.getElementById('checkoutModal') && !document.getElementById('checkoutModal').classList.contains('hidden')) {
+    input.value = name;
+    if (dropdown) dropdown.classList.add('hidden');
     if (typeof window.selectRobloxUser === 'function') {
-      window.selectRobloxUser(id, name, name);
+      window.selectRobloxUser(id, name, user?.displayName || name);
     }
-  } else if (inputId === 'tradeRobloxInput') {
+    return;
+  }
+  
+  // Trade modal
+  if (tradeInput && document.getElementById('tradeModal') && !document.getElementById('tradeModal').classList.contains('hidden')) {
+    tradeInput.value = name;
+    if (tradeDropdown) tradeDropdown.classList.add('hidden');
     if (typeof window.selectTradeUser === 'function') {
-      window.selectTradeUser(id, name, name);
+      window.selectTradeUser(id, name, user?.displayName || name);
     }
   }
 }
@@ -1868,6 +1912,7 @@ window.openCheckoutModal = function () {
   // Para MM2 y productos normales, abrimos el modal de selección de usuario antes de ir al checkout
   document.getElementById('checkoutModal').classList.remove('hidden');
   renderCheckoutSummary();
+  renderRecentList('robloxUserInput', 'checkout-recent-users');
 };
 
 function renderCheckoutSummary() {
@@ -1932,6 +1977,7 @@ window.closeCheckoutModal = function () {
   document.getElementById('robloxUserInput').value = '';
   document.getElementById('userSearchStatus').textContent = 'Busca y selecciona tu usuario para continuar';
   document.getElementById('checkout-selected-user').classList.add('hidden');
+  document.getElementById('checkout-recent-users').classList.add('hidden');
 };
 
 
@@ -1939,12 +1985,12 @@ document.getElementById('robloxUserInput').addEventListener('input', (e) => {
   const q = e.target.value.trim();
   const resultsDiv = document.getElementById('userSearchResults');
   const status = document.getElementById('userSearchStatus');
-  const recentDropdown = document.getElementById('checkout-recent-users');
+  const recentGrid = document.getElementById('checkout-recent-users');
 
   clearTimeout(searchTimeout);
 
-  // Ocultar dropdown de recientes al escribir
-  if (recentDropdown) recentDropdown.style.display = 'none';
+  // Ocultar grid de recientes al escribir
+  if (recentGrid) recentGrid.classList.add('hidden');
 
   if (q.length < 3) {
     resultsDiv.style.display = 'none';
@@ -2032,7 +2078,8 @@ window.backToCheckoutResults = function() {
   
   // Ocultar botón back
   
-  // Mostrar dropdown de usuarios recientes
+  // Limpiar input y mostrar grid de recientes
+  document.getElementById('robloxUserInput').value = '';
   renderRecentList('robloxUserInput', 'checkout-recent-users');
   
   // Hacer focus al input para mantener el dropdown abierto
@@ -2047,8 +2094,9 @@ window.selectRobloxUser = function (id, name, displayName) {
   const selectedGrid = document.getElementById('checkout-selected-grid');
   const selectedUserContainer = document.getElementById('checkout-selected-user');
 
-  // Ocultar resultados de búsqueda y mostrar grid de seleccionado
+  // Ocultar resultados de búsqueda y grid de recientes
   resultsDiv.style.display = 'none';
+  document.getElementById('checkout-recent-users').classList.add('hidden');
   
   // Mostrar usuario seleccionado en grid
   selectedGrid.innerHTML = `
@@ -2074,6 +2122,7 @@ window.selectRobloxUser = function (id, name, displayName) {
   saveRecentUser({
     name,
     id,
+    displayName,
     avatar: avatarUrl
   });
 };
@@ -2153,6 +2202,7 @@ window.openTradeModal = function (productId) {
 
   document.getElementById('tradeModal').classList.remove('hidden');
   updateTradeStepUI();
+  renderRecentList('tradeRobloxInput', 'trade-recent-users');
 
   // Reset Step 1
   document.getElementById('tradeRobloxInput').value = '';
@@ -2162,6 +2212,7 @@ window.openTradeModal = function (productId) {
 
 window.closeTradeModal = function () {
   document.getElementById('tradeModal').classList.add('hidden');
+  document.getElementById('trade-recent-users').classList.add('hidden');
 };
 
 function updateTradeStepUI() {
@@ -2290,29 +2341,6 @@ function updateTradeStepUI() {
       const itemsList = document.getElementById('final-buy-items-list');
       itemsList.innerHTML = state.cart.map((item, idx) => {
         const itemPrice = item.price * item.qty;
-        // Determinar color basado en rareza (igual que en las tarjetas)
-        let itemColor = '#ec4899'; // Default rosa
-        const r = (item.itemType || item.rarity || item.type || item.badge || '').toUpperCase();
-        
-        if (r === 'UNIQUE') {
-          itemColor = '#FF4444'; // Rojo intenso
-        } else if (r === 'GODLY' || r.includes('GODLY')) {
-          itemColor = '#FFD700'; // Dorado brillante
-        } else if (r === 'LEGENDARY') {
-          itemColor = '#FFD700'; // Dorado brillante
-        } else if (r === 'ANCIENT') {
-          itemColor = '#8B5CF6'; // Morado oscuro
-        } else if (r === 'VINTAGE') {
-          itemColor = '#F59E0B'; // Ámbar
-        } else if (r === 'EPIC') {
-          itemColor = '#9333EA'; // Morado
-        } else if (r === 'RARE') {
-          itemColor = '#3B82F6'; // Azul
-        } else if (r === 'UNCOMMON') {
-          itemColor = '#10B981'; // Verde
-        } else if (r === 'COMMON') {
-          itemColor = '#6B7280'; // Gris
-        }
         
         return `
           <div class="rounded-2xl p-4 flex items-center gap-4 border border-white/10" style="background-color: rgba(255, 255, 255, 0.05);">
@@ -2436,6 +2464,9 @@ window.selectTradeUser = function (id, name, displayName) {
   tradeSelectedUser = { id, name, displayName, avatarUrl };
   lastTradeSearchQuery = document.getElementById('tradeRobloxInput').value.trim();
 
+  // Ocultar grid de recientes
+  document.getElementById('trade-recent-users').classList.add('hidden');
+
   // Mostrar usuario seleccionado en grid
   const selectedGridContent = document.getElementById('trade-selected-grid-content');
   const selectedGridContainer = document.getElementById('trade-selected-user-grid');
@@ -2496,7 +2527,8 @@ window.backToTradeResults = function() {
     if (status) status.textContent = 'Buscando de nuevo...';
   }
 
-  // Mostrar dropdown de usuarios recientes
+  // Limpiar input y mostrar grid de recientes
+  document.getElementById('tradeRobloxInput').value = '';
   renderRecentList('tradeRobloxInput', 'trade-recent-users');
   document.getElementById('tradeRobloxInput').focus();
 
