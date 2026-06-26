@@ -828,7 +828,7 @@ function renderCard(p) {
         ${(p.game === 'limiteds' || p.game === 'murder-mystery-2') ? `<span class="card-year ml-auto">${p.year || '2026'}</span>` : ''}
       </div>
       <h3 class="card-title">${p.name}</h3>
-      ${p.game && p.game !== 'limiteds' ? `<p class="card-category">${p.game}</p>` : ''}
+      ${p.game && p.game !== 'limiteds' ? `<p class="card-category">${p.category || p.game}</p>` : ''}
       ${subtitleHtml}
       <div class="card-price-row" style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px; margin-top: auto;">
           <div class="card-price-box">
