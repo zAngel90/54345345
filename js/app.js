@@ -1484,7 +1484,7 @@ function updateCart() {
             <div class="flex justify-between items-start">
               <div>
                 <h4 class="cart-item-title text-ellipsis overflow-hidden whitespace-nowrap" style="max-width:140px;">${item.name}</h4>
-                <p class="cart-item-game">${item.game}</p>
+                <p class="cart-item-game">${item.category || item.game}</p>
               </div>
               <button onclick="removeFromCart('${item.id}', event)" class="remove-item-btn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
@@ -1904,7 +1904,7 @@ function renderCheckoutSummary() {
         </div>
         <div class="flex-1 min-w-0">
           <p class="text-[11px] font-bold text-white truncate">${item.name}</p>
-          <p class="text-[9px] uppercase tracking-tight text-white/40">${item.game}</p>
+          <p class="text-[9px] uppercase tracking-tight text-white/40">${item.category || item.game}</p>
         </div>
         <div class="text-right">
           <p class="text-[11px] font-black text-white">${fmtByCurr(itemTotal, state.currency)}</p>
@@ -2784,7 +2784,7 @@ function updateMobileCart() {
         </div>
         <div style="flex:1;min-width:0;">
           <p style="font-size:13px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${item.name}</p>
-          <p style="font-size:11px;color:rgba(255,255,255,0.3);margin-top:2px;">${item.game}</p>
+          <p style="font-size:11px;color:rgba(255,255,255,0.3);margin-top:2px;">${item.category || item.game}</p>
           <p style="font-size:13px;font-weight:800;color:#60a5fa;margin-top:4px;">${fmt(item.price * item.qty)}</p>
         </div>
         <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
