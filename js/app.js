@@ -1755,87 +1755,12 @@ window.clearSearch = function () { state.search = ''; document.getElementById('s
 // ===== GAME SEARCH =====
 document.getElementById('gameSearch').addEventListener('input', e => { state.gameSearch = e.target.value; renderSidebar(); });
 
-// Botón "Otro juego" - Búsqueda dinámica global
-const otroJuegoBtn = document.getElementById('otroJuegoBtn');
-const otroJuegoSearchWrap = document.getElementById('otroJuegoSearchWrap');
-const otroJuegoInput = document.getElementById('otroJuegoInput');
-const otroJuegoResults = document.getElementById('otroJuegoResults');
-
-if (otroJuegoBtn) {
-  otroJuegoBtn.addEventListener('click', () => {
-    otroJuegoSearchWrap.classList.toggle('hidden');
-    otroJuegoResults.classList.toggle('hidden');
-    if (!otroJuegoSearchWrap.classList.contains('hidden')) {
-      otroJuegoInput.focus();
-    }
-  });
-}
-
-if (otroJuegoInput) {
-  otroJuegoInput.addEventListener('input', (e) => {
-    const q = e.target.value.toLowerCase();
-    if (!q) {
-      otroJuegoResults.innerHTML = `
-        <div class="p-4 text-center">
-          <p class="text-[11px] font-bold text-white/20 uppercase tracking-widest">Escribe para buscar</p>
-        </div>
-      `;
-      return;
-    }
-
-    const filtered = GAMES.filter(g => g.hidden === true && g.label.toLowerCase().includes(q));
-
-    if (filtered.length === 0) {
-      otroJuegoResults.innerHTML = `
-        <div class="p-4 text-center">
-          <p class="text-[11px] font-bold text-white/20 uppercase tracking-widest">No se encontraron resultados</p>
-        </div>
-      `;
-      return;
-    }
-
-    otroJuegoResults.innerHTML = filtered.map((g, idx) => {
-      const gid = String(g.id).toLowerCase();
-      const gameIcon = (gid === 'murder-mystery-2' || gid === 'mm2') ? 'sword' : (gid === 'limiteds' ? 'crown' : 'gamepad-2');
-      const gameImg = g.image ? (g.image.startsWith('http') ? g.image : `${SERVER_URL}${g.image}`) : '';
-
-      return `
-        <div class="flex items-center gap-3 p-3 hover:bg-white/5 cursor-pointer transition-all border-b border-white/[0.03] group jelly-item" 
-             style="animation-delay: ${idx * 0.05}s"
-             onclick="addGameToSidebar('${g.id}')">
-          <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 overflow-hidden shrink-0">
-            ${gameImg ? `<img src="${gameImg}" class="w-full h-full object-cover">` : `<div class="w-full h-full flex items-center justify-center text-white/20"><i data-lucide="${gameIcon}" style="width:16px;height:16px"></i></div>`}
-          </div>
-          <div class="flex-1 min-w-0">
-            <p class="text-[12px] font-bold text-white truncate">${g.label}</p>
-          </div>
-          <div class="text-white/20 group-hover:text-blue-500 transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
-          </div>
-        </div>
-      `;
-    }).join('');
-
-    if (window.lucide) lucide.createIcons();
-  });
-}
-
 function addGameToSidebar(gameId) {
   if (!state.addedGames) state.addedGames = [];
   if (!state.addedGames.includes(gameId)) {
     state.addedGames.push(gameId);
     saveAddedGames();
   }
-
-  // Limpiar y ocultar buscador
-  otroJuegoInput.value = '';
-  otroJuegoSearchWrap.classList.add('hidden');
-  otroJuegoResults.classList.add('hidden');
-  otroJuegoResults.innerHTML = `
-    <div class="p-4 text-center">
-      <p class="text-[11px] font-bold text-white/20 uppercase tracking-widest">Escribe para buscar</p>
-    </div>
-  `;
 
   renderSidebar();
   selectGame(gameId);
@@ -2703,15 +2628,6 @@ function renderMobileStories() {
   const ITEM   = 'display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;flex-shrink:0;padding:0 8px;-webkit-tap-highlight-color:transparent;touch-action:manipulation;';
   const LABEL  = 'font-size:10px;font-weight:600;max-width:64px;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.2;';
 
-  // "Otro" add-game circle
-  const otroHTML = `
-    <div style="${ITEM}" onclick="document.getElementById('otroJuegoBtn').click();">
-      <div style="${CIRCLE}border:2px dashed rgba(255,255,255,0.15);background:rgba(255,255,255,0.03);">
-        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2.5"><line x1="12" x2="12" y1="5" y2="19"/><line x1="5" x2="19" y1="12" y2="12"/></svg>
-      </div>
-      <span style="${LABEL}color:rgba(255,255,255,0.3);">Otro</span>
-    </div>`;
-
   const storiesHTML = games.map(g => {
     const isActive = state.activeGame === g.id;
     const border   = isActive ? 'border:2px solid #3b82f6;box-shadow:0 0 0 2px rgba(59,130,246,0.25);' : 'border:2px solid rgba(255,255,255,0.1);';
@@ -2735,7 +2651,7 @@ function renderMobileStories() {
       </div>`;
   }).join('');
 
-  bar.innerHTML = otroHTML + storiesHTML;
+  bar.innerHTML = storiesHTML;
 }
 
 // ===== MOBILE CART OPEN/CLOSE =====

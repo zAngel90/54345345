@@ -1215,39 +1215,6 @@ color: rgba(255, 255, 255, 0.7);
   border-radius: 6px;
 }
 
-/* ===== OTRO JUEGO BTN ===== */
-.otro-juego-card {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 16px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 20px;
-  margin-bottom: 12px;
-  text-align: left;
-  transition: all 0.2s;
-}
-
-.otro-juego-card:hover {
-  background: rgba(255, 255, 255, 0.06);
-}
-
-.otro-juego-icon {
-  width: 50px;
-  height: 50px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-  color: rgba(255, 255, 255, 0.2);
-  flex-shrink: 0;
-}
-
 /* ===== SIDEBAR SEARCH ===== */
 .sidebar-search-wrap {
   position: relative;
